@@ -6,5 +6,4 @@
 build/
 pubspec.lock
 
-.idea/
 coverage/

@@ -417,7 +417,6 @@ void main() {
             'very_good.zsh',
             'zsh-config.zsh',
           ]);
-
         },
       );
     });

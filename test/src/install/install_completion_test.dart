@@ -19,27 +19,7 @@ void main() {
   });
 
   group('installCompletion', () {
-    test('creates a prefixed logger', () {
-      File(path.join(tempDir.path, '.zshrc')).createSync();
-
-      installCompletion(
-        logger: logger,
-        rootCommand: 'very_good',
-        isWindowsOverride: false,
-        environmentOverride: {
-          'SHELL': '/foo/bar/zsh',
-          'HOME': tempDir.path,
-        },
-      );
-
-      verify(
-        () => logger.detail(
-          'Completion installation for very_good started',
-        ),
-      );
-    });
-
-    test('installs for a zsh', () {
+    test('installs for zsh', () {
       File(path.join(tempDir.path, '.zshrc')).createSync();
 
       installCompletion(
@@ -66,37 +46,6 @@ void main() {
 
       expect(tempDir.listSync().map((e) => path.basename(e.path)), [
         '.zshrc',
-        '.dart-cli-completion',
-      ]);
-    });
-
-    test('installs for a bash', () {
-      File(path.join(tempDir.path, '.bashrc')).createSync();
-
-      installCompletion(
-        logger: logger,
-        rootCommand: 'very_good',
-        isWindowsOverride: false,
-        environmentOverride: {
-          'SHELL': '/foo/bar/bash',
-          'HOME': tempDir.path,
-        },
-      );
-
-      verify(
-        () => logger.detail(
-          'Completion installation for very_good started',
-        ),
-      );
-
-      verify(
-        () => logger.detail(
-          'Shell identified as bash',
-        ),
-      );
-
-      expect(tempDir.listSync().map((e) => path.basename(e.path)), [
-        '.bashrc',
         '.dart-cli-completion',
       ]);
     });
