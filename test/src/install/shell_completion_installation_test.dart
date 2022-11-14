@@ -11,10 +11,17 @@ import 'package:test/test.dart';
 class MockLogger extends Mock implements Logger {}
 
 void main() {
+  late Logger logger;
+  late Directory tempDir;
+
+  setUp(() {
+    logger = MockLogger();
+    tempDir = Directory.systemTemp.createTempSync();
+  });
+
   group('ShellCompletionInstallation', () {
     group('fromCurrentShell', () {
       test('instantiated without env', () {
-        final logger = MockLogger();
         expect(
           () => ShellCompletionInstallation.fromCurrentShell(logger: logger),
           returnsNormally,
@@ -22,7 +29,6 @@ void main() {
       });
 
       test('identifies zsh', () {
-        final logger = MockLogger();
         final result = ShellCompletionInstallation.fromCurrentShell(
           logger: logger,
           isWindowsOverride: false,
@@ -36,7 +42,6 @@ void main() {
 
       group('identifies no shell', () {
         test('for no shell env', () {
-          final logger = MockLogger();
           final result = ShellCompletionInstallation.fromCurrentShell(
             logger: logger,
             isWindowsOverride: false,
@@ -47,7 +52,6 @@ void main() {
         });
 
         test('for empty shell env', () {
-          final logger = MockLogger();
           final result = ShellCompletionInstallation.fromCurrentShell(
             logger: logger,
             isWindowsOverride: false,
@@ -60,7 +64,6 @@ void main() {
         });
 
         test('for extraneous shell', () {
-          final logger = MockLogger();
           final result = ShellCompletionInstallation.fromCurrentShell(
             logger: logger,
             isWindowsOverride: false,
@@ -76,9 +79,6 @@ void main() {
 
     group('completionConfigDir', () {
       test('gets config dir location on windows', () {
-        final logger = MockLogger();
-        final tempDir = Directory.systemTemp.createTempSync();
-
         final installation = ShellCompletionInstallation.fromCurrentShell(
           logger: logger,
           isWindowsOverride: true,
@@ -95,9 +95,6 @@ void main() {
       });
 
       test('gets config dir location on posix', () {
-        final logger = MockLogger();
-        final tempDir = Directory.systemTemp.createTempSync();
-
         final installation = ShellCompletionInstallation.fromCurrentShell(
           logger: logger,
           isWindowsOverride: false,
@@ -117,14 +114,6 @@ void main() {
     });
 
     group('install', () {
-      late Logger logger;
-      late Directory tempDir;
-
-      setUp(() {
-        logger = MockLogger();
-        tempDir = Directory.systemTemp.createTempSync();
-      });
-
       test('createCompletionConfigDir', () {
         final installation = ShellCompletionInstallation(
           logger: logger,
