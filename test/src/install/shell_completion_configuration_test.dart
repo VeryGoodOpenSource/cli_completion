@@ -29,7 +29,7 @@ if type compdef &>/dev/null; then
     IFS=\$si
 
     _describe 'values' reply
-  
+  }
   compdef _very_good_completion very_good
 fi
 ''');

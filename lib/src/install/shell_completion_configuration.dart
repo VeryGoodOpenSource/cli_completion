@@ -49,6 +49,9 @@ final zshConfiguration = ShellCompletionConfiguration(
     return '[[ -f $scriptPath ]] && . $scriptPath || true';
   },
   scriptTemplate: (String rootCommand) {
+    // Completion script for zsh.
+    //
+    // Based on https://github.com/mklabs/tabtab/blob/master/lib/scripts/zsh.sh
     return '''
 if type compdef &>/dev/null; then
   _${rootCommand}_completion () {
@@ -59,7 +62,7 @@ if type compdef &>/dev/null; then
     IFS=\$si
 
     _describe 'values' reply
-  
+  }
   compdef _${rootCommand}_completion $rootCommand
 fi
 ''';
