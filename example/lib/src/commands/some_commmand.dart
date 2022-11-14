@@ -1,6 +1,9 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
+/// A command that has no sub commands (a.k.a leaf command) that
+/// receives all the common cases of option mapping: options, muilt-options,
+/// flags and whatnot
 class SomeCommand extends Command<int> {
   SomeCommand(this._logger) {
     argParser

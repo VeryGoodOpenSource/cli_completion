@@ -40,6 +40,11 @@ class ExampleCommandRunner extends CommandRunner<int> {
     try {
       final topLevelResults = parse(args);
 
+      if (topLevelResults['rootFlag'] == true) {
+        _logger.info('You used the root flag, it does nothing :)');
+        return ExitCode.success.code;
+      }
+
       return await runCommand(topLevelResults) ?? ExitCode.success.code;
     } on FormatException catch (e, stackTrace) {
       // On format errors, show the commands error message, root usage and

@@ -1,9 +1,10 @@
 import 'package:args/command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
+/// A command that only has a sub command
 class SomeOtherCommand extends Command<int> {
   SomeOtherCommand(this._logger) {
-    addSubcommand(SomeSubCommand(_logger));
+    addSubcommand(_SomeSubCommand(_logger));
   }
 
   final Logger _logger;
@@ -15,8 +16,10 @@ class SomeOtherCommand extends Command<int> {
   String get name => 'some_other_command';
 }
 
-class SomeSubCommand extends Command<int> {
-  SomeSubCommand(this._logger);
+/// A command under [SomeOtherCommand] that does not receive options and read
+/// the "rest" field from arg results
+class _SomeSubCommand extends Command<int> {
+  _SomeSubCommand(this._logger);
 
   final Logger _logger;
 
@@ -28,8 +31,8 @@ class SomeSubCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    for (final option in argResults!.options) {
-      _logger.info('  - $option: ${argResults![option]}');
+    for (final rest in argResults!.rest) {
+      _logger.info('  - $rest');
     }
 
     return ExitCode.success.code;
