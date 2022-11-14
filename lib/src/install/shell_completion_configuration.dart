@@ -24,20 +24,20 @@ class ShellCompletionConfiguration {
     required this.scriptTemplate,
   });
 
-  /// The shell name
+  /// A descriptive string to identify the shell among others.
   final String name;
 
-  /// The location of a config file that is run uppon shell start.
+  /// The location of a config file that is run upon shell start.
   /// Eg: .bashrc or .zshrc
   final String shellRCFile;
 
-  /// Generates a line to sources a script file.
+  /// Generates a line to sources of a script file.
   final SourceStringTemplate sourceLineTemplate;
 
   /// Generates the contents of a completion script.
   final CompletionScriptTemplate scriptTemplate;
 
-  /// The name for the config file for this shell
+  /// The name for the config file for this shell.
   String get completionConfigForShellFileName => '$name-config.$name';
 }
 

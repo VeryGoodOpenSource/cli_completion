@@ -11,7 +11,7 @@ class CompletionInstallationException implements Exception {
   /// The error message for this exception
   final String message;
 
-  /// The command in which its installation went wrong.
+  /// The command for which the installation failed.
   final String rootCommand;
 
   @override
