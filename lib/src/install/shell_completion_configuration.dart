@@ -28,7 +28,7 @@ class ShellCompletionConfiguration {
   final String name;
 
   /// The location of a config file that is run upon shell start.
-  /// Eg: .bashrc or .zshrc
+  /// Eg: .bash_profile or .zshrc
   final String shellRCFile;
 
   /// Generates a line to sources of a script file.
@@ -64,6 +64,44 @@ if type compdef &>/dev/null; then
     _describe 'values' reply
   }
   compdef _${rootCommand}_completion $rootCommand
+fi
+''';
+  },
+);
+
+/// A [ShellCompletionConfiguration] for bash.
+final bashConfiguration = ShellCompletionConfiguration(
+  name: 'bash',
+  shellRCFile: '~/.bash_profile',
+  sourceLineTemplate: (String scriptPath) {
+    return '[ -f $scriptPath ] && . $scriptPath || true';
+  },
+  scriptTemplate: (String rootCommand) {
+    // Completion script for bash.
+    //
+    // Based on https://github.com/mklabs/tabtab/blob/master/lib/scripts/bash.sh
+    return '''
+if type complete &>/dev/null; then
+  _${rootCommand}_completion () {
+    local words cword
+    if type _get_comp_words_by_ref &>/dev/null; then
+      _get_comp_words_by_ref -n = -n @ -n : -w words -i cword
+    else
+      cword="\$COMP_CWORD"
+      words=("\${COMP_WORDS[@]}")
+    fi
+    local si="\$IFS"
+    IFS=\$'\n' COMPREPLY=(\$(COMP_CWORD="\$cword" \\
+                           COMP_LINE="\$COMP_LINE" \\
+                           COMP_POINT="\$COMP_POINT" \\
+                           $rootCommand completion -- "\${words[@]}" \\
+                           2>/dev/null)) || return \$?
+    IFS="\$si"
+    if type __ltrim_colon_completions &>/dev/null; then
+      __ltrim_colon_completions "\${words[cword]}"
+    fi
+  }
+  complete -o default -F _${rootCommand}_completion $rootCommand
 fi
 ''';
   },

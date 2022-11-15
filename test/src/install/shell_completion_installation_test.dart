@@ -40,6 +40,29 @@ void main() {
         expect(result?.configuration, zshConfiguration);
       });
 
+      test('identifies bash shell', () {
+        final logger = MockLogger();
+        final result = ShellCompletionInstallation.fromCurrentShell(
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {
+            'SHELL': '/foo/bar/bash',
+          },
+        );
+
+        expect(result?.configuration, bashConfiguration);
+
+        final resultWindows = ShellCompletionInstallation.fromCurrentShell(
+          logger: logger,
+          isWindowsOverride: true,
+          environmentOverride: {
+            'SHELL': r'c:\foo\bar\bash.exe',
+          },
+        );
+
+        expect(resultWindows?.configuration, bashConfiguration);
+      });
+
       group('identifies no shell', () {
         test('for no shell env', () {
           final result = ShellCompletionInstallation.fromCurrentShell(
@@ -401,11 +424,50 @@ void main() {
 
 ''');
 
-          expect(configDir.listSync().map((e) => path.basename(e.path)), [
-            'not_good.zsh',
-            'very_good.zsh',
-            'zsh-config.zsh',
-          ]);
+          expect(
+            configDir.listSync().map((e) => path.basename(e.path)),
+            unorderedEquals([
+              'not_good.zsh',
+              'very_good.zsh',
+              'zsh-config.zsh',
+            ]),
+          );
+
+          final bashInstallation = ShellCompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDir.path,
+            },
+            configuration: bashConfiguration,
+          );
+
+          final bashProfile = File(path.join(tempDir.path, '.bash_profile'))
+            ..createSync();
+
+          bashInstallation
+            ..install('very_good')
+            ..install('not_good');
+
+          // ignore: leading_newlines_in_multiline_strings
+          expect(bashProfile.readAsStringSync(), '''## [Completion] 
+## Completion scripts setup. Remove the following line to uninstall
+[ -f ${configDir.path}/bash-config.bash ] && . ${configDir.path}/bash-config.bash || true
+## [/Completion]
+
+''');
+
+          expect(
+            configDir.listSync().map((e) => path.basename(e.path)),
+            unorderedEquals([
+              'not_good.bash',
+              'not_good.zsh',
+              'very_good.bash',
+              'very_good.zsh',
+              'zsh-config.zsh',
+              'bash-config.bash'
+            ]),
+          );
         },
       );
     });
