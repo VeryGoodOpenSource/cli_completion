@@ -44,10 +44,41 @@ void main() {
         ),
       );
 
-      expect(tempDir.listSync().map((e) => path.basename(e.path)), [
-        '.zshrc',
-        '.dart-cli-completion',
-      ]);
+      expect(
+        tempDir.listSync().map((e) => path.basename(e.path)),
+        unorderedEquals(['.zshrc', '.dart-cli-completion']),
+      );
+    });
+
+    test('installs for bash', () {
+      File(path.join(tempDir.path, '.bash_profile')).createSync();
+
+      installCompletion(
+        logger: logger,
+        rootCommand: 'very_good',
+        isWindowsOverride: false,
+        environmentOverride: {
+          'SHELL': '/foo/bar/bash',
+          'HOME': tempDir.path,
+        },
+      );
+
+      verify(
+        () => logger.detail(
+          'Completion installation for very_good started',
+        ),
+      );
+
+      verify(
+        () => logger.detail(
+          'Shell identified as bash',
+        ),
+      );
+
+      expect(
+        tempDir.listSync().map((e) => path.basename(e.path)),
+        unorderedEquals(['.dart-cli-completion', '.bash_profile']),
+      );
     });
 
     test('do nothing on unknown shells', () {
