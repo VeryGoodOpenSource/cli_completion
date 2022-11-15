@@ -424,11 +424,14 @@ void main() {
 
 ''');
 
-          expect(configDir.listSync().map((e) => path.basename(e.path)), [
-            'not_good.zsh',
-            'very_good.zsh',
-            'zsh-config.zsh',
-          ]);
+          expect(
+            configDir.listSync().map((e) => path.basename(e.path)),
+            unorderedEquals([
+              'not_good.zsh',
+              'very_good.zsh',
+              'zsh-config.zsh',
+            ]),
+          );
 
           final bashInstallation = ShellCompletionInstallation(
             logger: logger,
@@ -454,14 +457,17 @@ void main() {
 
 ''');
 
-          expect(configDir.listSync().map((e) => path.basename(e.path)), [
-            'not_good.bash',
-            'not_good.zsh',
-            'very_good.bash',
-            'very_good.zsh',
-            'zsh-config.zsh',
-            'bash-config.bash'
-          ]);
+          expect(
+            configDir.listSync().map((e) => path.basename(e.path)),
+            unorderedEquals([
+              'not_good.bash',
+              'not_good.zsh',
+              'very_good.bash',
+              'very_good.zsh',
+              'zsh-config.zsh',
+              'bash-config.bash'
+            ]),
+          );
         },
       );
     });

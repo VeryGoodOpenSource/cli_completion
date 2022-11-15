@@ -44,10 +44,10 @@ void main() {
         ),
       );
 
-      expect(tempDir.listSync().map((e) => path.basename(e.path)), [
-        '.zshrc',
-        '.dart-cli-completion',
-      ]);
+      expect(
+        tempDir.listSync().map((e) => path.basename(e.path)),
+        unorderedEquals(['.zshrc', '.dart-cli-completion']),
+      );
     });
 
     test('installs for bash', () {
@@ -75,10 +75,10 @@ void main() {
         ),
       );
 
-      expect(tempDir.listSync().map((e) => path.basename(e.path)), [
-        '.dart-cli-completion',
-        '.bash_profile',
-      ]);
+      expect(
+        tempDir.listSync().map((e) => path.basename(e.path)),
+        unorderedEquals(['.dart-cli-completion', '.bash_profile']),
+      );
     });
 
     test('do nothing on unknown shells', () {
