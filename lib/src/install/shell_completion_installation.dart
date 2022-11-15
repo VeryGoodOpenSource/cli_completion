@@ -42,6 +42,9 @@ class ShellCompletionInstallation {
     final ShellCompletionConfiguration configuration;
     if (basename == 'zsh') {
       configuration = zshConfiguration;
+    } else if (basename.contains('bash')) {
+      // on windows basename can be bash.exe
+      configuration = bashConfiguration;
     } else {
       return null;
     }
