@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cli_completion/src/exceptions.dart';
 import 'package:cli_completion/src/install/shell_completion_configuration.dart';
+import 'package:cli_completion/src/system_shell.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
@@ -9,48 +10,39 @@ import 'package:path/path.dart' as path;
 /// {@template shell_completion_installation}
 /// A description of a completion installation process for a specific shell.
 ///
-/// Creation should be done via [ShellCompletionInstallation.fromCurrentShell].
+/// Creation should be done via [CompletionInstallation.fromSystemShell].
 /// {@endtemplate}
-class ShellCompletionInstallation {
+class CompletionInstallation {
   /// {@macro shell_completion_installation}
   @visibleForTesting
-  ShellCompletionInstallation({
+  CompletionInstallation({
     required this.configuration,
     required this.logger,
     required this.isWindows,
     required this.environment,
   });
 
-  /// Identify the current shell and from there, create a
-  /// [ShellCompletionInstallation] with the proper
-  /// [ShellCompletionConfiguration].
-  static ShellCompletionInstallation? fromCurrentShell({
+  /// Creates a [CompletionInstallation] given the current [SystemShell].
+  factory CompletionInstallation.fromSystemShell({
+    required SystemShell systemShell,
     required Logger logger,
     bool? isWindowsOverride,
     Map<String, String>? environmentOverride,
   }) {
-    final environment = environmentOverride ?? Platform.environment;
+    // logger.info('Identifying system shell');
+
     final isWindows = isWindowsOverride ?? Platform.isWindows;
+    final environment = environmentOverride ?? Platform.environment;
 
-    // TODO(renancaraujo): this detects the "login shell", which can be
-    // different from the actual shell.
-    final envShell = environment['SHELL'];
-    if (envShell == null || envShell.isEmpty) return null;
+    // final systemShell = SystemShell.current(environment: environment);
+    //
 
-    final basename = path.basename(envShell);
+    // logger.info(
+    //   'Shell identified as ${systemShell.configuration.name}',
+    // );
 
-    final ShellCompletionConfiguration configuration;
-    if (basename == 'zsh') {
-      configuration = zshConfiguration;
-    } else if (RegExp(r'bash(\.exe)?$').hasMatch(basename)) {
-      // on windows basename can be bash.exe
-      configuration = bashConfiguration;
-    } else {
-      return null;
-    }
-
-    return ShellCompletionInstallation(
-      configuration: configuration,
+    return CompletionInstallation(
+      configuration: ShellCompletionConfiguration.fromSystemShell(systemShell),
       logger: logger,
       isWindows: isWindows,
       environment: environment,
@@ -85,7 +77,8 @@ class ShellCompletionInstallation {
     }
   }
 
-  /// Perform the installation process.
+  /// Install completion configuration hooks for a [rootCommand] in the
+  /// current shell.
   void install(String rootCommand) {
     logger.detail(
       'Installing completion for the command $rootCommand '
