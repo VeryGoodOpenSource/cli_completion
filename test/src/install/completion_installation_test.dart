@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:cli_completion/install.dart';
 import 'package:cli_completion/src/exceptions.dart';
-import 'package:cli_completion/src/install/completion_installation.dart';
 import 'package:cli_completion/src/install/shell_completion_configuration.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,6 +20,43 @@ void main() {
   });
 
   group('CompletionInstallation', () {
+    group('fromSystemShell', () {
+      test('bash', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.bash,
+          logger: logger,
+        );
+        expect(installation.configuration.name, 'bash');
+      });
+
+      test('zsh', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.zsh,
+          logger: logger,
+        );
+        expect(installation.configuration.name, 'zsh');
+      });
+
+      test('proxies overrides', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.zsh,
+          logger: logger,
+          isWindowsOverride: true,
+          environmentOverride: {'HOME': '/foo/bar'},
+        );
+        expect(installation.isWindows, true);
+        expect(installation.environment, {'HOME': '/foo/bar'});
+
+        final installation2 = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.zsh,
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {'HOME': '/foo/bar'},
+        );
+        expect(installation2.isWindows, false);
+      });
+    });
+
     group('completionConfigDir', () {
       test('gets config dir location on windows', () {
         final installation = CompletionInstallation(

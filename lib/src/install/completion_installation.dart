@@ -29,17 +29,8 @@ class CompletionInstallation {
     bool? isWindowsOverride,
     Map<String, String>? environmentOverride,
   }) {
-    // logger.info('Identifying system shell');
-
     final isWindows = isWindowsOverride ?? Platform.isWindows;
     final environment = environmentOverride ?? Platform.environment;
-
-    // final systemShell = SystemShell.current(environment: environment);
-    //
-
-    // logger.info(
-    //   'Shell identified as ${systemShell.configuration.name}',
-    // );
 
     return CompletionInstallation(
       configuration: ShellCompletionConfiguration.fromSystemShell(systemShell),
