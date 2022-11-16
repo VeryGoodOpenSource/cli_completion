@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:args/command_runner.dart';
+import 'package:cli_completion/src/command_runner/completion_command_runner.dart';
 
-import 'package:cli_completion/src/handling/completion_command_runner.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 /// {@template handle_completion_request_command}
@@ -41,9 +41,9 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
   @override
   FutureOr<T>? run() {
     logger
-      ..info('This')
-      ..info('is')
-      ..info('a suggestion');
+      ..info('USA')
+      ..info('Brazil')
+      ..info('Netherlands');
 
     return null;
   }

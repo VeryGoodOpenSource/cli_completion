@@ -1,4 +1,5 @@
 import 'package:args/command_runner.dart';
+import 'package:cli_completion/cli_completion.dart';
 import 'package:example/src/commands/commands.dart';
 import 'package:mason_logger/mason_logger.dart';
 
@@ -13,7 +14,7 @@ const description = 'Example for cli_completion';
 /// $ example_cli --version
 /// ```
 /// {@endtemplate}
-class ExampleCommandRunner extends CommandRunner<int> {
+class ExampleCommandRunner extends CompletionCommandRunner<int> {
   /// {@macro example_command_runner}
   ExampleCommandRunner({
     Logger? logger,
