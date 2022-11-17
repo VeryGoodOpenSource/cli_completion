@@ -31,6 +31,7 @@ class _SomeSubCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    _logger.info(description);
     for (final rest in argResults!.rest) {
       _logger.info('  - $rest');
     }
