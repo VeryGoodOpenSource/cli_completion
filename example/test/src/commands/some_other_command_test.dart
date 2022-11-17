@@ -1,5 +1,4 @@
 import 'package:example/src/command_runner.dart';
-import 'package:example/src/commands/commands.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
