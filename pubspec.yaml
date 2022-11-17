@@ -7,6 +7,7 @@ environment:
   sdk: ">=2.18.0 <3.0.0"
 
 dependencies:
+  args: ^2.3.1
   mason_logger: ^0.2.2
   meta: ^1.8.0
   path: ^1.8.2

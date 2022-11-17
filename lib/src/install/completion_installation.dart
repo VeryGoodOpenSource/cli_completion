@@ -24,7 +24,7 @@ class CompletionInstallation {
 
   /// Creates a [CompletionInstallation] given the current [SystemShell].
   factory CompletionInstallation.fromSystemShell({
-    required SystemShell systemShell,
+    required SystemShell? systemShell,
     required Logger logger,
     bool? isWindowsOverride,
     Map<String, String>? environmentOverride,
@@ -32,8 +32,12 @@ class CompletionInstallation {
     final isWindows = isWindowsOverride ?? Platform.isWindows;
     final environment = environmentOverride ?? Platform.environment;
 
+    final configuration = systemShell == null
+        ? null
+        : ShellCompletionConfiguration.fromSystemShell(systemShell);
+
     return CompletionInstallation(
-      configuration: ShellCompletionConfiguration.fromSystemShell(systemShell),
+      configuration: configuration,
       logger: logger,
       isWindows: isWindows,
       environment: environment,
@@ -51,7 +55,7 @@ class CompletionInstallation {
   final Map<String, String> environment;
 
   /// The associated [ShellCompletionConfiguration].
-  final ShellCompletionConfiguration configuration;
+  final ShellCompletionConfiguration? configuration;
 
   /// Define the [Directory] in which the
   /// completion configuration files will be stored.
@@ -71,6 +75,15 @@ class CompletionInstallation {
   /// Install completion configuration hooks for a [rootCommand] in the
   /// current shell.
   void install(String rootCommand) {
+    final configuration = this.configuration;
+
+    if (configuration == null) {
+      throw CompletionInstallationException(
+        message: 'Unknown shell.',
+        rootCommand: rootCommand,
+      );
+    }
+
     logger.detail(
       'Installing completion for the command $rootCommand '
       'on ${configuration.name}',
@@ -87,13 +100,13 @@ class CompletionInstallation {
   void createCompletionConfigDir() {
     final completionConfigDirPath = completionConfigDir.path;
 
-    logger.detail(
+    logger.info(
       'Creating completion configuration directory '
       'at $completionConfigDirPath',
     );
 
     if (completionConfigDir.existsSync()) {
-      logger.detail(
+      logger.warn(
         'A ${completionConfigDir.path} directory was already found.',
       );
       return;
@@ -106,20 +119,21 @@ class CompletionInstallation {
   /// identified shell.
   @visibleForTesting
   void writeCompletionScriptForCommand(String rootCommand) {
+    final configuration = this.configuration!;
     final completionConfigDirPath = completionConfigDir.path;
     final commandScriptName = '$rootCommand.${configuration.name}';
     final commandScriptPath = path.join(
       completionConfigDirPath,
       commandScriptName,
     );
-    logger.detail(
+    logger.info(
       'Writing completion script for $rootCommand on $commandScriptPath',
     );
 
     final scriptFile = File(commandScriptPath);
 
     if (scriptFile.existsSync()) {
-      logger.detail(
+      logger.warn(
         'A script file for $rootCommand was already found on '
         '$commandScriptPath.',
       );
@@ -133,18 +147,19 @@ class CompletionInstallation {
   /// [writeCompletionScriptForCommand] the the global completion config file.
   @visibleForTesting
   void writeCompletionConfigForShell(String rootCommand) {
+    final configuration = this.configuration!;
     final completionConfigDirPath = completionConfigDir.path;
 
     final configPath = path.join(
       completionConfigDirPath,
       configuration.completionConfigForShellFileName,
     );
-    logger.detail('Adding config for $rootCommand config entry to $configPath');
+    logger.info('Adding config for $rootCommand config entry to $configPath');
 
     final configFile = File(configPath);
 
     if (!configFile.existsSync()) {
-      logger.detail('No file found at $configPath, creating one now');
+      logger.info('No file found at $configPath, creating one now');
       configFile.createSync();
     }
     final commandScriptName = '$rootCommand.${configuration.name}';
@@ -153,7 +168,7 @@ class CompletionInstallation {
         configFile.readAsStringSync().contains(commandScriptName);
 
     if (containsLine) {
-      logger.detail(
+      logger.warn(
         'A config entry for $rootCommand was already found on $configPath.',
       );
       return;
@@ -167,13 +182,15 @@ class CompletionInstallation {
   }
 
   String get _shellRCFilePath =>
-      _resolveHome(configuration.shellRCFile, environment);
+      _resolveHome(configuration!.shellRCFile, environment);
 
   /// Write a source to the completion global script in the shell configuration
   /// file, which its location is described by the [configuration]
   @visibleForTesting
   void writeToShellConfigFile(String rootCommand) {
-    logger.detail(
+    final configuration = this.configuration!;
+
+    logger.info(
       'Adding dart cli completion config entry '
       'to $_shellRCFilePath',
     );
@@ -190,7 +207,7 @@ class CompletionInstallation {
     if (!shellRCFile.existsSync()) {
       throw CompletionInstallationException(
         rootCommand: rootCommand,
-        message: 'No file found at ${shellRCFile.path}',
+        message: 'No configuration file found at ${shellRCFile.path}',
       );
     }
 
@@ -198,7 +215,7 @@ class CompletionInstallation {
         shellRCFile.readAsStringSync().contains(completionConfigPath);
 
     if (containsLine) {
-      logger.detail('A completion config entry was found on'
+      logger.warn('A completion config entry was already found on'
           ' $_shellRCFilePath.');
       return;
     }
@@ -235,13 +252,13 @@ class CompletionInstallation {
       '''
 ## [$scriptName] 
 ## $description
-${configuration.sourceLineTemplate(scriptPath)}
+${configuration!.sourceLineTemplate(scriptPath)}
 ## [/$scriptName]
 
 ''',
     );
 
-    logger.detail('Added config to $configFilePath');
+    logger.info('Added config to $configFilePath');
   }
 }
 

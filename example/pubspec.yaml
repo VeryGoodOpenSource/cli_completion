@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   args: ^2.3.1
+  cli_completion:
+    path: ../
   mason_logger: ^0.2.0
 
 dev_dependencies:

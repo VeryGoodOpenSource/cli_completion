@@ -26,7 +26,7 @@ void main() {
           systemShell: SystemShell.bash,
           logger: logger,
         );
-        expect(installation.configuration.name, 'bash');
+        expect(installation.configuration?.name, 'bash');
       });
 
       test('zsh', () {
@@ -34,7 +34,7 @@ void main() {
           systemShell: SystemShell.zsh,
           logger: logger,
         );
-        expect(installation.configuration.name, 'zsh');
+        expect(installation.configuration?.name, 'zsh');
       });
 
       test('proxies overrides', () {
@@ -109,7 +109,7 @@ void main() {
         expect(installation.completionConfigDir.existsSync(), true);
 
         verifyNever(
-          () => logger.detail(
+          () => logger.warn(
             any(
               that: endsWith(
                 'directory was already found.',
@@ -121,7 +121,7 @@ void main() {
         installation.createCompletionConfigDir();
 
         verify(
-          () => logger.detail(
+          () => logger.warn(
             any(
               that: endsWith(
                 'directory was already found.',
@@ -159,7 +159,7 @@ void main() {
         );
 
         verifyNever(
-          () => logger.detail(
+          () => logger.warn(
             any(
               that: startsWith(
                 'A script file for very_good was already found on ',
@@ -171,7 +171,7 @@ void main() {
         installation.writeCompletionScriptForCommand('very_good');
 
         verify(
-          () => logger.detail(
+          () => logger.warn(
             any(
               that: startsWith(
                 'A script file for very_good was already found on ',
@@ -212,7 +212,7 @@ void main() {
 ''');
 
         verify(
-          () => logger.detail(
+          () => logger.info(
             any(
               that: startsWith(
                 'No file found at ${configFile.path}',
@@ -224,7 +224,7 @@ void main() {
         installation.writeCompletionConfigForShell('very_good');
 
         verify(
-          () => logger.detail(
+          () => logger.warn(
             any(
               that: startsWith(
                 'A config entry for very_good was already found on',
@@ -250,16 +250,11 @@ void main() {
         expect(
           () => installation.writeToShellConfigFile('very_good'),
           throwsA(
-            predicate(
-              (e) {
-                return e is CompletionInstallationException &&
-                    e.toString() ==
-                        'Could not install completion scripts for very_good: '
-                            'No file found at ${path.join(
-                          tempDir.path,
-                          '.zshrc',
-                        )}';
-              },
+            isA<CompletionInstallationException>().having(
+              (e) => e.message,
+              'message',
+              'No configuration file found at '
+                  '${path.join(tempDir.path, '.zshrc')}',
             ),
           ),
         );
@@ -299,13 +294,13 @@ void main() {
           installation.install('very_good');
 
           verify(
-            () => logger.detail(
+            () => logger.warn(
               'A ${installation.completionConfigDir.path} directory was already'
               ' found.',
             ),
           ).called(1);
           verify(
-            () => logger.detail(
+            () => logger.warn(
               'A script file for very_good was already found on ${path.join(
                 installation.completionConfigDir.path,
                 'very_good.zsh',
@@ -313,7 +308,7 @@ void main() {
             ),
           ).called(1);
           verify(
-            () => logger.detail(
+            () => logger.warn(
               'A config entry for very_good was already found on '
               '${path.join(
                 installation.completionConfigDir.path,
@@ -323,8 +318,8 @@ void main() {
           ).called(1);
 
           verify(
-            () => logger.detail(
-              'A completion config entry was found on '
+            () => logger.warn(
+              'A completion config entry was already found on '
               '${path.join(tempDir.path, '.zshrc')}.',
             ),
           ).called(1);
@@ -334,7 +329,7 @@ void main() {
       test(
         'installing completion for two different commands',
         () {
-          final installation = CompletionInstallation(
+          final zshInstallation = CompletionInstallation(
             logger: logger,
             isWindows: false,
             environment: {
@@ -345,9 +340,9 @@ void main() {
 
           final rcFile = File(path.join(tempDir.path, '.zshrc'))..createSync();
 
-          final configDir = installation.completionConfigDir;
+          final configDir = zshInstallation.completionConfigDir;
 
-          installation
+          zshInstallation
             ..install('very_good')
             ..install('not_good');
 
@@ -422,6 +417,31 @@ void main() {
               'zsh-config.zsh',
               'bash-config.bash'
             ]),
+          );
+        },
+      );
+
+      test(
+        'installing completion when the current shell is not supported',
+        () {
+          final installation = CompletionInstallation.fromSystemShell(
+            logger: logger,
+            isWindowsOverride: false,
+            environmentOverride: {
+              'HOME': tempDir.path,
+            },
+            systemShell: null,
+          );
+
+          expect(
+            () => installation.install('very_good'),
+            throwsA(
+              isA<CompletionInstallationException>().having(
+                (e) => e.message,
+                'message',
+                'Unknown shell.',
+              ),
+            ),
           );
         },
       );
