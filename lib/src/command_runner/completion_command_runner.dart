@@ -34,21 +34,25 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   /// The [Logger] used to display messages during completion installation.
   final Logger completionInstallationLogger = Logger();
 
+  /// Environment map which can be overridden for testing purposes.
+  @visibleForTesting
+  Map<String, String>? environmentOverride;
+
+  SystemShell? get _systemShell =>
+      SystemShell.current(environmentOverride: environmentOverride);
+
   CompletionInstallation? _completionInstallation;
 
   /// The [CompletionInstallation] used to install completion files.
-  @visibleForTesting
   CompletionInstallation get completionInstallation {
-    if (_completionInstallation != null) {
-      return _completionInstallation!;
-    }
+    var completionInstallation = _completionInstallation;
 
-    _completionInstallation = CompletionInstallation.fromSystemShell(
-      systemShell: SystemShell.current(),
+    completionInstallation ??= CompletionInstallation.fromSystemShell(
+      systemShell: _systemShell,
       logger: completionInstallationLogger,
     );
 
-    return _completionInstallation!;
+    return _completionInstallation = completionInstallation;
   }
 
   @override

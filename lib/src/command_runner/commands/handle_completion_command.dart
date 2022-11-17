@@ -18,7 +18,7 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
 
   @override
   String get description {
-    return 'handles shell completion (should never be called manually)';
+    return 'Handles shell completion (should never be called manually)';
   }
 
   /// The string that the shell will use to call for completion suggestions
@@ -32,11 +32,6 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
 
   /// The [Logger] used to display the completion suggestions
   final Logger logger;
-
-  @override
-  CompletionCommandRunner<T> get runner {
-    return super.runner! as CompletionCommandRunner<T>;
-  }
 
   @override
   FutureOr<T>? run() {
