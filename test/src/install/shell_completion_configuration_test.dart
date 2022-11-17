@@ -1,9 +1,17 @@
+import 'package:cli_completion/install.dart';
 import 'package:cli_completion/src/install/shell_completion_configuration.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('ShellCompletionConfiguration', () {
     group('zshConfiguration', () {
+      late ShellCompletionConfiguration zshConfiguration;
+
+      setUp(() {
+        zshConfiguration =
+            ShellCompletionConfiguration.fromSystemShell(SystemShell.zsh);
+      });
+
       test('name', () {
         expect(zshConfiguration.name, 'zsh');
       });
@@ -44,6 +52,13 @@ fi
     });
 
     group('bashConfiguration', () {
+      late ShellCompletionConfiguration bashConfiguration;
+
+      setUp(() {
+        bashConfiguration =
+            ShellCompletionConfiguration.fromSystemShell(SystemShell.bash);
+      });
+
       test('name', () {
         expect(bashConfiguration.name, 'bash');
       });

@@ -1,3 +1,4 @@
+import 'package:cli_completion/src/system_shell.dart';
 import 'package:meta/meta.dart';
 
 /// A type definition for functions that creates the content of a
@@ -16,13 +17,24 @@ typedef SourceStringTemplate = String Function(String scriptPath);
 @immutable
 class ShellCompletionConfiguration {
   /// {@macro shell_completion_configuration}
-  @visibleForTesting
-  const ShellCompletionConfiguration({
+  const ShellCompletionConfiguration._({
     required this.name,
     required this.shellRCFile,
     required this.sourceLineTemplate,
     required this.scriptTemplate,
   });
+
+  /// Creates a [ShellCompletionConfiguration] given the current [SystemShell].
+  factory ShellCompletionConfiguration.fromSystemShell(
+    SystemShell systemShell,
+  ) {
+    switch (systemShell) {
+      case SystemShell.zsh:
+        return zshConfiguration;
+      case SystemShell.bash:
+        return bashConfiguration;
+    }
+  }
 
   /// A descriptive string to identify the shell among others.
   final String name;
@@ -42,7 +54,8 @@ class ShellCompletionConfiguration {
 }
 
 /// A [ShellCompletionConfiguration] for zsh.
-final zshConfiguration = ShellCompletionConfiguration(
+@visibleForTesting
+final zshConfiguration = ShellCompletionConfiguration._(
   name: 'zsh',
   shellRCFile: '~/.zshrc',
   sourceLineTemplate: (String scriptPath) {
@@ -70,7 +83,8 @@ fi
 );
 
 /// A [ShellCompletionConfiguration] for bash.
-final bashConfiguration = ShellCompletionConfiguration(
+@visibleForTesting
+final bashConfiguration = ShellCompletionConfiguration._(
   name: 'bash',
   shellRCFile: '~/.bash_profile',
   sourceLineTemplate: (String scriptPath) {

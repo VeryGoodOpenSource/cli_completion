@@ -19,115 +19,70 @@ void main() {
     tempDir = Directory.systemTemp.createTempSync();
   });
 
-  group('ShellCompletionInstallation', () {
-    group('fromCurrentShell', () {
-      test('instantiated without env', () {
-        expect(
-          () => ShellCompletionInstallation.fromCurrentShell(logger: logger),
-          returnsNormally,
+  group('CompletionInstallation', () {
+    group('fromSystemShell', () {
+      test('bash', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.bash,
+          logger: logger,
         );
+        expect(installation.configuration.name, 'bash');
       });
 
-      test('identifies zsh', () {
-        final result = ShellCompletionInstallation.fromCurrentShell(
+      test('zsh', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.zsh,
           logger: logger,
-          isWindowsOverride: false,
-          environmentOverride: {
-            'SHELL': '/foo/bar/zsh',
-          },
         );
-
-        expect(result?.configuration, zshConfiguration);
+        expect(installation.configuration.name, 'zsh');
       });
 
-      test('identifies bash shell', () {
-        final logger = MockLogger();
-        final result = ShellCompletionInstallation.fromCurrentShell(
-          logger: logger,
-          isWindowsOverride: false,
-          environmentOverride: {
-            'SHELL': '/foo/bar/bash',
-          },
-        );
-
-        expect(result?.configuration, bashConfiguration);
-
-        final resultWindows = ShellCompletionInstallation.fromCurrentShell(
+      test('proxies overrides', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.zsh,
           logger: logger,
           isWindowsOverride: true,
-          environmentOverride: {
-            'SHELL': r'c:\foo\bar\bash.exe',
-          },
+          environmentOverride: {'HOME': '/foo/bar'},
         );
+        expect(installation.isWindows, true);
+        expect(installation.environment, {'HOME': '/foo/bar'});
 
-        expect(resultWindows?.configuration, bashConfiguration);
-      });
-
-      group('identifies no shell', () {
-        test('for no shell env', () {
-          final result = ShellCompletionInstallation.fromCurrentShell(
-            logger: logger,
-            isWindowsOverride: false,
-            environmentOverride: {},
-          );
-
-          expect(result, null);
-        });
-
-        test('for empty shell env', () {
-          final result = ShellCompletionInstallation.fromCurrentShell(
-            logger: logger,
-            isWindowsOverride: false,
-            environmentOverride: {
-              'SHELL': '',
-            },
-          );
-
-          expect(result, null);
-        });
-
-        test('for extraneous shell', () {
-          final result = ShellCompletionInstallation.fromCurrentShell(
-            logger: logger,
-            isWindowsOverride: false,
-            environmentOverride: {
-              'SHELL': '/usr/bin/someshell',
-            },
-          );
-
-          expect(result, null);
-        });
+        final installation2 = CompletionInstallation.fromSystemShell(
+          systemShell: SystemShell.zsh,
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {'HOME': '/foo/bar'},
+        );
+        expect(installation2.isWindows, false);
       });
     });
 
     group('completionConfigDir', () {
       test('gets config dir location on windows', () {
-        final installation = ShellCompletionInstallation.fromCurrentShell(
+        final installation = CompletionInstallation(
+          configuration: zshConfiguration,
           logger: logger,
-          isWindowsOverride: true,
-          environmentOverride: {
-            'SHELL': '/foo/bar/zsh',
+          isWindows: true,
+          environment: {
             'LOCALAPPDATA': tempDir.path,
           },
         );
 
         expect(
-          installation!.completionConfigDir.path,
+          installation.completionConfigDir.path,
           path.join(tempDir.path, 'DartCLICompletion'),
         );
       });
 
       test('gets config dir location on posix', () {
-        final installation = ShellCompletionInstallation.fromCurrentShell(
+        final installation = CompletionInstallation(
+          configuration: zshConfiguration,
           logger: logger,
-          isWindowsOverride: false,
-          environmentOverride: {
-            'SHELL': '/foo/bar/zsh',
+          isWindows: false,
+          environment: {
             'HOME': tempDir.path,
           },
         );
-
-        installation!;
 
         expect(
           installation.completionConfigDir.path,
@@ -138,13 +93,13 @@ void main() {
 
     group('install', () {
       test('createCompletionConfigDir', () {
-        final installation = ShellCompletionInstallation(
+        final installation = CompletionInstallation(
+          configuration: zshConfiguration,
           logger: logger,
           isWindows: false,
           environment: {
             'HOME': tempDir.path,
           },
-          configuration: zshConfiguration,
         );
 
         expect(installation.completionConfigDir.existsSync(), false);
@@ -177,7 +132,7 @@ void main() {
       });
 
       test('writeCompletionScriptForCommand', () {
-        final installation = ShellCompletionInstallation(
+        final installation = CompletionInstallation(
           logger: logger,
           isWindows: false,
           environment: {
@@ -227,7 +182,7 @@ void main() {
       });
 
       test('writeCompletionConfigForShell', () {
-        final installation = ShellCompletionInstallation(
+        final installation = CompletionInstallation(
           logger: logger,
           isWindows: false,
           environment: {
@@ -280,7 +235,7 @@ void main() {
       });
 
       test('writeToShellConfigFile', () {
-        final installation = ShellCompletionInstallation(
+        final installation = CompletionInstallation(
           logger: logger,
           isWindows: false,
           environment: {
@@ -325,7 +280,7 @@ void main() {
       test(
         'installing completion for a command when it is already installed',
         () {
-          final installation = ShellCompletionInstallation(
+          final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
             environment: {
@@ -379,7 +334,7 @@ void main() {
       test(
         'installing completion for two different commands',
         () {
-          final installation = ShellCompletionInstallation(
+          final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
             environment: {
@@ -433,7 +388,7 @@ void main() {
             ]),
           );
 
-          final bashInstallation = ShellCompletionInstallation(
+          final bashInstallation = CompletionInstallation(
             logger: logger,
             isWindows: false,
             environment: {
