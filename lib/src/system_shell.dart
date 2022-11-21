@@ -11,6 +11,8 @@ enum SystemShell {
   bash;
 
   /// Identifies the current shell.
+  ///
+  /// Based on https://stackoverflow.com/a/3327022
   static SystemShell? current({
     Map<String, String>? environmentOverride,
   }) {
