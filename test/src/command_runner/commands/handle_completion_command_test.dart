@@ -36,19 +36,46 @@ void main() {
       );
     });
 
-    group('when run', () {
-      test('with no args', () async {
+    group('run', () {
+      test('should display completion', () async {
+        final output = StringBuffer();
+        when(() {
+          commandRunner.completionLogger.info(any());
+        }).thenAnswer((invocation) {
+          output.writeln(invocation.positionalArguments.first);
+        });
+
+        commandRunner.environmentOverride = {
+          'SHELL': '/foo/bar/zsh',
+          'COMP_LINE': 'example_cli some_command --discrete foo',
+          'COMP_POINT': '12',
+          'COMP_CWORD': '2'
+        };
         await commandRunner.run(['completion']);
 
-        verify(() {
-          commandRunner.completionLogger.info('USA');
-        }).called(1);
-        verify(() {
-          commandRunner.completionLogger.info('Brazil');
-        }).called(1);
-        verify(() {
-          commandRunner.completionLogger.info('Netherlands');
-        }).called(1);
+        expect(output.toString(), r'''
+Brazil:A country
+USA:Another country
+Netherlands:Guess what\: a country
+Portugal:Yep, a country
+''');
+      });
+
+      test('should supress error messages', () async {
+        final output = StringBuffer();
+        when(() {
+          commandRunner.completionLogger.info(any());
+        }).thenThrow(Exception('oh no'));
+
+        commandRunner.environmentOverride = {
+          'SHELL': '/foo/bar/zsh',
+          'COMP_LINE': 'example_cli some_command --discrete foo',
+          'COMP_POINT': '12',
+          'COMP_CWORD': '2'
+        };
+        await commandRunner.run(['completion']);
+
+        expect(output.toString(), '');
       });
     });
   });

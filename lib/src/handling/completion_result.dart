@@ -12,21 +12,16 @@ import 'package:meta/meta.dart';
 ///
 /// See also:
 /// - [ValueCompletionResult]
-/// - [NoCompletionResult]
+/// - [EmptyCompletionResult]
 @immutable
 abstract class CompletionResult {
   /// Creates a [CompletionResult] that contains predefined suggestions.
-  ///
-  /// If constant, cannot
   const factory CompletionResult.fromMap(Map<String, String?> completions) =
       ValueCompletionResult._fromMap;
 
-  /// Creates a [CompletionResult] that contains no suggestions.
-  const factory CompletionResult.empty() = NoCompletionResult._;
-
   const CompletionResult._();
 
-  /// Render the completion suggestions to the [shell]
+  /// Render the completion suggestions to the [shell].
   void render(Logger logger, SystemShell shell);
 }
 
@@ -36,7 +31,7 @@ abstract class CompletionResult {
 class ValueCompletionResult extends CompletionResult {
   /// {@macro value_completion_result}
   ValueCompletionResult()
-      : _completions = <String, String>{},
+      : _completions = <String, String?>{},
         super._();
 
   /// Create a [ValueCompletionResult] with predefined completion suggestions
@@ -51,31 +46,39 @@ class ValueCompletionResult extends CompletionResult {
 
   /// Adds an entry to the current pool of suggestions. Overrides any previous
   /// entry with the same [completion].
-  void addSuggestion(String completion, String? description) {
+  void addSuggestion(String completion, [String? description]) {
     _completions[completion] = description;
   }
 
   @override
   void render(Logger logger, SystemShell shell) {
     for (final entry in _completions.entries) {
-      if (shell == SystemShell.zsh) {
-        // On zsh, colon acts as delimitation between a suggestion and its
-        // description. Any literal colon should be escaped.
-        final suggestion = entry.key.replaceAll(':', r'\:');
-        final description = entry.value?.replaceAll(':', r'\:');
+      switch (shell) {
+        case SystemShell.zsh:
+          // On zsh, colon acts as delimitation between a suggestion and its
+          // description. Any literal colon should be escaped.
+          final suggestion = entry.key.replaceAll(':', r'\:');
+          final description = entry.value?.replaceAll(':', r'\:');
 
-        logger.info('$suggestion${description != null ? ':$description' : ''}');
-      } else {
-        logger.info(entry.key);
+          logger.info(
+            '$suggestion${description != null ? ':$description' : ''}',
+          );
+          break;
+        case SystemShell.bash:
+          logger.info(entry.key);
+          break;
       }
     }
   }
 }
 
+/// {@template no_completion_result}
 /// A [CompletionResult] that indicates that no completion suggestions should be
 /// displayed.
-class NoCompletionResult extends CompletionResult {
-  const NoCompletionResult._() : super._();
+/// {@endtemplate}
+class EmptyCompletionResult extends CompletionResult {
+  /// {@macro no_completion_result}
+  const EmptyCompletionResult() : super._();
 
   @override
   void render(Logger logger, SystemShell shell) {}

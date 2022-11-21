@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:mason_logger/mason_logger.dart';
+
 import 'package:meta/meta.dart';
 
 /// {@template completion_state}
@@ -9,10 +9,12 @@ import 'package:meta/meta.dart';
 /// {@endtemplate}
 @immutable
 class CompletionState extends Equatable {
-  const CompletionState._({
+  /// {@macro completion_state}
+  @visibleForTesting
+  const CompletionState({
     required this.cword,
     required this.cpoint,
-    required this.line,
+    required this.cline,
     required this.args,
   });
 
@@ -23,7 +25,7 @@ class CompletionState extends Equatable {
   final int cpoint;
 
   /// The user prompt that is being completed
-  final String line;
+  final String cline;
 
   /// The arguments that were passed by the user so far
   final Iterable<String> args;
@@ -33,16 +35,15 @@ class CompletionState extends Equatable {
 
   /// Creates a [CompletionState] from the environment variables set by the
   /// shell script.
-  static CompletionState? fromEnvironment(
-    Logger logger, [
+  static CompletionState? fromEnvironment([
     Map<String, String>? environmentOverride,
   ]) {
     final environment = environmentOverride ?? Platform.environment;
     final cword = environment['COMP_CWORD'];
     final cpoint = environment['COMP_POINT'];
-    final line = environment['COMP_LINE'];
+    final compLine = environment['COMP_LINE'];
 
-    if (cword == null || cpoint == null || line == null) {
+    if (cword == null || cpoint == null || compLine == null) {
       return null;
     }
 
@@ -53,16 +54,16 @@ class CompletionState extends Equatable {
       return null;
     }
 
-    final args = line.trimLeft().split(' ').skip(1);
+    final args = compLine.trimLeft().split(' ').skip(1);
 
-    return CompletionState._(
+    return CompletionState(
       cword: cwordInt,
       cpoint: cpointInt,
-      line: line,
+      cline: compLine,
       args: args,
     );
   }
 
   @override
-  List<Object?> get props => [cword, cpoint, line, args];
+  List<Object?> get props => [cword, cpoint, cline, args];
 }

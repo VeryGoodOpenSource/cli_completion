@@ -24,7 +24,7 @@ class CompletionParser {
   /// structure of commands and options declared by the CLIs [ArgParser].
   CompletionResult parse() {
     if (_containsArgumentTerminator()) {
-      return const CompletionResult.empty();
+      return const EmptyCompletionResult();
     }
 
     // todo(renancaraujo): actually suggest useful things

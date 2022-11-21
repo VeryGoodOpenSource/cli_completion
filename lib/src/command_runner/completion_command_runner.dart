@@ -35,7 +35,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   final Logger completionInstallationLogger = Logger();
 
   /// Environment map which can be overridden for testing purposes.
-  @visibleForTesting
+  @internal
   Map<String, String>? environmentOverride;
 
   /// The [SystemShell] used to determine the current shell.

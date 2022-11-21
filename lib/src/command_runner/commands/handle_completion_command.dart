@@ -42,7 +42,9 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
   @override
   FutureOr<T>? run() {
     try {
-      final completionState = CompletionState.fromEnvironment(logger);
+      final completionState = CompletionState.fromEnvironment(
+        runner.environmentOverride,
+      );
       if (completionState == null) {
         return null;
       }
