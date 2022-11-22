@@ -1,12 +1,12 @@
-import 'package:cli_completion/cli_completion.dart';
+import 'dart:io';
+
 import 'package:example/src/command_runner.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
+class MockStdout extends Mock implements Stdout {}
 
 Map<String, String> prepareEnvForLineInput(
   String line, {
@@ -33,41 +33,33 @@ Future<Map<String, String?>> runCompletionCommand(
   String line, {
   int? cursorIndex,
 }) async {
-  final completionLogger = MockLogger();
   final map = <String, String?>{};
+  final stdout = MockStdout();
   when(() {
-    completionLogger.info(any());
+    stdout.writeln(any());
   }).thenAnswer((invocation) {
     final line = invocation.positionalArguments.first as String;
 
-    // a regex that finds all colons, except the ones preceded by backslash
+    // A regex that finds all colons, except the ones preceded by backslash
     final res = line.split(RegExp(r'(?<!\\):'));
 
     final description = res.length > 1 ? res[1] : null;
 
     map[res.first] = description;
   });
-  final commandRunner = ExampleCommandRunner()
-    ..completionLogger = completionLogger
-    ..environmentOverride = {
-      'SHELL': '/foo/bar/zsh',
-      ...prepareEnvForLineInput(line, cursorIndex: cursorIndex),
-    };
-  await commandRunner.run(['completion']);
+  await IOOverrides.runZoned(
+    stdout: () => stdout,
+    () async {
+      final commandRunner = ExampleCommandRunner()
+        ..environmentOverride = {
+          'SHELL': '/foo/bar/zsh',
+          ...prepareEnvForLineInput(line, cursorIndex: cursorIndex),
+        };
+      await commandRunner.run(['completion']);
+    },
+  );
 
   return map;
-}
-
-String mapToCompletion(Map<String, String?> map) {
-  final logger = MockLogger();
-  final output = StringBuffer();
-  when(() {
-    logger.info(any());
-  }).thenAnswer((invocation) {
-    output.writeln(invocation.positionalArguments.first);
-  });
-  CompletionResult.fromMap(map).render(logger, SystemShell.zsh);
-  return output.toString();
 }
 
 @isTest

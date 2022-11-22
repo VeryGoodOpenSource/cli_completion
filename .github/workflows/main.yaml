@@ -19,7 +19,7 @@ jobs:
   build:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v1
 
-  integrated_tests:
+  integration_tests:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -36,4 +36,4 @@ jobs:
         run: dart pub get
 
       - name: 🧪 Run Tests
-        run:dart test -t integrated
+        run: dart test -t integration

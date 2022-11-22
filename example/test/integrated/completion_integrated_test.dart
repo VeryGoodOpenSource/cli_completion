@@ -1,4 +1,4 @@
-@Tags(['integrated'])
+@Tags(['integration'])
 import 'package:test/test.dart';
 
 import 'utils.dart';
