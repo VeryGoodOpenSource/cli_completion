@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="completion_example" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" editBeforeRun="true" singleton="false">
+    <option name="arguments" value="completion" />
+    <option name="envs">
+      <entry key="COMP_CWORD" value="1" />
+      <entry key="COMP_LINE" value="example_cli some_command --a" />
+      <entry key="COMP_POINT" value="0" />
+    </option>
+    <option name="filePath" value="$PROJECT_DIR$/example/bin/example_cli.dart" />
+    <method v="2" />
+  </configuration>
+</component>
