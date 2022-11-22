@@ -32,6 +32,10 @@ class ExampleCommandRunner extends CompletionCommandRunner<int> {
   }
 
   @override
+  // ignore: overridden_fields
+  Logger completionLogger = Logger();
+
+  @override
   void printUsage() => _logger.info(usage);
 
   final Logger _logger;
