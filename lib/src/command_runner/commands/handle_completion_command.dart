@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/src/command_runner/completion_command_runner.dart';
-
+import 'package:cli_completion/src/handling/completion_state.dart';
+import 'package:cli_completion/src/handling/parser.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 /// {@template handle_completion_request_command}
@@ -34,12 +35,27 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
   final Logger logger;
 
   @override
-  FutureOr<T>? run() {
-    logger
-      ..info('USA')
-      ..info('Brazil')
-      ..info('Netherlands');
+  CompletionCommandRunner<T> get runner {
+    return super.runner! as CompletionCommandRunner<T>;
+  }
 
+  @override
+  FutureOr<T>? run() {
+    try {
+      final completionState = CompletionState.fromEnvironment(
+        runner.environmentOverride,
+      );
+      if (completionState == null) {
+        return null;
+      }
+
+      final result = CompletionParser(completionState).parse();
+
+      runner.renderCompletionResult(result);
+    } on Exception {
+      // Do not output any Exception here, since even error messages are
+      // interpreted as completion suggestions
+    }
     return null;
   }
 }

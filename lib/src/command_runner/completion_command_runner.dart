@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
-import 'package:cli_completion/src/command_runner/commands/commands.dart';
+import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/src/exceptions.dart';
 import 'package:cli_completion/src/install/completion_installation.dart';
 import 'package:cli_completion/src/system_shell.dart';
@@ -35,10 +35,11 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   final Logger completionInstallationLogger = Logger();
 
   /// Environment map which can be overridden for testing purposes.
-  @visibleForTesting
+  @internal
   Map<String, String>? environmentOverride;
 
-  SystemShell? get _systemShell =>
+  /// The [SystemShell] used to determine the current shell.
+  SystemShell? get systemShell =>
       SystemShell.current(environmentOverride: environmentOverride);
 
   CompletionInstallation? _completionInstallation;
@@ -48,7 +49,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     var completionInstallation = _completionInstallation;
 
     completionInstallation ??= CompletionInstallation.fromSystemShell(
-      systemShell: _systemShell,
+      systemShell: systemShell,
       logger: completionInstallationLogger,
     );
 
@@ -80,5 +81,20 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.err(e.toString());
     }
+  }
+
+  /// Renders a [CompletionResult] into the current system shell.
+  ///
+  /// This is called after a completion request (sent by a shell function) is
+  /// parsed and the output is ready to be displayed.
+  ///
+  /// Override this to intercept and customize the general
+  /// output of the completions.
+  void renderCompletionResult(CompletionResult completionResult) {
+    final systemShell = this.systemShell;
+    if (systemShell == null) {
+      return;
+    }
+    completionResult.render(completionLogger, systemShell);
   }
 }
