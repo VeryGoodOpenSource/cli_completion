@@ -5,7 +5,6 @@ import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/src/exceptions.dart';
 import 'package:cli_completion/src/install/completion_installation.dart';
-import 'package:cli_completion/src/system_shell.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 
@@ -35,7 +34,6 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   final Logger completionInstallationLogger = Logger();
 
   /// Environment map which can be overridden for testing purposes.
-  @internal
   Map<String, String>? environmentOverride;
 
   /// The [SystemShell] used to determine the current shell.

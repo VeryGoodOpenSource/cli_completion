@@ -12,6 +12,10 @@ class SomeCommand extends Command<int> {
         abbr: 'd',
         help: 'A discrete option with "allowed" values (mandatory)',
         allowed: ['foo', 'bar', 'faa'],
+        aliases: [
+          'allowed',
+          'defined-values',
+        ],
         allowedHelp: {
           'foo': 'foo help',
           'bar': 'bar help',
@@ -20,18 +24,29 @@ class SomeCommand extends Command<int> {
         mandatory: true,
       )
       ..addOption(
-        'continuous',
-        abbr: 'c',
+        'hidden',
+        hide: true,
+        help: 'A hidden option',
+      )
+      ..addOption(
+        'continuous', // intentionally, this one does not have an abbr
         help: 'A continuous option: any value is allowed',
       )
       ..addMultiOption(
         'multi-d',
         abbr: 'm',
-        allowed: ['fii', 'bar', 'fee'],
+        allowed: [
+          'fii',
+          'bar',
+          'fee',
+          'i have space', // arg parser wont accept space on "allowed" values,
+          // therefore this should never appear on completions
+        ],
         allowedHelp: {
           'fii': 'fii help',
           'bar': 'bar help',
           'fee': 'fee help',
+          'i have space': 'an allowed option with space on it',
         },
         help: 'An discrete option that can be passed multiple times ',
       )
@@ -65,6 +80,12 @@ class SomeCommand extends Command<int> {
 
   @override
   String get name => 'some_command';
+
+  @override
+  List<String> get aliases => [
+        'disguised:some_commmand',
+        'melon',
+      ];
 
   @override
   Future<int> run() async {

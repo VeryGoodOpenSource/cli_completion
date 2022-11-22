@@ -19,7 +19,12 @@ class SomeOtherCommand extends Command<int> {
 /// A command under [SomeOtherCommand] that does not receive options and read
 /// the "rest" field from arg results
 class _SomeSubCommand extends Command<int> {
-  _SomeSubCommand(this._logger);
+  _SomeSubCommand(this._logger) {
+    argParser.addFlag(
+      'flag',
+      help: 'a flag just to show we are in the subcommand',
+    );
+  }
 
   final Logger _logger;
 
@@ -28,6 +33,9 @@ class _SomeSubCommand extends Command<int> {
 
   @override
   String get name => 'subcommand';
+
+  @override
+  List<String> get aliases => ['subcommand_alias'];
 
   @override
   Future<int> run() async {
