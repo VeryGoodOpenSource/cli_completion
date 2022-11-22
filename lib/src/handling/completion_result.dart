@@ -21,7 +21,7 @@ abstract class CompletionResult {
 
   const CompletionResult._();
 
-  /// Render the completion suggestions to the [shell].
+  /// Render the completion suggestions on the [shell].
   void render(Logger logger, SystemShell shell);
 }
 
