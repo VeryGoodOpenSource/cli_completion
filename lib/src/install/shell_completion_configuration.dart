@@ -74,7 +74,11 @@ if type compdef &>/dev/null; then
     IFS=\$'\n' reply=(\$(COMP_CWORD="\$((CURRENT-1))" COMP_LINE="\$BUFFER" COMP_POINT="\$CURSOR" $rootCommand completion -- "\${words[@]}"))
     IFS=\$si
 
-    _describe 'values' reply
+    if [[ -z "\$reply" ]]; then
+        _path_files
+    else 
+        _describe 'values' reply
+    fi
   }
   compdef _${rootCommand}_completion $rootCommand
 fi
