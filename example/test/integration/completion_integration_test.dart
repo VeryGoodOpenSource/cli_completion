@@ -506,7 +506,6 @@ void main() {
           'basic usage with args in between',
           forLine: 'example_cli some_other_command subcommand_alias',
           suggests: allOptionsInThisLevel,
-
         );
       });
     });

@@ -14,7 +14,7 @@ class _TestCompletionResult extends CompletionResult {
   final Map<String, String?> _completions;
 
   @override
-  Iterable<MapEntry<String, String?>> get completions => _completions.entries;
+  Map<String, String?> get completions => _completions;
 }
 
 class _TestCommand extends Command<void> {
@@ -87,29 +87,6 @@ suggestion4
     });
   });
 
-  group('EmptyCompletionResult', () {
-    test('renders nothing', () {
-      const completionResult = EmptyCompletionResult();
-
-      final logger = MockLogger();
-
-      final output = StringBuffer();
-      when(() {
-        logger.info(any());
-      }).thenAnswer((invocation) {
-        output.writeln(invocation.positionalArguments.first);
-      });
-
-      completionResult.render(logger, SystemShell.zsh);
-
-      expect(output.toString(), '');
-
-      completionResult.render(logger, SystemShell.bash);
-
-      expect(output.toString(), '');
-    });
-  });
-
   group('AllOptionsAndCommandsCompletionResult', () {
     test(
       'renders suggestions for all sub commands and options in'
@@ -121,7 +98,7 @@ suggestion4
 
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
-          rawArgs: [],
+          rawArgs: const <String>[],
           visibleSubcommands: [
             _TestCommand(
               name: 'command1',
@@ -180,7 +157,7 @@ command2
 
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
-          rawArgs: [],
+          rawArgs: const <String>[],
           visibleSubcommands: [
             _TestCommand(
               name: 'command1',

@@ -1,17 +1,19 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
-import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/src/handling/arg_parser_extension.dart';
 import 'package:meta/meta.dart';
 
+/// {@template completion_level}
 /// The necessary information to produce completion for [CommandRunner] based
 /// cli applications.
+/// {@endtemplate}
 ///
 /// Generally, the [grammar], [visibleSubcommands] and [visibleOptions]
 ///
 /// See also [find] to learn how it is created.
 @immutable
 class CompletionLevel {
+  /// {@macro completion_level}
   @visibleForTesting
   const CompletionLevel({
     required this.grammar,
@@ -20,7 +22,7 @@ class CompletionLevel {
     required this.visibleOptions,
   });
 
-  /// Given a user input [rootArgs] and the [commandRunner], it finds the
+  /// Given a user input [rootArgs] and the [runnerGrammar], it finds the
   /// innermost context that needs completion.
   ///
   /// If the user input did not type any sub command, the runner itself
@@ -43,11 +45,9 @@ class CompletionLevel {
   /// it returns null.
   static CompletionLevel? find(
     Iterable<String> rootArgs,
-    CompletionCommandRunner<dynamic> commandRunner,
+    ArgParser runnerGrammar,
+    Map<String, Command<dynamic>> runnerCommands,
   ) {
-    final runnerGrammar = commandRunner.argParser;
-    final runnerCommands = commandRunner.commands;
-
     // Parse args regarding only commands
     final commandsOnlyResults = runnerGrammar.tryParseCommandsOnly(rootArgs);
 
@@ -58,7 +58,7 @@ class CompletionLevel {
 
     // Find the leaf-most parsed command, starting from the root level
 
-    // The user-declared argparser in the current command, starting as the one
+    // The user-declared argParser in the current command, starting as the one
     // on the runner and substituted by the ones belonging to the
     // parsed subcommands, if any.
     var originalGrammar = runnerGrammar;

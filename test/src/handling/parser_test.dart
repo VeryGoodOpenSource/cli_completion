@@ -1,6 +1,26 @@
+import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
+import 'package:cli_completion/src/handling/completion_level.dart';
 import 'package:cli_completion/src/handling/parser.dart';
 import 'package:test/test.dart';
+
+class _TestCommand extends Command<void> {
+  _TestCommand({
+    required this.name,
+    required this.description,
+    required this.aliases,
+  });
+
+  @override
+  final String description;
+
+  @override
+  final String name;
+
+  @override
+  final List<String> aliases;
+}
 
 CompletionState stateForLine(
   String line, {
@@ -29,37 +49,211 @@ void main() {
     test('can be instantiated', () {
       final state = stateForLine('foo bar --p');
 
-      expect(() => CompletionParser(state), returnsNormally);
+      expect(
+        () => CompletionParser(
+          state: state,
+          runnerGrammar: ArgParser(),
+          runnerCommands: {},
+        ),
+        returnsNormally,
+      );
     });
 
     group('parse', () {
-      test('returns suggestions', () {
-        final state = stateForLine('foo bar --p');
-        final parser = CompletionParser(state);
-        final result = parser.parse();
-
-        expect(
-          result,
-          equals(
-            const CompletionResult.fromMap(
-              {
-                'Brazil': 'A country',
-                'USA': 'Another country',
-                'Netherlands': 'Guess what: a country',
-                'Portugal': 'Yep, a country',
-              },
-            ),
-          ),
-        );
-      });
-
-      group('argument terminator', () {
-        test('returns nothing when finds argument terminator', () {
+      group('when there is an argument terminator', () {
+        test('returns nothing', () {
           final state = stateForLine('foo bar --p -- something');
-          final parser = CompletionParser(state);
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          );
           final result = parser.parse();
 
-          expect(result, equals(const EmptyCompletionResult()));
+          expect(result, <CompletionResult>[]);
+        });
+      });
+
+      group('when completion level cannot be found', () {
+        test('returns nothing', () {
+          final state = stateForLine('foo unkown subcommand');
+
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => null;
+          final result = parser.parse();
+
+          expect(result, <CompletionResult>[]);
+        });
+      });
+
+      group('when completion level cannot be found', () {
+        test('returns nothing', () {
+          final state = stateForLine('foo unkown subcommand');
+
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => null;
+          final result = parser.parse();
+
+          expect(result, <CompletionResult>[]);
+        });
+      });
+
+      group('when calling parse', () {
+        test('calls find witht he correct params', () {
+          final state = stateForLine('foo subcommand');
+
+          final argParser = ArgParser();
+
+          final commands = <String, Command<dynamic>>{};
+
+          Iterable<String>? rootArgs;
+          ArgParser? runnerGrammar;
+          Map<String, Command<dynamic>>? runnerCommands;
+
+          CompletionParser(
+            state: state,
+            runnerGrammar: argParser,
+            runnerCommands: commands,
+          )
+            ..findCompletionLevel = (args, grammar, commands) {
+              rootArgs = args;
+              runnerGrammar = grammar;
+              runnerCommands = commands;
+              return null;
+            }
+            ..parse();
+
+          expect(rootArgs, state.args);
+          expect(runnerGrammar, same(argParser));
+          expect(runnerCommands, same(commands));
+        });
+      });
+
+      group('when completion level cannot be found', () {
+        test('returns nothing', () {
+          final state = stateForLine('foo subcommand');
+
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => null;
+          final result = parser.parse();
+
+          expect(result, <CompletionResult>[]);
+        });
+      });
+
+      group('when there is zero non empty args', () {
+        test('returns all options', () {
+          // << important setup
+          final testArgParser = ArgParser()
+            ..addOption('option1')
+            ..addFlag('option2', help: 'yay option 2');
+          const rawArgs = ['', ''];
+          final visibleSubcommands = [
+            _TestCommand(
+              name: 'command1',
+              description: 'yay command 1',
+              aliases: [],
+            ),
+            _TestCommand(
+              name: 'command2',
+              description: 'yay command 2',
+              aliases: ['alias'],
+            ),
+          ];
+          // important setup >>
+
+          // << setup
+          final state = stateForLine('foo subcommand');
+          final completionLevel = CompletionLevel(
+            grammar: testArgParser,
+            rawArgs: rawArgs,
+            visibleSubcommands: visibleSubcommands,
+            visibleOptions: testArgParser.options.values.toList(),
+          );
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => completionLevel;
+          // setup >>
+
+          final result = parser.parse();
+
+          expect(result.length, 1);
+          expect(
+            result.first,
+            isA<AllOptionsAndCommandsCompletionResult>().having(
+              (res) => res.completions,
+              'completions',
+              {
+                'command1': 'yay command 1',
+                'command2': 'yay command 2',
+                '--option1': null,
+                '--option2': 'yay option 2'
+              },
+            ),
+          );
+        });
+      });
+
+      group('when the user started to type a sub command', () {
+        test('returns all matching command and options', () {
+          // << important setup
+          final testArgParser = ArgParser()..addOption('option');
+
+          const rawArgs = ['', 'command'];
+          final visibleSubcommands = [
+            _TestCommand(
+              name: 'command1',
+              description: 'yay command 1',
+              aliases: [],
+            ),
+            _TestCommand(
+              name: 'command2',
+              description: 'yay command 2',
+              aliases: ['alias'],
+            ),
+          ];
+          // important setup >>
+
+          // << setup
+          final state = stateForLine('foo command1');
+          final completionLevel = CompletionLevel(
+            grammar: testArgParser,
+            rawArgs: rawArgs,
+            visibleSubcommands: visibleSubcommands,
+            visibleOptions: testArgParser.options.values.toList(),
+          );
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => completionLevel;
+          // setup >>
+
+          final result = parser.parse();
+
+          expect(result.length, 1);
+          expect(
+            result.first,
+            isA<MatchingCommandsCompletionResult>().having(
+              (res) => res.completions,
+              'completions',
+              {
+                'command1': 'yay command 1',
+                'command2': 'yay command 2',
+              },
+            ),
+          );
         });
       });
     });

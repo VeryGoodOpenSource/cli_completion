@@ -49,7 +49,11 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
         return null;
       }
 
-      final result = CompletionParser(completionState, runner).parse();
+      final result = CompletionParser(
+        state: completionState,
+        runnerGrammar: runner.argParser,
+        runnerCommands: runner.commands,
+      ).parse();
       runner.renderCompletionResult(result);
     } on Exception {
       // Do not output any Exception here, since even error messages are

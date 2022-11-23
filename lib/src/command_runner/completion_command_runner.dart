@@ -88,7 +88,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   ///
   /// Override this to intercept and customize the general
   /// output of the completions.
-  void renderCompletionResult(Iterable<CompletionResult> completionResults) {
+  void renderCompletionResult(List<CompletionResult> completionResults) {
     final systemShell = this.systemShell;
     if (systemShell == null) {
       return;

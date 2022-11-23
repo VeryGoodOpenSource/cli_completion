@@ -1,8 +1,7 @@
+import 'package:cli_completion/src/handling/completion_level.dart';
 import 'package:cli_completion/src/system_shell.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
-
-import 'completion_level.dart';
 
 /// {@template completion_result}
 /// Describes the result of a completion handling process.
@@ -13,7 +12,8 @@ import 'completion_level.dart';
 /// (via stdout) including suggestions and its metadata (description).
 ///
 /// See also:
-/// - [EmptyCompletionResult]
+/// - [AllOptionsAndCommandsCompletionResult]
+/// - [MatchingCommandsCompletionResult]
 @immutable
 abstract class CompletionResult {
   /// {@macro completion_result}
@@ -21,11 +21,11 @@ abstract class CompletionResult {
 
   /// A collection of [MapEntry] with completion suggestions to their
   /// descriptions.
-  Iterable<MapEntry<String, String?>> get completions;
+  Map<String, String?> get completions;
 
   /// Render the completion suggestions on the [shell].
   void render(Logger logger, SystemShell shell) {
-    for (final entry in completions) {
+    for (final entry in completions.entries) {
       switch (shell) {
         case SystemShell.zsh:
           // On zsh, colon acts as delimitation between a suggestion and its
@@ -45,18 +45,6 @@ abstract class CompletionResult {
   }
 }
 
-/// {@template no_completion_result}
-/// A [CompletionResult] that indicates that no completion suggestions should be
-/// displayed.
-/// {@endtemplate}
-class EmptyCompletionResult extends CompletionResult {
-  /// {@macro no_completion_result}
-  const EmptyCompletionResult();
-
-  @override
-  Iterable<MapEntry<String, String?>> get completions => [];
-}
-
 /// {@template all_options_and_commands_completion_result}
 /// A [CompletionResult] that suggests all options and commands in a
 /// [completionLevel].
@@ -72,7 +60,7 @@ class AllOptionsAndCommandsCompletionResult extends CompletionResult {
   final CompletionLevel completionLevel;
 
   @override
-  Iterable<MapEntry<String, String?>> get completions {
+  Map<String, String?> get completions {
     final mapCompletions = <String, String?>{};
     for (final subcommand in completionLevel.visibleSubcommands) {
       mapCompletions[subcommand.name] = subcommand.description;
@@ -80,7 +68,7 @@ class AllOptionsAndCommandsCompletionResult extends CompletionResult {
     for (final option in completionLevel.visibleOptions) {
       mapCompletions['--${option.name}'] = option.help;
     }
-    return mapCompletions.entries;
+    return mapCompletions;
   }
 }
 
@@ -90,7 +78,7 @@ class AllOptionsAndCommandsCompletionResult extends CompletionResult {
 /// {@endtemplate}
 class MatchingCommandsCompletionResult extends CompletionResult {
   /// {@macro matching_commands_completion_result}
-  MatchingCommandsCompletionResult({
+  const MatchingCommandsCompletionResult({
     required this.completionLevel,
     required this.pattern,
   });
@@ -103,7 +91,7 @@ class MatchingCommandsCompletionResult extends CompletionResult {
   final CompletionLevel completionLevel;
 
   @override
-  Iterable<MapEntry<String, String?>> get completions {
+  Map<String, String?> get completions {
     final mapCompletions = <String, String>{};
     for (final command in completionLevel.visibleSubcommands) {
       final description = command.description;
@@ -117,6 +105,6 @@ class MatchingCommandsCompletionResult extends CompletionResult {
         }
       }
     }
-    return mapCompletions.entries;
+    return mapCompletions;
   }
 }
