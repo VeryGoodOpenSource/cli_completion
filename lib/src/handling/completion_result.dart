@@ -2,6 +2,8 @@ import 'package:cli_completion/src/system_shell.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 
+import 'completion_level.dart';
+
 /// {@template completion_result}
 /// Describes the result of a completion handling process.
 /// {@endtemplate}
@@ -11,48 +13,19 @@ import 'package:meta/meta.dart';
 /// (via stdout) including suggestions and its metadata (description).
 ///
 /// See also:
-/// - [ValueCompletionResult]
 /// - [EmptyCompletionResult]
 @immutable
 abstract class CompletionResult {
-  /// Creates a [CompletionResult] that contains predefined suggestions.
-  const factory CompletionResult.fromMap(Map<String, String?> completions) =
-      ValueCompletionResult._fromMap;
+  /// {@macro completion_result}
+  const CompletionResult();
 
-  const CompletionResult._();
+  /// A collection of [MapEntry] with completion suggestions to their
+  /// descriptions.
+  Iterable<MapEntry<String, String?>> get completions;
 
   /// Render the completion suggestions on the [shell].
-  void render(Logger logger, SystemShell shell);
-}
-
-/// {@template value_completion_result}
-/// A [CompletionResult] that contains completion suggestions.
-/// {@endtemplate}
-class ValueCompletionResult extends CompletionResult {
-  /// {@macro value_completion_result}
-  ValueCompletionResult()
-      : _completions = <String, String?>{},
-        super._();
-
-  /// Create a [ValueCompletionResult] with predefined completion suggestions
-  ///
-  /// Since this can be const, calling "addSuggestion" on instances created
-  /// with this constructor may result in runtime exceptions.
-  /// Use [CompletionResult.fromMap] instead.
-  const ValueCompletionResult._fromMap(this._completions) : super._();
-
-  /// A map of completion suggestions to their descriptions.
-  final Map<String, String?> _completions;
-
-  /// Adds an entry to the current pool of suggestions. Overrides any previous
-  /// entry with the same [completion].
-  void addSuggestion(String completion, [String? description]) {
-    _completions[completion] = description;
-  }
-
-  @override
   void render(Logger logger, SystemShell shell) {
-    for (final entry in _completions.entries) {
+    for (final entry in completions) {
       switch (shell) {
         case SystemShell.zsh:
           // On zsh, colon acts as delimitation between a suggestion and its
@@ -78,8 +51,72 @@ class ValueCompletionResult extends CompletionResult {
 /// {@endtemplate}
 class EmptyCompletionResult extends CompletionResult {
   /// {@macro no_completion_result}
-  const EmptyCompletionResult() : super._();
+  const EmptyCompletionResult();
 
   @override
-  void render(Logger logger, SystemShell shell) {}
+  Iterable<MapEntry<String, String?>> get completions => [];
+}
+
+/// {@template all_options_and_commands_completion_result}
+/// A [CompletionResult] that suggests all options and commands in a
+/// [completionLevel].
+/// {@endtemplate}
+class AllOptionsAndCommandsCompletionResult extends CompletionResult {
+  /// {@macro all_options_and_commands_completion_result}
+  const AllOptionsAndCommandsCompletionResult({
+    required this.completionLevel,
+  });
+
+  /// The [CompletionLevel] in which the suggested options and subcommands are
+  /// supposed to be located at.
+  final CompletionLevel completionLevel;
+
+  @override
+  Iterable<MapEntry<String, String?>> get completions {
+    final mapCompletions = <String, String?>{};
+    for (final subcommand in completionLevel.visibleSubcommands) {
+      mapCompletions[subcommand.name] = subcommand.description;
+    }
+    for (final option in completionLevel.visibleOptions) {
+      mapCompletions['--${option.name}'] = option.help;
+    }
+    return mapCompletions.entries;
+  }
+}
+
+/// {@template matching_commands_completion_result}
+/// A [CompletionResult] that suggests the sub commands in a [completionLevel]
+/// that matches [pattern] (A.K.A: startsWith).
+/// {@endtemplate}
+class MatchingCommandsCompletionResult extends CompletionResult {
+  /// {@macro matching_commands_completion_result}
+  MatchingCommandsCompletionResult({
+    required this.completionLevel,
+    required this.pattern,
+  });
+
+  /// The pattern in which the matching commands will be suggested.
+  final String pattern;
+
+  /// The [CompletionLevel] in which the suggested commands are supposed to be
+  /// located at.
+  final CompletionLevel completionLevel;
+
+  @override
+  Iterable<MapEntry<String, String?>> get completions {
+    final mapCompletions = <String, String>{};
+    for (final command in completionLevel.visibleSubcommands) {
+      final description = command.description;
+      if (command.name.startsWith(pattern)) {
+        mapCompletions[command.name] = description;
+      } else {
+        for (final alias in command.aliases) {
+          if (alias.startsWith(pattern)) {
+            mapCompletions[alias] = description;
+          }
+        }
+      }
+    }
+    return mapCompletions.entries;
+  }
 }
