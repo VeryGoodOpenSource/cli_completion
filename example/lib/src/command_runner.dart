@@ -23,7 +23,7 @@ class ExampleCommandRunner extends CompletionCommandRunner<int> {
     // Add root options and flags
     argParser.addFlag(
       'rootFlag',
-      help: 'A flag in the root command',
+      help: 'A flag: in the root command',
     );
 
     // Add sub commands

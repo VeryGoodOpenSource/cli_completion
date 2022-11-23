@@ -23,21 +23,18 @@ void main() {
         'basic usage',
         forLine: 'example_cli',
         suggests: allRootOptionsAndSubcommands,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'leading whitespaces',
         forLine: '   example_cli',
         suggests: allRootOptionsAndSubcommands,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'trailing whitespaces',
         forLine: 'example_cli   ',
         suggests: allRootOptionsAndSubcommands,
-        skip: notImplemmentedYet,
       );
     });
 
@@ -172,17 +169,17 @@ void main() {
       '--continuous': r'A continuous option\: any value is allowed',
       '--multi-d': 'An discrete option that can be passed multiple times ',
       '--multi-c': 'An continuous option that can be passed multiple times',
-      '--flag': '',
+      '--flag': null,
       '--inverseflag': 'A flag that the default value is true',
       '--trueflag': 'A flag that cannot be negated'
     };
 
-    final allAbbreviationssInThisLevel = <String, String>{
+    final allAbbreviationssInThisLevel = <String, String?>{
       '-h': 'Print this usage information.',
       '-d': 'A discrete option with "allowed" values (mandatory)',
       '-m': 'An discrete option that can be passed multiple times ',
       '-n': 'An continuous option that can be passed multiple times',
-      '-f': '',
+      '-f': null,
       '-i': 'A flag that the default value is true',
       '-t': 'A flag that cannot be negated'
     };
@@ -192,35 +189,30 @@ void main() {
         'basic usage',
         forLine: 'example_cli some_command',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'leading spaces',
         forLine: '   example_cli some_command',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'trailing spaces',
         forLine: 'example_cli some_command     ',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'options in between',
         forLine: 'example_cli -f some_command',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'lots of spaces in between',
         forLine: 'example_cli      some_command',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
     });
 
@@ -229,14 +221,12 @@ void main() {
         'shows same options for alias sub command',
         forLine: 'example_cli melon',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'shows same options for alias sub command 2',
         forLine: 'example_cli disguised:some_commmand',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
     });
 
@@ -470,9 +460,9 @@ void main() {
           'subcommand': 'A sub command of some_other_command',
           '--help': 'Print this usage information.',
         },
-        skip: notImplemmentedYet,
       );
     });
+
     group('partially written sub command', () {
       testCompletion(
         'partially written sub command',
@@ -480,9 +470,9 @@ void main() {
         suggests: {
           'subcommand': 'A sub command of some_other_command',
         },
-        skip: notImplemmentedYet,
       );
     });
+
     group('subcommand', () {
       final allOptionsInThisLevel = <String, String?>{
         '--help': 'Print this usage information.',
@@ -516,7 +506,7 @@ void main() {
           'basic usage with args in between',
           forLine: 'example_cli some_other_command subcommand_alias',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
+
         );
       });
     });
