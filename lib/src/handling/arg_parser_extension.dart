@@ -36,7 +36,7 @@ extension ArgParserExtension on ArgParser {
 
     // The intention is to disregard options altogether.
     // That is not doable because ArgParser breaks if there is an input to an
-    // unmapped option,producing false negatives.
+    // unmapped option, producing false negatives.
     // Since it is impossible to extend ArgParser, we just clone an existing
     // instance with way less restrictive option rules instead.
     // This can be significantly more expensive if we have lots of options
