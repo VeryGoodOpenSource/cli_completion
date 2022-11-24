@@ -109,7 +109,6 @@ void main() {
             'some_command': 'This is help for some_command',
             'some_other_command': 'This is help for some_other_command',
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
@@ -119,7 +118,6 @@ void main() {
             'some_command': 'This is help for some_command',
             'some_other_command': 'This is help for some_other_command',
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
@@ -128,7 +126,6 @@ void main() {
           suggests: {
             'some_command': 'This is help for some_command',
           },
-          skip: notImplemmentedYet,
         );
       });
 
@@ -139,7 +136,6 @@ void main() {
           suggests: {
             'melon': 'This is help for some_command',
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
@@ -148,7 +144,6 @@ void main() {
           suggests: {
             r'disguised\:some_commmand': 'This is help for some_command',
           },
-          skip: notImplemmentedYet,
         );
       });
 
