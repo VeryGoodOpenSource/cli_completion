@@ -17,6 +17,7 @@ void main() {
         'some_other_command': 'This is help for some_other_command',
         '--help': 'Print this usage information.',
         '--rootFlag': r'A flag\: in the root command',
+        '--rootOption': null,
       };
 
       testCompletion(
@@ -46,6 +47,7 @@ void main() {
           suggests: {
             '--help': 'Print this usage information.',
             '--rootFlag': r'A flag\: in the root command',
+            '--rootOption': null,
           },
           skip: notImplemmentedYet,
         );
@@ -55,6 +57,7 @@ void main() {
           forLine: 'example_cli --r',
           suggests: {
             '--rootFlag': r'A flag\: in the root command',
+            '--rootOption': null,
           },
           skip: notImplemmentedYet,
         );
@@ -64,6 +67,7 @@ void main() {
           forLine: 'example_cli -h --r',
           suggests: {
             '--rootFlag': r'A flag\: in the root command',
+            '--rootOption': null,
           },
           skip: notImplemmentedYet,
         );
@@ -184,36 +188,36 @@ void main() {
       '-t': 'A flag that cannot be negated'
     };
 
-    group('empty', () {
-      testCompletion(
-        'basic usage',
-        forLine: 'example_cli some_command',
-        suggests: allOptionsInThisLevel,
-      );
-
-      testCompletion(
-        'leading spaces',
-        forLine: '   example_cli some_command',
-        suggests: allOptionsInThisLevel,
-      );
-
-      testCompletion(
-        'trailing spaces',
-        forLine: 'example_cli some_command     ',
-        suggests: allOptionsInThisLevel,
-      );
+    group('empty (debugging)', () {
+      // testCompletion(
+      //   'basic usage',
+      //   forLine: 'example_cli some_command',
+      //   suggests: allOptionsInThisLevel,
+      // );
+      //
+      // testCompletion(
+      //   'leading spaces',
+      //   forLine: '   example_cli some_command',
+      //   suggests: allOptionsInThisLevel,
+      // );
+      //
+      // testCompletion(
+      //   'trailing spaces',
+      //   forLine: 'example_cli some_command     ',
+      //   suggests: allOptionsInThisLevel,
+      // );
 
       testCompletion(
         'options in between',
-        forLine: 'example_cli -f some_command',
+        forLine: 'example_cli -f --rootOption yay some_command',
         suggests: allOptionsInThisLevel,
       );
 
-      testCompletion(
-        'lots of spaces in between',
-        forLine: 'example_cli      some_command',
-        suggests: allOptionsInThisLevel,
-      );
+      // testCompletion(
+      //   'lots of spaces in between',
+      //   forLine: 'example_cli      some_command',
+      //   suggests: allOptionsInThisLevel,
+      // );
     });
 
     group('empty (aliases)', () {

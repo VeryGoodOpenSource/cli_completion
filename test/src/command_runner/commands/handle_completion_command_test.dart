@@ -1,3 +1,4 @@
+import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
@@ -6,11 +7,38 @@ import 'package:test/test.dart';
 class MockLogger extends Mock implements Logger {}
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
-  _TestCompletionCommandRunner() : super('test', 'Test command runner');
+  _TestCompletionCommandRunner() : super('test', 'Test command runner') {
+    final subCommand = _TestCommand(
+      name: 'subcommand',
+      description: 'subcommand 1',
+    );
+    addCommand(subCommand);
+    final subSubCommand = _TestCommand(
+      name: 'subsubcommand2',
+      description: 'subcommand 2',
+    );
+    subCommand.addSubcommand(subSubCommand);
+  }
+
+  @override
+  String get executableName => 'test_cli';
 
   @override
   // ignore: overridden_fields
   final Logger completionLogger = MockLogger();
+}
+
+class _TestCommand extends Command<int> {
+  _TestCommand({
+    required this.name,
+    required this.description,
+  });
+
+  @override
+  final String description;
+
+  @override
+  final String name;
 }
 
 void main() {
@@ -45,32 +73,32 @@ void main() {
           output.writeln(invocation.positionalArguments.first);
         });
 
+        const line = 'test_cli ';
         commandRunner.environmentOverride = {
           'SHELL': '/foo/bar/zsh',
-          'COMP_LINE': 'example_cli some_command --discrete foo',
-          'COMP_POINT': '12',
+          'COMP_LINE': line,
+          'COMP_POINT': '${line.length}',
           'COMP_CWORD': '2'
         };
         await commandRunner.run(['completion']);
 
-        expect(output.toString(), r'''
-Brazil:A country
-USA:Another country
-Netherlands:Guess what\: a country
-Portugal:Yep, a country
+        expect(output.toString(), '''
+subcommand:level 1
+--help:Print this usage information.
 ''');
       });
 
-      test('should supress error messages', () async {
+      test('should suppress error messages', () async {
         final output = StringBuffer();
         when(() {
           commandRunner.completionLogger.info(any());
         }).thenThrow(Exception('oh no'));
 
+        const line = 'test_cli ';
         commandRunner.environmentOverride = {
           'SHELL': '/foo/bar/zsh',
-          'COMP_LINE': 'example_cli some_command --discrete foo',
-          'COMP_POINT': '12',
+          'COMP_LINE': line,
+          'COMP_POINT': '${line.length}',
           'COMP_CWORD': '2'
         };
         await commandRunner.run(['completion']);

@@ -23,6 +23,7 @@ class SomeCommand extends Command<int> {
         },
         mandatory: true,
       )
+      ..addSeparator('yay')
       ..addOption(
         'hidden',
         hide: true,

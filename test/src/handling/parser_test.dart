@@ -105,7 +105,7 @@ void main() {
       });
 
       group('when calling parse', () {
-        test('calls find witht he correct params', () {
+        test('calls find with he correct params', () {
           final state = stateForLine('foo subcommand');
 
           final argParser = ArgParser();
@@ -202,6 +202,51 @@ void main() {
               },
             ),
           );
+        });
+      });
+
+      group('when the cursor is not at the end of the line', () {
+        test('returns nothing', () {
+          // << important setup
+          final testArgParser = ArgParser()
+            ..addOption('option1')
+            ..addFlag('option2', help: 'yay option 2');
+          const rawArgs = ['', ''];
+          final visibleSubcommands = [
+            _TestCommand(
+              name: 'command1',
+              description: 'yay command 1',
+              aliases: [],
+            ),
+            _TestCommand(
+              name: 'command2',
+              description: 'yay command 2',
+              aliases: ['alias'],
+            ),
+          ];
+          final state = stateForLine(
+            'foo subcommand',
+            cursorIndex: 4,
+          );
+          // important setup >>
+
+          // << setup
+          final completionLevel = CompletionLevel(
+            grammar: testArgParser,
+            rawArgs: rawArgs,
+            visibleSubcommands: visibleSubcommands,
+            visibleOptions: testArgParser.options.values.toList(),
+          );
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => completionLevel;
+          // setup >>
+
+          final result = parser.parse();
+
+          expect(result, <CompletionResult>[]);
         });
       });
 
