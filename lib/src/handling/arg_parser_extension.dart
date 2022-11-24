@@ -34,7 +34,7 @@ extension ArgParserExtension on ArgParser {
       clonedArgParser.addCommand(entry.key, parser);
     }
 
-    // The intention is to disregard options altogheter.
+    // The intention is to disregard options altogether.
     // That is not doable because ArgParser breaks if there is an input to an
     // unmapped option,producing false negatives.
     // Since it is impossible to extend ArgParser, we just clone an existing
