@@ -16,7 +16,7 @@ extension ArgParserExtension on ArgParser {
 
     try {
       return commandsOnlyGrammar
-          .parse(args.where((element) => element.isNotEmpty));
+          .parse(args.where((arg) => arg.isNotEmpty));
     } on ArgParserException {
       return null;
     }
