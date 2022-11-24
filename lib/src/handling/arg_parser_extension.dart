@@ -15,8 +15,7 @@ extension ArgParserExtension on ArgParser {
     final commandsOnlyGrammar = _looseOptions();
 
     try {
-      return commandsOnlyGrammar
-          .parse(args.where((arg) => arg.isNotEmpty));
+      return commandsOnlyGrammar.parse(args.where((arg) => arg.isNotEmpty));
     } on ArgParserException {
       return null;
     }

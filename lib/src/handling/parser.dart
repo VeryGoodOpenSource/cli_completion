@@ -19,9 +19,7 @@ class CompletionParser {
 
   /// Parse the given [CompletionState] into a [CompletionResult] given the
   /// structure of commands and options declared by the CLIs [ArgParser].
-  List<CompletionResult> parse() {
-    return _parse().toList();
-  }
+  List<CompletionResult> parse() => _parse().toList();
 
   Iterable<CompletionResult> _parse() sync* {
     final rawArgs = completionLevel.rawArgs;
