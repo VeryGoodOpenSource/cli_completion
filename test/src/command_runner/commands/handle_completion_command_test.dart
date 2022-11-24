@@ -10,12 +10,12 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
   _TestCompletionCommandRunner() : super('test', 'Test command runner') {
     final subCommand = _TestCommand(
       name: 'subcommand',
-      description: 'subcommand 1',
+      description: 'level 1',
     );
     addCommand(subCommand);
     final subSubCommand = _TestCommand(
       name: 'subsubcommand2',
-      description: 'subcommand 2',
+      description: 'level 2',
     );
     subCommand.addSubcommand(subSubCommand);
   }

@@ -6,25 +6,15 @@ void main() {
   group('ArgParserExtension', () {
     group('tryParseCommandsOnly', () {
       final rootArgParser = ArgParser()
-        ..addFlag('rootFlag')
         ..addOption(
           'rootOption',
           mandatory: true, //  this should be disregarded
         );
-      final argParserLevel1 = ArgParser()
-        ..addFlag('level1Flag')
-        ..addOption('level1Option');
-      rootArgParser.addCommand('subcommand', argParserLevel1);
-      final argParserLevel2 = ArgParser()
-        ..addFlag('level2Flag')
-        ..addMultiOption('level2Option');
-      argParserLevel1.addCommand('subcommand2', argParserLevel2);
+      final subArgPasrser = ArgParser();
+      rootArgParser.addCommand('subcommand', subArgPasrser);
 
       test('parses commands only disregarding strict option rules', () {
-        final args = '--rootFlag subcommand '
-                '--level1Option option '
-                'subcommand2 --level2Flag'
-            .split(' ');
+        final args = '--rootOption value subcommand'.split(' ');
         final results = rootArgParser.tryParseCommandsOnly(args);
 
         expect(results, isNotNull);
@@ -34,47 +24,35 @@ void main() {
         expect(
           results.arguments,
           <String>[
-            '--rootFlag',
+            '--rootOption',
+            'value',
             'subcommand',
-            '--level1Option',
-            'option',
-            'subcommand2',
-            '--level2Flag',
           ],
         );
         expect(
           results.command,
-          isA<ArgResults>()
-              .having(
-                (results) => results.name,
-                'level 1 name',
-                'subcommand',
-              )
-              .having(
-                (results) => results.command,
-                'level2',
-                isA<ArgResults>()
-                    .having(
-                      (results) => results.name,
-                      'level 2 name',
-                      'subcommand2',
-                    )
-                    .having(
-                      (results) => results.command,
-                      'level 3 doesnt exist',
-                      isNull,
-                    ),
-              ),
+          isA<ArgResults>().having(
+            (results) => results.name,
+            'level 1 name',
+            'subcommand',
+          ),
         );
 
-        expect(results.options, <String>{'rootFlag'});
+        expect(results.options, <String>{'rootOption'});
       });
 
       test('returns null when args make no sense', () {
-        final args = '--rootFlag subcommand oh my god subcommand2'.split(' ');
+        final args = '--rootFlag oh my god subcommand'.split(' ');
         final results = rootArgParser.tryParseCommandsOnly(args);
 
         expect(results, isNull);
+      });
+
+      test('returns null when args make no sense', () {
+        final args = '         subcommand'.split(' ');
+        final results = rootArgParser.tryParseCommandsOnly(args);
+
+        expect(results, isNotNull);
       });
     });
   });

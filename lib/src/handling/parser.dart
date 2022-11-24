@@ -35,6 +35,8 @@ class CompletionParser {
     return args.isNotEmpty && args.take(args.length - 1).contains('--');
   }
 
+  /// The functions that produces a [CompletionLevel], can be overridden for
+  /// testing purposes.
   @visibleForTesting
   CompletionLevel? Function(
     Iterable<String> rootArgs,

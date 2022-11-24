@@ -188,24 +188,24 @@ void main() {
       '-t': 'A flag that cannot be negated'
     };
 
-    group('empty (debugging)', () {
-      // testCompletion(
-      //   'basic usage',
-      //   forLine: 'example_cli some_command',
-      //   suggests: allOptionsInThisLevel,
-      // );
-      //
-      // testCompletion(
-      //   'leading spaces',
-      //   forLine: '   example_cli some_command',
-      //   suggests: allOptionsInThisLevel,
-      // );
-      //
-      // testCompletion(
-      //   'trailing spaces',
-      //   forLine: 'example_cli some_command     ',
-      //   suggests: allOptionsInThisLevel,
-      // );
+    group('empty ', () {
+      testCompletion(
+        'basic usage',
+        forLine: 'example_cli some_command',
+        suggests: allOptionsInThisLevel,
+      );
+
+      testCompletion(
+        'leading spaces',
+        forLine: '   example_cli some_command',
+        suggests: allOptionsInThisLevel,
+      );
+
+      testCompletion(
+        'trailing spaces',
+        forLine: 'example_cli some_command     ',
+        suggests: allOptionsInThisLevel,
+      );
 
       testCompletion(
         'options in between',
@@ -213,11 +213,11 @@ void main() {
         suggests: allOptionsInThisLevel,
       );
 
-      // testCompletion(
-      //   'lots of spaces in between',
-      //   forLine: 'example_cli      some_command',
-      //   suggests: allOptionsInThisLevel,
-      // );
+      testCompletion(
+        'lots of spaces in between',
+        forLine: 'example_cli      some_command',
+        suggests: allOptionsInThisLevel,
+      );
     });
 
     group('empty (aliases)', () {

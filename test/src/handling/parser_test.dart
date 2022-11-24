@@ -9,7 +9,6 @@ class _TestCommand extends Command<void> {
   _TestCommand({
     required this.name,
     required this.description,
-    required this.aliases,
   });
 
   @override
@@ -17,9 +16,6 @@ class _TestCommand extends Command<void> {
 
   @override
   final String name;
-
-  @override
-  final List<String> aliases;
 }
 
 CompletionState stateForLine(
@@ -46,15 +42,28 @@ CompletionState stateForLine(
 
 void main() {
   group('CompletionParser', () {
+    final visibleSubcommands = [
+      _TestCommand(
+        name: 'command1',
+        description: 'yay command 1',
+      ),
+      _TestCommand(
+        name: 'command2',
+        description: 'yay command 2',
+      ),
+    ];
+
+    final testArgParser = ArgParser()..addOption('option1');
+
     test('can be instantiated', () {
-      final state = stateForLine('foo bar --p');
+      final state = stateForLine('foo command1 --p');
 
       expect(
         () => CompletionParser(
           state: state,
           runnerGrammar: ArgParser(),
           runnerCommands: {},
-        ),
+        )..findCompletionLevel = (_, __, ___) => null,
         returnsNormally,
       );
     });
@@ -62,12 +71,12 @@ void main() {
     group('parse', () {
       group('when there is an argument terminator', () {
         test('returns nothing', () {
-          final state = stateForLine('foo bar --p -- something');
+          final state = stateForLine('foo command1 -- command2');
           final parser = CompletionParser(
             state: state,
             runnerGrammar: ArgParser(),
             runnerCommands: {},
-          );
+          )..findCompletionLevel = (_, __, ___) => null;
           final result = parser.parse();
 
           expect(result, <CompletionResult>[]);
@@ -76,7 +85,7 @@ void main() {
 
       group('when completion level cannot be found', () {
         test('returns nothing', () {
-          final state = stateForLine('foo unkown subcommand');
+          final state = stateForLine('foo unknown subcommand');
 
           final parser = CompletionParser(
             state: state,
@@ -91,7 +100,7 @@ void main() {
 
       group('when completion level cannot be found', () {
         test('returns nothing', () {
-          final state = stateForLine('foo unkown subcommand');
+          final state = stateForLine('foo unknown subcommand');
 
           final parser = CompletionParser(
             state: state,
@@ -150,87 +159,11 @@ void main() {
         });
       });
 
-      group('when there is zero non empty args', () {
-        test('returns all options', () {
-          // << important setup
-          final testArgParser = ArgParser()
-            ..addOption('option1')
-            ..addFlag('option2', help: 'yay option 2');
-          const rawArgs = ['', ''];
-          final visibleSubcommands = [
-            _TestCommand(
-              name: 'command1',
-              description: 'yay command 1',
-              aliases: [],
-            ),
-            _TestCommand(
-              name: 'command2',
-              description: 'yay command 2',
-              aliases: ['alias'],
-            ),
-          ];
-          // important setup >>
-
-          // << setup
-          final state = stateForLine('foo subcommand');
-          final completionLevel = CompletionLevel(
-            grammar: testArgParser,
-            rawArgs: rawArgs,
-            visibleSubcommands: visibleSubcommands,
-            visibleOptions: testArgParser.options.values.toList(),
-          );
-          final parser = CompletionParser(
-            state: state,
-            runnerGrammar: ArgParser(),
-            runnerCommands: {},
-          )..findCompletionLevel = (_, __, ___) => completionLevel;
-          // setup >>
-
-          final result = parser.parse();
-
-          expect(result.length, 1);
-          expect(
-            result.first,
-            isA<AllOptionsAndCommandsCompletionResult>().having(
-              (res) => res.completions,
-              'completions',
-              {
-                'command1': 'yay command 1',
-                'command2': 'yay command 2',
-                '--option1': null,
-                '--option2': 'yay option 2'
-              },
-            ),
-          );
-        });
-      });
-
       group('when the cursor is not at the end of the line', () {
         test('returns nothing', () {
-          // << important setup
-          final testArgParser = ArgParser()
-            ..addOption('option1')
-            ..addFlag('option2', help: 'yay option 2');
           const rawArgs = ['', ''];
-          final visibleSubcommands = [
-            _TestCommand(
-              name: 'command1',
-              description: 'yay command 1',
-              aliases: [],
-            ),
-            _TestCommand(
-              name: 'command2',
-              description: 'yay command 2',
-              aliases: ['alias'],
-            ),
-          ];
-          final state = stateForLine(
-            'foo subcommand',
-            cursorIndex: 4,
-          );
-          // important setup >>
+          final state = stateForLine('foo  ', cursorIndex: 4);
 
-          // << setup
           final completionLevel = CompletionLevel(
             grammar: testArgParser,
             rawArgs: rawArgs,
@@ -242,7 +175,6 @@ void main() {
             runnerGrammar: ArgParser(),
             runnerCommands: {},
           )..findCompletionLevel = (_, __, ___) => completionLevel;
-          // setup >>
 
           final result = parser.parse();
 
@@ -250,28 +182,11 @@ void main() {
         });
       });
 
-      group('when the user started to type a sub command', () {
-        test('returns all matching command and options', () {
-          // << important setup
-          final testArgParser = ArgParser()..addOption('option');
+      group('when there is zero non empty args', () {
+        test('returns all options', () {
+          const rawArgs = ['', ''];
+          final state = stateForLine('foo   ');
 
-          const rawArgs = ['', 'command'];
-          final visibleSubcommands = [
-            _TestCommand(
-              name: 'command1',
-              description: 'yay command 1',
-              aliases: [],
-            ),
-            _TestCommand(
-              name: 'command2',
-              description: 'yay command 2',
-              aliases: ['alias'],
-            ),
-          ];
-          // important setup >>
-
-          // << setup
-          final state = stateForLine('foo command1');
           final completionLevel = CompletionLevel(
             grammar: testArgParser,
             rawArgs: rawArgs,
@@ -283,7 +198,59 @@ void main() {
             runnerGrammar: ArgParser(),
             runnerCommands: {},
           )..findCompletionLevel = (_, __, ___) => completionLevel;
-          // setup >>
+
+          final result = parser.parse();
+
+          expect(result.length, 1);
+          expect(
+            result.first,
+            isA<AllOptionsAndCommandsCompletionResult>(),
+          );
+        });
+      });
+
+      group('when user writes something, presses space before completion', () {
+        test('returns all  all options', () {
+          const rawArgs = ['', 'command1', 'rest', ''];
+          final state = stateForLine('foo command1 rest ');
+
+          final completionLevel = CompletionLevel(
+            grammar: testArgParser,
+            rawArgs: rawArgs,
+            visibleSubcommands: visibleSubcommands,
+            visibleOptions: testArgParser.options.values.toList(),
+          );
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => completionLevel;
+
+          final result = parser.parse();
+          expect(result.length, 1);
+          expect(
+            result.first,
+            isA<AllOptionsAndCommandsCompletionResult>(),
+          );
+        });
+      });
+
+      group('when the user started to type a sub command', () {
+        test('returns all matching command and options', () {
+          const rawArgs = ['', 'command'];
+          final state = stateForLine('foo command');
+
+          final completionLevel = CompletionLevel(
+            grammar: testArgParser,
+            rawArgs: rawArgs,
+            visibleSubcommands: visibleSubcommands,
+            visibleOptions: testArgParser.options.values.toList(),
+          );
+          final parser = CompletionParser(
+            state: state,
+            runnerGrammar: ArgParser(),
+            runnerCommands: {},
+          )..findCompletionLevel = (_, __, ___) => completionLevel;
 
           final result = parser.parse();
 
@@ -291,12 +258,9 @@ void main() {
           expect(
             result.first,
             isA<MatchingCommandsCompletionResult>().having(
-              (res) => res.completions,
-              'completions',
-              {
-                'command1': 'yay command 1',
-                'command2': 'yay command 2',
-              },
+              (res) => res.pattern,
+              'commands start with',
+              'command',
             ),
           );
         });
