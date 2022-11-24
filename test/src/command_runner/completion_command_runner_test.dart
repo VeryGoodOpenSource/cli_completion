@@ -16,6 +16,10 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
 
   @override
   // ignore: overridden_fields
+  final Logger completionLogger = MockLogger();
+
+  @override
+  // ignore: overridden_fields
   final Logger completionInstallationLogger = MockLogger();
 
   CompletionInstallation? mockCompletionInstallation;
@@ -36,6 +40,15 @@ class _TestUserCommand extends Command<int> {
   int run() {
     return 0;
   }
+}
+
+class _TestCompletionResult extends CompletionResult {
+  const _TestCompletionResult(this._completions);
+
+  final Map<String, String?> _completions;
+
+  @override
+  Map<String, String?> get completions => _completions;
 }
 
 void main() {
@@ -126,6 +139,68 @@ void main() {
               .err('Could not install completion scripts for test: oops');
         },
       ).called(1);
+    });
+
+    group('renderCompletionResult', () {
+      test('renders predefined suggestions on zsh', () {
+        const completionResult = _TestCompletionResult({
+          'suggestion1': 'description1',
+          'suggestion2': 'description2',
+          'suggestion3': null,
+          'suggestion4': 'description4',
+        });
+
+        final commandRunner = _TestCompletionCommandRunner()
+          ..environmentOverride = {
+            'SHELL': '/foo/bar/zsh',
+          };
+
+        final output = StringBuffer();
+        when(() {
+          commandRunner.completionLogger.info(any());
+        }).thenAnswer((invocation) {
+          output.writeln(invocation.positionalArguments.first);
+        });
+
+        commandRunner.renderCompletionResult(completionResult);
+
+        expect(output.toString(), '''
+suggestion1:description1
+suggestion2:description2
+suggestion3
+suggestion4:description4
+''');
+      });
+
+      test('renders predefined suggestions on bash', () {
+        const completionResult = _TestCompletionResult({
+          'suggestion1': 'description1',
+          'suggestion2': 'description2',
+          'suggestion3': null,
+          'suggestion4': 'description4',
+        });
+
+        final commandRunner = _TestCompletionCommandRunner()
+          ..environmentOverride = {
+            'SHELL': '/foo/bar/bash',
+          };
+
+        final output = StringBuffer();
+        when(() {
+          commandRunner.completionLogger.info(any());
+        }).thenAnswer((invocation) {
+          output.writeln(invocation.positionalArguments.first);
+        });
+
+        commandRunner.renderCompletionResult(completionResult);
+
+        expect(output.toString(), '''
+suggestion1
+suggestion2
+suggestion3
+suggestion4
+''');
+      });
     });
   });
 }

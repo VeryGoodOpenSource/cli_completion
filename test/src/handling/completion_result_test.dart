@@ -2,20 +2,7 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/src/handling/completion_level.dart';
-import 'package:mason_logger/mason_logger.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-
-class MockLogger extends Mock implements Logger {}
-
-class _TestCompletionResult extends CompletionResult {
-  const _TestCompletionResult(this._completions);
-
-  final Map<String, String?> _completions;
-
-  @override
-  Map<String, String?> get completions => _completions;
-}
 
 class _TestCommand extends Command<void> {
   _TestCommand({
@@ -35,58 +22,6 @@ class _TestCommand extends Command<void> {
 }
 
 void main() {
-  group('CompletionResult', () {
-    group('render', () {
-      test('renders predefined suggestions on zsh', () {
-        const completionResult = _TestCompletionResult({
-          'suggestion1': 'description1',
-          'suggestion2': 'description2',
-          'suggestion3': null,
-          'suggestion4': 'description4',
-        });
-
-        final logger = MockLogger();
-
-        final output = StringBuffer();
-
-        when(() {
-          logger.info(any());
-        }).thenAnswer((invocation) {
-          output.writeln(invocation.positionalArguments.first);
-        });
-
-        completionResult.render(logger, SystemShell.zsh);
-      });
-
-      test('renders predefined suggestions on bash', () {
-        const completionResult = _TestCompletionResult({
-          'suggestion1': 'description1',
-          'suggestion2': 'description2',
-          'suggestion3': null,
-          'suggestion4': 'description4',
-        });
-
-        final logger = MockLogger();
-
-        final output = StringBuffer();
-        when(() {
-          logger.info(any());
-        }).thenAnswer((invocation) {
-          output.writeln(invocation.positionalArguments.first);
-        });
-
-        completionResult.render(logger, SystemShell.bash);
-
-        expect(output.toString(), '''
-suggestion1
-suggestion2
-suggestion3
-suggestion4
-''');
-      });
-    });
-  });
-
   group('AllOptionsAndCommandsCompletionResult', () {
     test(
       'renders suggestions for all sub commands and options in'
@@ -118,33 +53,15 @@ suggestion4
           completionLevel: completionLevel,
         );
 
-        final logger = MockLogger();
-
-        final output = StringBuffer();
-
-        when(() {
-          logger.info(any());
-        }).thenAnswer((invocation) {
-          output.writeln(invocation.positionalArguments.first);
-        });
-
-        completionResult.render(logger, SystemShell.zsh);
-        expect(output.toString(), '''
-command1:yay command 1
-command2:yay command 2
---option1
---option2:yay option 2
-''');
-
-        output.clear();
-
-        completionResult.render(logger, SystemShell.bash);
-        expect(output.toString(), '''
-command1
-command2
---option1
---option2
-''');
+        expect(
+          completionResult.completions,
+          {
+            'command1': 'yay command 1',
+            'command2': 'yay command 2',
+            '--option1': null,
+            '--option2': 'yay option 2',
+          },
+        );
       },
     );
   });
@@ -183,31 +100,14 @@ command2
           pattern: 'co',
         );
 
-        final logger = MockLogger();
-
-        final output = StringBuffer();
-
-        when(() {
-          logger.info(any());
-        }).thenAnswer((invocation) {
-          output.writeln(invocation.positionalArguments.first);
-        });
-
-        completionResult.render(logger, SystemShell.zsh);
-        expect(output.toString(), '''
-command1:yay command 1
-command2:yay command 2
-command_not_weird:yay weird command
-''');
-
-        output.clear();
-
-        completionResult.render(logger, SystemShell.bash);
-        expect(output.toString(), '''
-command1
-command2
-command_not_weird
-''');
+        expect(
+          completionResult.completions,
+          {
+            'command1': 'yay command 1',
+            'command2': 'yay command 2',
+            'command_not_weird': 'yay weird command'
+          },
+        );
       },
     );
   });

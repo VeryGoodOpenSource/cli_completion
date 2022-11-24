@@ -8,7 +8,8 @@ import 'package:meta/meta.dart';
 /// cli applications.
 /// {@endtemplate}
 ///
-/// Generally, the [grammar], [visibleSubcommands] and [visibleOptions]
+/// The [grammar], [visibleSubcommands] and [visibleOptions] should be derived
+/// from a [CommandRunner] and a [Command].
 ///
 /// See also [find] to learn how it is created.
 @immutable
@@ -32,14 +33,13 @@ class CompletionLevel {
   /// ```
   /// root_command -f command1 command2 -o
   /// ```
-  /// Consider `root_command` the cli executable being completed and
-  /// `command1`  a sub command of `root_command` and `command2` a sub
-  /// command of `command1`.
+  /// Consider `root_command` the cli executable and command1`  a sub command
+  /// of `root_command` and `command2` a sub command of `command1`.
   ///
   /// In a scenario where the user requests completion for this line, all
-  /// possible suggestions (options, flags and sub commands) should be delcared
+  /// possible suggestions (options, flags and sub commands) should be declared
   /// under the [ArgParser] object belonging to `command2`, all the args
-  /// preceding `command2` are irrelevant for completion.
+  /// preceding `command2` are not considered for completion.
   ///
   /// if the user input does not respect the known structure of commands,
   /// it returns null.
@@ -72,7 +72,9 @@ class CompletionLevel {
     String? commandName;
     while (nextLevelResults != null) {
       originalGrammar = originalGrammar.commands[nextLevelResults.name]!;
-      // This can be null if .addSubCommand was sued directly
+      // This can be null if ArgParser.addSubcommand was used directly instead
+      // of CommandRunner.addCommand or Command.addSubcommand
+      // In these cases,
       subcommands = subcommands?[nextLevelResults.name]?.subcommands;
       commandName = nextLevelResults.name;
       nextLevelResults = nextLevelResults.command;
@@ -112,10 +114,10 @@ class CompletionLevel {
   /// command/sub_command being completed.
   final List<String> rawArgs;
 
-  /// The not-hidden commands declared by [grammar] in the form of [Command]
+  /// The visible commands declared by [grammar] in the form of [Command]
   /// instances.
   final List<Command<dynamic>> visibleSubcommands;
 
-  /// The not-hidden options declared by [grammar].
+  /// The visible options declared by [grammar].
   final List<Option> visibleOptions;
 }

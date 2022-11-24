@@ -23,7 +23,7 @@ import 'package:meta/meta.dart';
 abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   /// {@macro completion_command_runner}
   CompletionCommandRunner(super.executableName, super.description) {
-    addCommand(HandleCompletionRequestCommand<T>(completionLogger));
+    addCommand(HandleCompletionRequestCommand<T>());
     addCommand(InstallCompletionFilesCommand<T>());
   }
 
@@ -88,13 +88,28 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   ///
   /// Override this to intercept and customize the general
   /// output of the completions.
-  void renderCompletionResult(List<CompletionResult> completionResults) {
+  void renderCompletionResult(CompletionResult completionResult) {
     final systemShell = this.systemShell;
     if (systemShell == null) {
       return;
     }
-    for (final completionResult in completionResults) {
-      completionResult.render(completionLogger, systemShell);
+
+    for (final entry in completionResult.completions.entries) {
+      switch (systemShell) {
+        case SystemShell.zsh:
+          // On zsh, colon acts as delimitation between a suggestion and its
+          // description. Any literal colon should be escaped.
+          final suggestion = entry.key.replaceAll(':', r'\:');
+          final description = entry.value?.replaceAll(':', r'\:');
+
+          completionLogger.info(
+            '$suggestion${description != null ? ':$description' : ''}',
+          );
+          break;
+        case SystemShell.bash:
+          completionLogger.info(entry.key);
+          break;
+      }
     }
   }
 }

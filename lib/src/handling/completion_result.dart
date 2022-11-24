@@ -1,6 +1,4 @@
 import 'package:cli_completion/src/handling/completion_level.dart';
-import 'package:cli_completion/src/system_shell.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 
 /// {@template completion_result}
@@ -22,27 +20,6 @@ abstract class CompletionResult {
   /// A collection of [MapEntry] with completion suggestions to their
   /// descriptions.
   Map<String, String?> get completions;
-
-  /// Render the completion suggestions on the [shell].
-  void render(Logger logger, SystemShell shell) {
-    for (final entry in completions.entries) {
-      switch (shell) {
-        case SystemShell.zsh:
-          // On zsh, colon acts as delimitation between a suggestion and its
-          // description. Any literal colon should be escaped.
-          final suggestion = entry.key.replaceAll(':', r'\:');
-          final description = entry.value?.replaceAll(':', r'\:');
-
-          logger.info(
-            '$suggestion${description != null ? ':$description' : ''}',
-          );
-          break;
-        case SystemShell.bash:
-          logger.info(entry.key);
-          break;
-      }
-    }
-  }
 }
 
 /// {@template all_options_and_commands_completion_result}

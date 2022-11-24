@@ -50,16 +50,16 @@ void main() {
     });
 
     test('can be instantiated', () {
-      expect(HandleCompletionRequestCommand<int>(MockLogger()), isNotNull);
+      expect(HandleCompletionRequestCommand<int>(), isNotNull);
     });
 
     test('is hidden', () {
-      expect(HandleCompletionRequestCommand<int>(MockLogger()).hidden, isTrue);
+      expect(HandleCompletionRequestCommand<int>().hidden, isTrue);
     });
 
     test('description', () {
       expect(
-        HandleCompletionRequestCommand<int>(MockLogger()).description,
+        HandleCompletionRequestCommand<int>().description,
         'Handles shell completion (should never be called manually)',
       );
     });
