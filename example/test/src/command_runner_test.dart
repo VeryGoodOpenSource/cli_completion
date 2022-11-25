@@ -81,7 +81,8 @@ Usage: example_cli <command> [arguments]
 
 Global options:
 -h, --help             Print this usage information.
-    --[no-]rootFlag    A flag in the root command
+-f, --[no-]rootFlag    A flag: in the root command
+    --rootOption       
 
 Available commands:
   some_command         This is help for some_command

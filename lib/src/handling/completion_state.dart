@@ -56,6 +56,17 @@ class CompletionState extends Equatable {
 
     final args = compLine.trimLeft().split(' ').skip(1);
 
+    if (cpointInt < compLine.length) {
+      // Do not complete when the cursor is not at the end of the line
+      return null;
+    }
+
+    if (args.isNotEmpty && args.take(args.length - 1).contains('--')) {
+      // Do not complete if there is an argument terminator in the middle of
+      // the sentence
+      return null;
+    }
+
     return CompletionState(
       cword: cwordInt,
       cpoint: cpointInt,

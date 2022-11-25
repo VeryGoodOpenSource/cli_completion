@@ -21,10 +21,13 @@ class ExampleCommandRunner extends CompletionCommandRunner<int> {
   })  : _logger = logger ?? Logger(),
         super(executableName, description) {
     // Add root options and flags
-    argParser.addFlag(
-      'rootFlag',
-      help: 'A flag in the root command',
-    );
+    argParser
+      ..addFlag(
+        'rootFlag',
+        abbr: 'f',
+        help: 'A flag: in the root command',
+      )
+      ..addOption('rootOption');
 
     // Add sub commands
     addCommand(SomeCommand(_logger));

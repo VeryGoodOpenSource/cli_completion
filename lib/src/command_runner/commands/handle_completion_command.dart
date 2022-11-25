@@ -2,20 +2,21 @@ import 'dart:async';
 
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/src/command_runner/completion_command_runner.dart';
+import 'package:cli_completion/src/handling/completion_level.dart';
 import 'package:cli_completion/src/handling/completion_state.dart';
 import 'package:cli_completion/src/handling/parser.dart';
-import 'package:mason_logger/mason_logger.dart';
 
 /// {@template handle_completion_request_command}
 /// A hidden [Command] added by [CompletionCommandRunner] that handles the
 /// "completion" sub command.
+/// {@endtemplate}
+///
 /// This is called by a shell function when the user presses "tab".
 /// Any output to stdout during this call will be interpreted as suggestions
 /// for completions.
-/// {@endtemplate}
 class HandleCompletionRequestCommand<T> extends Command<T> {
   /// {@macro handle_completion_request_command}
-  HandleCompletionRequestCommand(this.logger);
+  HandleCompletionRequestCommand();
 
   @override
   String get description {
@@ -31,9 +32,6 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
   @override
   bool get hidden => true;
 
-  /// The [Logger] used to display the completion suggestions
-  final Logger logger;
-
   @override
   CompletionCommandRunner<T> get runner {
     return super.runner! as CompletionCommandRunner<T>;
@@ -42,16 +40,38 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
   @override
   FutureOr<T>? run() {
     try {
+      // Get completion request params from the environment
       final completionState = CompletionState.fromEnvironment(
         runner.environmentOverride,
       );
+
+      // If the parameters in the environment are not supported or invalid,
+      // do not proceed with completion complete.
       if (completionState == null) {
         return null;
       }
 
-      final result = CompletionParser(completionState).parse();
+      // Find the completion level
+      final completionLevel = CompletionLevel.find(
+        completionState.args,
+        runner.argParser,
+        runner.commands,
+      );
 
-      runner.renderCompletionResult(result);
+      // Do not complete if the command structure is not recognized
+      if (completionLevel == null) {
+        return null;
+      }
+
+      // Parse the completion level into completion suggestions
+      final completionResults = CompletionParser(
+        completionLevel: completionLevel,
+      ).parse();
+
+      // Render the completion suggestions
+      for (final completionResult in completionResults) {
+        runner.renderCompletionResult(completionResult);
+      }
     } on Exception {
       // Do not output any Exception here, since even error messages are
       // interpreted as completion suggestions

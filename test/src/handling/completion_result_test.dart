@@ -1,150 +1,114 @@
+import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
-import 'package:mason_logger/mason_logger.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:cli_completion/src/handling/completion_level.dart';
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
+class _TestCommand extends Command<void> {
+  _TestCommand({
+    required this.name,
+    required this.description,
+    required this.aliases,
+  });
+
+  @override
+  final String description;
+
+  @override
+  final String name;
+
+  @override
+  final List<String> aliases;
+}
 
 void main() {
-  group('CompletionResult', () {
-    group('fromMap', () {
-      test('renders predefined suggestions on zsh', () {
-        const completionResult = CompletionResult.fromMap({
-          'suggestion1': 'description1',
-          'suggestion2': 'description2',
-          'suggestion3': null,
-          'suggestion4': 'description4',
-        });
+  group('AllOptionsAndCommandsCompletionResult', () {
+    test(
+      'renders suggestions for all sub commands and options in'
+      ' a completion level',
+      () {
+        final testArgParser = ArgParser()
+          ..addOption('option1')
+          ..addFlag('option2', help: 'yay option 2');
 
-        final logger = MockLogger();
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: [
+            _TestCommand(
+              name: 'command1',
+              description: 'yay command 1',
+              aliases: [],
+            ),
+            _TestCommand(
+              name: 'command2',
+              description: 'yay command 2',
+              aliases: ['alias'],
+            ),
+          ],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
 
-        final output = StringBuffer();
-        when(() {
-          logger.info(any());
-        }).thenAnswer((invocation) {
-          output.writeln(invocation.positionalArguments.first);
-        });
+        final completionResult = AllOptionsAndCommandsCompletionResult(
+          completionLevel: completionLevel,
+        );
 
-        completionResult.render(logger, SystemShell.zsh);
-
-        expect(output.toString(), '''
-suggestion1:description1
-suggestion2:description2
-suggestion3
-suggestion4:description4
-''');
-      });
-
-      test('renders predefined suggestions on bash', () {
-        const completionResult = CompletionResult.fromMap({
-          'suggestion1': 'description1',
-          'suggestion2': 'description2',
-          'suggestion3': null,
-          'suggestion4': 'description4',
-        });
-
-        final logger = MockLogger();
-
-        final output = StringBuffer();
-        when(() {
-          logger.info(any());
-        }).thenAnswer((invocation) {
-          output.writeln(invocation.positionalArguments.first);
-        });
-
-        completionResult.render(logger, SystemShell.bash);
-
-        expect(output.toString(), '''
-suggestion1
-suggestion2
-suggestion3
-suggestion4
-''');
-      });
-    });
+        expect(
+          completionResult.completions,
+          {
+            'command1': 'yay command 1',
+            'command2': 'yay command 2',
+            '--option1': null,
+            '--option2': 'yay option 2',
+          },
+        );
+      },
+    );
   });
 
-  group('ValueCompletionResult', () {
-    test('can be instantiated without any parameters', () {
-      expect(ValueCompletionResult.new, returnsNormally);
-    });
+  group('MatchingCommandsCompletionResult', () {
+    test(
+      'renders suggestions only for sub commands that starts with pattern',
+      () {
+        final testArgParser = ArgParser()..addOption('option');
 
-    test('renders suggestions on zsh', () {
-      final completionResult = ValueCompletionResult()
-        ..addSuggestion('suggestion1', 'description1')
-        ..addSuggestion('suggestion2', 'description2')
-        ..addSuggestion('suggestion3')
-        ..addSuggestion('suggestion4', 'description4');
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: [
+            _TestCommand(
+              name: 'command1',
+              description: 'yay command 1',
+              aliases: [],
+            ),
+            _TestCommand(
+              name: 'command2',
+              description: 'yay command 2',
+              aliases: ['alias'],
+            ),
+            _TestCommand(
+              name: 'weird_command',
+              description: 'yay weird command',
+              aliases: ['command_not_weird'],
+            ),
+          ],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
 
-      final logger = MockLogger();
+        final completionResult = MatchingCommandsCompletionResult(
+          completionLevel: completionLevel,
+          pattern: 'co',
+        );
 
-      final output = StringBuffer();
-      when(() {
-        logger.info(any());
-      }).thenAnswer((invocation) {
-        output.writeln(invocation.positionalArguments.first);
-      });
-
-      completionResult.render(logger, SystemShell.zsh);
-
-      expect(output.toString(), '''
-suggestion1:description1
-suggestion2:description2
-suggestion3
-suggestion4:description4
-''');
-    });
-
-    test('renders suggestions on bash', () {
-      final completionResult = ValueCompletionResult()
-        ..addSuggestion('suggestion1', 'description1')
-        ..addSuggestion('suggestion2', 'description2')
-        ..addSuggestion('suggestion3')
-        ..addSuggestion('suggestion4', 'description4');
-
-      final logger = MockLogger();
-      final output = StringBuffer();
-      when(() {
-        logger.info(any());
-      }).thenAnswer((invocation) {
-        output.writeln(invocation.positionalArguments.first);
-      });
-
-      completionResult.render(logger, SystemShell.bash);
-
-      expect(output.toString(), '''
-suggestion1
-suggestion2
-suggestion3
-suggestion4
-''');
-    });
-  });
-
-  group('EmptyCompletionResult', () {
-    test('can be instantiated without any parameters', () {
-      expect(EmptyCompletionResult.new, returnsNormally);
-    });
-
-    test('renders nothing', () {
-      const completionResult = EmptyCompletionResult();
-
-      final logger = MockLogger();
-
-      final output = StringBuffer();
-      when(() {
-        logger.info(any());
-      }).thenAnswer((invocation) {
-        output.writeln(invocation.positionalArguments.first);
-      });
-
-      completionResult.render(logger, SystemShell.zsh);
-
-      expect(output.toString(), '');
-
-      completionResult.render(logger, SystemShell.bash);
-
-      expect(output.toString(), '');
-    });
+        expect(
+          completionResult.completions,
+          {
+            'command1': 'yay command 1',
+            'command2': 'yay command 2',
+            'command_not_weird': 'yay weird command'
+          },
+        );
+      },
+    );
   });
 }

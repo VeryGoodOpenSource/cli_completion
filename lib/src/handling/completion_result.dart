@@ -1,5 +1,4 @@
-import 'package:cli_completion/src/system_shell.dart';
-import 'package:mason_logger/mason_logger.dart';
+import 'package:cli_completion/src/handling/completion_level.dart';
 import 'package:meta/meta.dart';
 
 /// {@template completion_result}
@@ -11,75 +10,78 @@ import 'package:meta/meta.dart';
 /// (via stdout) including suggestions and its metadata (description).
 ///
 /// See also:
-/// - [ValueCompletionResult]
-/// - [EmptyCompletionResult]
+/// - [AllOptionsAndCommandsCompletionResult]
+/// - [MatchingCommandsCompletionResult]
 @immutable
 abstract class CompletionResult {
-  /// Creates a [CompletionResult] that contains predefined suggestions.
-  const factory CompletionResult.fromMap(Map<String, String?> completions) =
-      ValueCompletionResult._fromMap;
+  /// {@macro completion_result}
+  const CompletionResult();
 
-  const CompletionResult._();
-
-  /// Render the completion suggestions on the [shell].
-  void render(Logger logger, SystemShell shell);
+  /// A collection of [MapEntry] with completion suggestions to their
+  /// descriptions.
+  Map<String, String?> get completions;
 }
 
-/// {@template value_completion_result}
-/// A [CompletionResult] that contains completion suggestions.
+/// {@template all_options_and_commands_completion_result}
+/// A [CompletionResult] that suggests all options and commands in a
+/// [completionLevel].
 /// {@endtemplate}
-class ValueCompletionResult extends CompletionResult {
-  /// {@macro value_completion_result}
-  ValueCompletionResult()
-      : _completions = <String, String?>{},
-        super._();
+class AllOptionsAndCommandsCompletionResult extends CompletionResult {
+  /// {@macro all_options_and_commands_completion_result}
+  const AllOptionsAndCommandsCompletionResult({
+    required this.completionLevel,
+  });
 
-  /// Create a [ValueCompletionResult] with predefined completion suggestions
-  ///
-  /// Since this can be const, calling "addSuggestion" on instances created
-  /// with this constructor may result in runtime exceptions.
-  /// Use [CompletionResult.fromMap] instead.
-  const ValueCompletionResult._fromMap(this._completions) : super._();
-
-  /// A map of completion suggestions to their descriptions.
-  final Map<String, String?> _completions;
-
-  /// Adds an entry to the current pool of suggestions. Overrides any previous
-  /// entry with the same [completion].
-  void addSuggestion(String completion, [String? description]) {
-    _completions[completion] = description;
-  }
+  /// The [CompletionLevel] in which the suggested options and subcommands are
+  /// supposed to be located at.
+  final CompletionLevel completionLevel;
 
   @override
-  void render(Logger logger, SystemShell shell) {
-    for (final entry in _completions.entries) {
-      switch (shell) {
-        case SystemShell.zsh:
-          // On zsh, colon acts as delimitation between a suggestion and its
-          // description. Any literal colon should be escaped.
-          final suggestion = entry.key.replaceAll(':', r'\:');
-          final description = entry.value?.replaceAll(':', r'\:');
+  Map<String, String?> get completions {
+    final mapCompletions = <String, String?>{};
+    for (final subcommand in completionLevel.visibleSubcommands) {
+      mapCompletions[subcommand.name] = subcommand.description;
+    }
+    for (final option in completionLevel.visibleOptions) {
+      mapCompletions['--${option.name}'] = option.help;
+    }
+    return mapCompletions;
+  }
+}
 
-          logger.info(
-            '$suggestion${description != null ? ':$description' : ''}',
-          );
-          break;
-        case SystemShell.bash:
-          logger.info(entry.key);
-          break;
+/// {@template matching_commands_completion_result}
+/// A [CompletionResult] that suggests the sub commands in a [completionLevel]
+/// that matches [pattern] (A.K.A: startsWith).
+/// {@endtemplate}
+class MatchingCommandsCompletionResult extends CompletionResult {
+  /// {@macro matching_commands_completion_result}
+  const MatchingCommandsCompletionResult({
+    required this.completionLevel,
+    required this.pattern,
+  });
+
+  /// The pattern in which the matching commands will be suggested.
+  final String pattern;
+
+  /// The [CompletionLevel] in which the suggested commands are supposed to be
+  /// located at.
+  final CompletionLevel completionLevel;
+
+  @override
+  Map<String, String?> get completions {
+    final mapCompletions = <String, String>{};
+    for (final command in completionLevel.visibleSubcommands) {
+      final description = command.description;
+      if (command.name.startsWith(pattern)) {
+        mapCompletions[command.name] = description;
+      } else {
+        for (final alias in command.aliases) {
+          if (alias.startsWith(pattern)) {
+            mapCompletions[alias] = description;
+          }
+        }
       }
     }
+    return mapCompletions;
   }
-}
-
-/// {@template no_completion_result}
-/// A [CompletionResult] that indicates that no completion suggestions should be
-/// displayed.
-/// {@endtemplate}
-class EmptyCompletionResult extends CompletionResult {
-  /// {@macro no_completion_result}
-  const EmptyCompletionResult() : super._();
-
-  @override
-  void render(Logger logger, SystemShell shell) {}
 }
