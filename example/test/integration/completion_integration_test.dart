@@ -3,8 +3,6 @@ import 'package:test/test.dart';
 
 import 'utils.dart';
 
-const notImplemmentedYet = 'not implemented yet';
-
 /// The goal for the tests in this file is to guarantee the general working of
 /// the completion suggestions given a shell request
 void main() {
@@ -203,7 +201,7 @@ void main() {
         'options in between',
         forLine: 'example_cli -f --rootOption yay some_command',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
+        tags: 'known-issues',
       );
 
       testCompletion(
@@ -470,6 +468,7 @@ void main() {
 
     group(
       'repeating options',
+      tags: 'known-issues',
       () {
         group('non multi options', () {});
 

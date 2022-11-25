@@ -67,13 +67,13 @@ void testCompletion(
   String description, {
   required String forLine,
   required Map<String, String?> suggests,
-  String? skip,
+  dynamic tags,
 }) {
   test(
     description,
     () async {
       await expectLater(runCompletionCommand(forLine), completion(suggests));
     },
-    skip: skip,
+    tags: tags,
   );
 }

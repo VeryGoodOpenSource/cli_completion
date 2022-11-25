@@ -1,2 +1,6 @@
 tags:
   integration:
+
+  # This tag is used to mark tests that map to a scenario not supported by the library.
+  known-issues:
+    skip: true
