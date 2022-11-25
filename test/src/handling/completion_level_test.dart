@@ -7,10 +7,7 @@ import 'package:test/test.dart';
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
   _TestCompletionCommandRunner() : super('test', 'Test command runner') {
     argParser
-      ..addOption(
-        'rootOption',
-        mandatory: true, //  this should be disregarded
-      )
+      ..addOption('rootFlag')
       ..addCommand(
         'fakesubcommand',
         ArgParser()..addFlag('fakeSubcommandFlag'),
@@ -59,7 +56,7 @@ void main() {
         'gets completion level from the innermost aspet',
         () {
           final commanrRunner = _TestCompletionCommandRunner();
-          final args = '--rootOption  valueForOption  '
+          final args = '--rootFlag '
                   'subcommand  --level1Flag '
                   'subsubcommand  --level2Flag'
               .split(' ');
@@ -119,7 +116,7 @@ void main() {
         'finds level when subcommand is added via "ArgParser.addCommand"',
         () {
           final commanrRunner = _TestCompletionCommandRunner();
-          final args = '--rootOption valueForOption '
+          final args = '--rootFlag '
                   'fakesubcommand --fakeSubcommandFlag'
               .split(' ');
 

@@ -1,3 +1,4 @@
+import 'package:args/args.dart';
 import 'package:cli_completion/src/handling/completion_level.dart';
 import 'package:meta/meta.dart';
 
@@ -11,7 +12,10 @@ import 'package:meta/meta.dart';
 ///
 /// See also:
 /// - [AllOptionsAndCommandsCompletionResult]
+/// - [AllAbbrOptionsCompletionResult]
 /// - [MatchingCommandsCompletionResult]
+/// - [MatchingOptionsCompletionResult]
+/// - [OptionValuesCompletionResult]
 @immutable
 abstract class CompletionResult {
   /// {@macro completion_result}
@@ -49,10 +53,42 @@ class AllOptionsAndCommandsCompletionResult extends CompletionResult {
   }
 }
 
+/// {@template all_options_and_commands_completion_result}
+/// A [CompletionResult] that suggests all abbreviated options in a
+/// [completionLevel].
+/// {@endtemplate}
+///
+/// See also:
+/// - [AllOptionsAndCommandsCompletionResult]
+class AllAbbrOptionsCompletionResult extends CompletionResult {
+  /// {@macro all_options_and_commands_completion_result}
+  const AllAbbrOptionsCompletionResult({
+    required this.completionLevel,
+  });
+
+  /// The [CompletionLevel] in which the suggested options and subcommands are
+  /// supposed to be located at.
+  final CompletionLevel completionLevel;
+
+  @override
+  Map<String, String?> get completions {
+    final mapCompletions = <String, String?>{};
+    for (final option in completionLevel.visibleOptions) {
+      final abbr = option.abbr;
+      if (abbr != null) {
+        mapCompletions['-$abbr'] = option.help;
+      }
+    }
+    return mapCompletions;
+  }
+}
+
 /// {@template matching_commands_completion_result}
 /// A [CompletionResult] that suggests the sub commands in a [completionLevel]
 /// that matches [pattern] (A.K.A: startsWith).
 /// {@endtemplate}
+///
+/// If a command doesnt match the pattern, its aliases are also checked.
 class MatchingCommandsCompletionResult extends CompletionResult {
   /// {@macro matching_commands_completion_result}
   const MatchingCommandsCompletionResult({
@@ -60,12 +96,12 @@ class MatchingCommandsCompletionResult extends CompletionResult {
     required this.pattern,
   });
 
-  /// The pattern in which the matching commands will be suggested.
-  final String pattern;
-
   /// The [CompletionLevel] in which the suggested commands are supposed to be
   /// located at.
   final CompletionLevel completionLevel;
+
+  /// The pattern in which the matching commands will be suggested.
+  final String pattern;
 
   @override
   Map<String, String?> get completions {
@@ -83,5 +119,117 @@ class MatchingCommandsCompletionResult extends CompletionResult {
       }
     }
     return mapCompletions;
+  }
+}
+
+/// {@template matching_options_completion_result}
+/// A [CompletionResult] that suggests the options in a [completionLevel] that
+/// matches [pattern] (A.K.A: startsWith).
+/// {@endtemplate}
+///
+/// If an option does not match the pattern, its aliases will be checked.
+class MatchingOptionsCompletionResult extends CompletionResult {
+  /// {@macro matching_options_completion_result}
+  const MatchingOptionsCompletionResult({
+    required this.completionLevel,
+    required this.pattern,
+  });
+
+  /// The [CompletionLevel] in which the suggested options are supposed to be
+  /// located at.
+  final CompletionLevel completionLevel;
+
+  /// The pattern in which the matching options will be suggested.
+  final String pattern;
+
+  @override
+  Map<String, String?> get completions {
+    final mapCompletions = <String, String?>{};
+    for (final option in completionLevel.visibleOptions) {
+      if (option.name.startsWith(pattern)) {
+        mapCompletions['--${option.name}'] = option.help;
+      } else {
+        for (final alias in option.aliases) {
+          if (alias.startsWith(pattern)) {
+            mapCompletions['--$alias'] = option.help;
+          }
+        }
+      }
+    }
+    return mapCompletions;
+  }
+}
+
+/// {@template option_values_completion_result}
+/// A [CompletionResult] that suggests the values of options given an
+/// [optionName] and its [completionLevel].
+/// {@endtemplate}
+///
+/// For Options with [Option.allowed] values, the suggestions will be those
+/// values with [Option.allowedHelp] as description.
+///
+/// If [pattern] is not null, only the values that match the pattern will be
+/// suggested.
+///
+/// Use [OptionValuesCompletionResult.isAbbr] to suggest the values of an option
+/// in an abbreviated form.
+class OptionValuesCompletionResult extends CompletionResult {
+  /// {@macro option_values_completion_result}
+  const OptionValuesCompletionResult({
+    required this.completionLevel,
+    required this.optionName,
+    this.pattern,
+  })  : isAbbr = false,
+        includeAbbrName = false;
+
+  /// {@macro option_values_completion_result}
+  const OptionValuesCompletionResult.abbr({
+    required this.completionLevel,
+    required String abbrName,
+    this.pattern,
+    this.includeAbbrName = false,
+  })  : isAbbr = true,
+        optionName = abbrName;
+
+  /// The [CompletionLevel] in which the suggested options are supposed to be
+  /// located at.
+  final CompletionLevel completionLevel;
+
+  /// The pattern in which the matching options values be suggested.
+  final String? pattern;
+
+  /// The name of the option whose values will be suggested.
+  final String optionName;
+
+  /// Whether the option name is abbreviated.
+  final bool isAbbr;
+
+  /// Whether the option name should be included in the suggestions.
+  /// This is only used when [isAbbr] is true.
+  final bool includeAbbrName;
+
+  @override
+  Map<String, String?> get completions {
+    final Option? option;
+    if (isAbbr) {
+      option = completionLevel.grammar.findByAbbreviation(optionName);
+    } else {
+      option = completionLevel.grammar.findByNameOrAlias(optionName);
+    }
+
+    final allowed = option?.allowed ?? [];
+    Iterable<String> filteredAllowed;
+    if (pattern == null) {
+      filteredAllowed = allowed;
+    } else {
+      filteredAllowed = allowed.where((e) => e.startsWith(pattern!));
+    }
+    return {
+      for (final allowed in filteredAllowed)
+        if (includeAbbrName)
+          '-$optionName$allowed': option?.allowedHelp?[allowed]
+        else
+          allowed: option?.allowedHelp?[allowed]
+    };
   }
 }
