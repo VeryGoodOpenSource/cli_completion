@@ -29,8 +29,8 @@ class CompletionParser {
     final nonEmptyArgs = rawArgs.where((element) => element.isNotEmpty);
 
     if (nonEmptyArgs.isEmpty) {
-      // There is nothing in the user prompt between the last
-      // known command and the cursor
+      // There is nothing in the user prompt between the last known command and
+      // the cursor
       // e.g. `my_cli commandName|`
       yield AllOptionsAndCommandsCompletionResult(
         completionLevel: completionLevel,
@@ -46,15 +46,15 @@ class CompletionParser {
       // e.g. `my_cli commandName --option |` or `my_cli commandName -o |`
       final lastNonEmpty = nonEmptyArgs.last;
 
-      final suggestionForValues = _suggestValuesOfOptions(lastNonEmpty);
+      final suggestionForValues = _getOptionValues(lastNonEmpty);
 
       if (suggestionForValues != null) {
         yield suggestionForValues;
         return;
       }
 
-      // User pressed space before tab
-      // (not currently writing any arg ot the arg is a flag)
+      // User pressed space before tab (not currently writing any arg ot the
+      // arg is a flag)
       // e.g. `my_cli commandName something |`
       yield AllOptionsAndCommandsCompletionResult(
         completionLevel: completionLevel,
@@ -64,16 +64,12 @@ class CompletionParser {
 
     // Check if the user has started to type the value of an
     // option with "allowed" values
-    // e.g. `my_cli commandName --option valueNam|`
-    // or `my_cli commandName -o valueNam|`
+    // e.g. `my_cli --option valueNam|` or `my_cli -o valueNam|`
     if (nonEmptyArgs.length > 1) {
       final secondLastNonEmpty =
           nonEmptyArgs.elementAt(nonEmptyArgs.length - 2);
 
-      final resultForValues = _suggestValuesOfOptions(
-        secondLastNonEmpty,
-        argOnCursor,
-      );
+      final resultForValues = _getOptionValues(secondLastNonEmpty, argOnCursor);
 
       if (resultForValues != null) {
         yield resultForValues;
@@ -83,8 +79,9 @@ class CompletionParser {
 
     // Further code cover the case where the user is in the middle of writing a
     // word.
-    // From now on, avoid early returns since completions may
-    // include commands and options alike
+
+    // From now on, avoid early returns since completions may include commands
+    // and options alike
 
     // Check if the user has started to type a sub command and pressed tab
     // e.g. `my_cli commandNam|`
@@ -108,9 +105,7 @@ class CompletionParser {
     if (isAbbr(argOnCursor)) {
       // Check if the user typed only a dash
       if (argOnCursor.length == 1) {
-        yield AllAbbrOptionsCompletionResult(
-          completionLevel: completionLevel,
-        );
+        yield AllAbbrOptionsCompletionResult(completionLevel: completionLevel);
       } else {
         // The user has started to type the value of an
         // option with "allowed" in an abbreviated form or just the abbreviation
@@ -129,12 +124,9 @@ class CompletionParser {
     }
   }
 
-  OptionValuesCompletionResult? _suggestValuesOfOptions(
-    String optionString, [
-    String? valuePattern,
-  ]) {
-    if (isOption(optionString)) {
-      final optionName = optionString.substring(2);
+  CompletionResult? _getOptionValues(String value, [String? valuePattern]) {
+    if (isOption(value)) {
+      final optionName = value.substring(2);
       final option = completionLevel.grammar.findByNameOrAlias(optionName);
 
       final receivesValue = option != null && !option.isFlag;
@@ -146,8 +138,8 @@ class CompletionParser {
           pattern: valuePattern,
         );
       }
-    } else if (isAbbr(optionString) && optionString.length > 1) {
-      final abbrName = optionString.substring(1, 2);
+    } else if (isAbbr(value) && value.length > 1) {
+      final abbrName = value.substring(1, 2);
       final option = completionLevel.grammar.findByAbbreviation(abbrName);
 
       final receivesValue = option != null && !option.isFlag;

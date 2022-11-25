@@ -36,26 +36,13 @@ void main() {
 
     group('parse', () {
       final visibleSubcommands = [
-        _TestCommand(
-          name: 'command1',
-          description: 'yay command 1',
-        ),
-        _TestCommand(
-          name: 'command2',
-          description: 'yay command 2',
-        ),
+        _TestCommand(name: 'command1', description: 'yay command 1'),
+        _TestCommand(name: 'command2', description: 'yay command 2'),
       ];
 
       final testArgParser = ArgParser()
         ..addOption('option')
-        ..addOption(
-          'optionWithAllowed',
-          abbr: 'a',
-          allowed: [
-            'allowed1',
-            'anotherAllowed',
-          ],
-        )
+        ..addOption('optionAllowed', abbr: 'a', allowed: ['allowed', 'another'])
         ..addFlag('flag');
 
       group('when there is zero non empty args', () {
@@ -97,21 +84,9 @@ void main() {
               expect(
                 result.first,
                 isA<OptionValuesCompletionResult>()
-                    .having(
-                      (result) => result.optionName,
-                      'option name',
-                      'option',
-                    )
-                    .having(
-                      (result) => result.pattern,
-                      'pattern',
-                      null,
-                    )
-                    .having(
-                      (result) => result.isAbbr,
-                      'is abbr',
-                      false,
-                    ),
+                    .having((r) => r.optionName, 'option name', 'option')
+                    .having((r) => r.pattern, 'pattern', null)
+                    .having((r) => r.isAbbr, 'is abbr', false),
               );
             });
           });
@@ -121,7 +96,7 @@ void main() {
               final parser = CompletionParser(
                 completionLevel: CompletionLevel(
                   grammar: testArgParser,
-                  rawArgs: const ['', 'command1', '--optionWithAllowed', ''],
+                  rawArgs: const ['', 'command1', '--optionAllowed', ''],
                   visibleSubcommands: visibleSubcommands,
                   visibleOptions: testArgParser.options.values.toList(),
                 ),
@@ -132,21 +107,9 @@ void main() {
               expect(
                 result.first,
                 isA<OptionValuesCompletionResult>()
-                    .having(
-                      (result) => result.optionName,
-                      'option name',
-                      'optionWithAllowed',
-                    )
-                    .having(
-                      (result) => result.pattern,
-                      'pattern',
-                      null,
-                    )
-                    .having(
-                      (result) => result.isAbbr,
-                      'is abbr',
-                      false,
-                    ),
+                    .having((r) => r.optionName, 'name', 'optionAllowed')
+                    .having((r) => r.pattern, 'pattern', null)
+                    .having((r) => r.isAbbr, 'is abbr', false),
               );
             });
           });
@@ -167,26 +130,10 @@ void main() {
               expect(
                 result.first,
                 isA<OptionValuesCompletionResult>()
-                    .having(
-                      (result) => result.optionName,
-                      'option name',
-                      'a',
-                    )
-                    .having(
-                      (result) => result.pattern,
-                      'pattern',
-                      null,
-                    )
-                    .having(
-                      (result) => result.isAbbr,
-                      'is abbr',
-                      true,
-                    )
-                    .having(
-                      (result) => result.includeAbbrName,
-                      'include abbr name',
-                      false,
-                    ),
+                    .having((r) => r.optionName, 'option name', 'a')
+                    .having((r) => r.pattern, 'pattern', null)
+                    .having((r) => r.isAbbr, 'is abbr', true)
+                    .having((r) => r.includeAbbrName, 'include abbr', false),
               );
             });
           });
@@ -250,21 +197,9 @@ void main() {
             expect(
               result.first,
               isA<OptionValuesCompletionResult>()
-                  .having(
-                    (result) => result.optionName,
-                    'option name',
-                    'option',
-                  )
-                  .having(
-                    (result) => result.pattern,
-                    'pattern',
-                    'something',
-                  )
-                  .having(
-                    (result) => result.isAbbr,
-                    'is abbr',
-                    false,
-                  ),
+                  .having((r) => r.optionName, 'option name', 'option')
+                  .having((r) => r.pattern, 'pattern', 'something')
+                  .having((r) => r.isAbbr, 'is abbr', false),
             );
           });
         });
@@ -277,7 +212,7 @@ void main() {
                 rawArgs: const [
                   '',
                   'command1',
-                  '--optionWithAllowed',
+                  '--optionAllowed',
                   'something',
                 ],
                 visibleSubcommands: visibleSubcommands,
@@ -290,21 +225,9 @@ void main() {
             expect(
               result.first,
               isA<OptionValuesCompletionResult>()
-                  .having(
-                    (result) => result.optionName,
-                    'option name',
-                    'optionWithAllowed',
-                  )
-                  .having(
-                    (result) => result.pattern,
-                    'pattern',
-                    'something',
-                  )
-                  .having(
-                    (result) => result.isAbbr,
-                    'is abbr',
-                    false,
-                  ),
+                  .having((r) => r.optionName, ' name', 'optionAllowed')
+                  .having((r) => r.pattern, 'pattern', 'something')
+                  .having((r) => r.isAbbr, 'is abbr', false),
             );
           });
         });
@@ -330,26 +253,10 @@ void main() {
             expect(
               result.first,
               isA<OptionValuesCompletionResult>()
-                  .having(
-                    (result) => result.optionName,
-                    'option name',
-                    'a',
-                  )
-                  .having(
-                    (result) => result.pattern,
-                    'pattern',
-                    'something',
-                  )
-                  .having(
-                    (result) => result.isAbbr,
-                    'is abbr',
-                    true,
-                  )
-                  .having(
-                    (result) => result.includeAbbrName,
-                    'include abbr name',
-                    false,
-                  ),
+                  .having((r) => r.optionName, 'option name', 'a')
+                  .having((r) => r.pattern, 'pattern', 'something')
+                  .having((r) => r.isAbbr, 'is abbr', true)
+                  .having((r) => r.includeAbbrName, 'include abbr name', false),
             );
           });
         });
@@ -367,10 +274,7 @@ void main() {
 
             final result = parser.parse();
             expect(result.length, 1);
-            expect(
-              result.first,
-              isA<AllOptionsAndCommandsCompletionResult>(),
-            );
+            expect(result.first, isA<AllOptionsAndCommandsCompletionResult>());
           });
         });
       });
@@ -391,11 +295,8 @@ void main() {
           expect(result.length, 1);
           expect(
             result.first,
-            isA<MatchingCommandsCompletionResult>().having(
-              (res) => res.pattern,
-              'commands pattern',
-              'command',
-            ),
+            isA<MatchingCommandsCompletionResult>()
+                .having((res) => res.pattern, 'commands pattern', 'command'),
           );
         });
       });
@@ -416,19 +317,13 @@ void main() {
           expect(result.length, 2);
           expect(
             result.first,
-            isA<MatchingCommandsCompletionResult>().having(
-              (res) => res.pattern,
-              'commands pattern',
-              '--option',
-            ),
+            isA<MatchingCommandsCompletionResult>()
+                .having((res) => res.pattern, 'commands pattern', '--option'),
           );
           expect(
             result.last,
-            isA<MatchingOptionsCompletionResult>().having(
-              (res) => res.pattern,
-              'option pattern',
-              'option',
-            ),
+            isA<MatchingOptionsCompletionResult>()
+                .having((res) => res.pattern, 'option pattern', 'option'),
           );
         });
       });
@@ -455,10 +350,7 @@ void main() {
               '-',
             ),
           );
-          expect(
-            result.last,
-            isA<AllAbbrOptionsCompletionResult>(),
-          );
+          expect(result.last, isA<AllAbbrOptionsCompletionResult>());
         });
       });
 
@@ -476,37 +368,14 @@ void main() {
           final result = parser.parse();
 
           expect(result.length, 2);
-          expect(
-            result.first,
-            isA<MatchingCommandsCompletionResult>().having(
-              (res) => res.pattern,
-              'commands pattern',
-              '-asomething',
-            ),
-          );
+          expect(result.first, isA<MatchingCommandsCompletionResult>());
           expect(
             result.last,
             isA<OptionValuesCompletionResult>()
-                .having(
-                  (result) => result.optionName,
-                  'option name',
-                  'a',
-                )
-                .having(
-                  (result) => result.pattern,
-                  'pattern',
-                  'something',
-                )
-                .having(
-                  (result) => result.isAbbr,
-                  'is abbr',
-                  true,
-                )
-                .having(
-                  (result) => result.includeAbbrName,
-                  'include abbr name',
-                  true,
-                ),
+                .having((r) => r.optionName, 'option name', 'a')
+                .having((r) => r.pattern, 'pattern', 'something')
+                .having((r) => r.isAbbr, 'is abbr', true)
+                .having((r) => r.includeAbbrName, 'include abbr name', true),
           );
         });
       });

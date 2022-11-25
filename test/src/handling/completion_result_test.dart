@@ -74,8 +74,7 @@ void main() {
           ..addOption('option1')
           ..addOption('option2', abbr: 'a')
           ..addFlag('flag1')
-          ..addFlag('flag2', abbr: 'b', help: 'yay flag1 2')
-          ..addFlag('flag3', abbr: 'c');
+          ..addFlag('flag2', abbr: 'b', help: 'yay flag1 2');
 
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
@@ -90,11 +89,7 @@ void main() {
 
         expect(
           completionResult.completions,
-          {
-            '-a': null,
-            '-b': 'yay flag1 2',
-            '-c': null,
-          },
+          {'-a': null, '-b': 'yay flag1 2'},
         );
       },
     );
@@ -118,7 +113,7 @@ void main() {
             _TestCommand(
               name: 'command2',
               description: 'yay command 2',
-              aliases: ['alias'],
+              aliases: ['command2alias'],
             ),
             _TestCommand(
               name: 'weird_command',
@@ -154,13 +149,10 @@ void main() {
           ..addOption('option1')
           ..addOption(
             'noption2',
-            aliases: [
-              'option2alias',
-            ],
+            aliases: ['option2alias'],
             help: 'yay noption2',
           )
-          ..addFlag('oflag1')
-          ..addFlag('flag2', help: 'yay flag2');
+          ..addFlag('oflag1');
 
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
@@ -187,22 +179,24 @@ void main() {
   });
 
   group('OptionValuesCompletionResult', () {
+    final testArgParser = ArgParser()
+      ..addOption('continuous', abbr: 'c')
+      ..addOption(
+        'allowed',
+        abbr: 'a',
+        allowed: [
+          'value',
+          'valuesomething',
+          'anothervalue',
+        ],
+        allowedHelp: {
+          'valueyay': 'yay valueyay',
+          'valuesomething': 'yay valuesomething',
+        },
+      );
+
     group('OptionValuesCompletionResult.new', () {
       test('render suggestions for all option values', () {
-        final testArgParser = ArgParser()
-          ..addOption(
-            'option',
-            allowed: [
-              'value1',
-              'value2',
-              'value3',
-            ],
-            allowedHelp: {
-              'value1': 'yay value1',
-              'value3': 'yay value3',
-            },
-          );
-
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
           rawArgs: const <String>[],
@@ -212,37 +206,18 @@ void main() {
 
         final completionResult = OptionValuesCompletionResult(
           completionLevel: completionLevel,
-          optionName: 'option',
+          optionName: 'allowed',
         );
 
-        expect(
-          completionResult.completions,
-          {
-            'value1': 'yay value1',
-            'value2': null,
-            'value3': 'yay value3',
-          },
-        );
+        expect(completionResult.completions, {
+          'value': null,
+          'valuesomething': 'yay valuesomething',
+          'anothervalue': null,
+        });
       });
       test(
         'renders suggestions for option values that starts with pattern',
         () {
-          final testArgParser = ArgParser()
-            ..addOption(
-              'option',
-              allowed: [
-                'value',
-                'valueyay',
-                'valuesomething',
-                'somevalue',
-                'anothervalue',
-              ],
-              allowedHelp: {
-                'valueyay': 'yay valueyay',
-                'valuesomething': 'yay valuesomething',
-              },
-            );
-
           final completionLevel = CompletionLevel(
             grammar: testArgParser,
             rawArgs: const <String>[],
@@ -252,23 +227,17 @@ void main() {
 
           final completionResult = OptionValuesCompletionResult(
             completionLevel: completionLevel,
-            optionName: 'option',
+            optionName: 'allowed',
             pattern: 'va',
           );
 
-          expect(
-            completionResult.completions,
-            {
-              'value': null,
-              'valueyay': 'yay valueyay',
-              'valuesomething': 'yay valuesomething',
-            },
-          );
+          expect(completionResult.completions, {
+            'value': null,
+            'valuesomething': 'yay valuesomething',
+          });
         },
       );
       test('renders no suggestions when there is no allowed values', () {
-        final testArgParser = ArgParser()..addOption('option');
-
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
           rawArgs: const <String>[],
@@ -278,7 +247,7 @@ void main() {
 
         final completionResult = OptionValuesCompletionResult(
           completionLevel: completionLevel,
-          optionName: 'option',
+          optionName: 'continuous',
         );
 
         expect(completionResult.completions, isEmpty);
@@ -286,21 +255,6 @@ void main() {
     });
     group('OptionValuesCompletionResult.abbr', () {
       test('render suggestions for all option values', () {
-        final testArgParser = ArgParser()
-          ..addOption(
-            'option',
-            abbr: 'o',
-            allowed: [
-              'value1',
-              'value2',
-              'value3',
-            ],
-            allowedHelp: {
-              'value1': 'yay value1',
-              'value3': 'yay value3',
-            },
-          );
-
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
           rawArgs: const <String>[],
@@ -310,38 +264,18 @@ void main() {
 
         final completionResult = OptionValuesCompletionResult.abbr(
           completionLevel: completionLevel,
-          abbrName: 'o',
+          abbrName: 'a',
         );
 
-        expect(
-          completionResult.completions,
-          {
-            'value1': 'yay value1',
-            'value2': null,
-            'value3': 'yay value3',
-          },
-        );
+        expect(completionResult.completions, {
+          'value': null,
+          'valuesomething': 'yay valuesomething',
+          'anothervalue': null,
+        });
       });
       test(
         'renders suggestions for option values that starts with pattern',
         () {
-          final testArgParser = ArgParser()
-            ..addOption(
-              'option',
-              abbr: 'o',
-              allowed: [
-                'value',
-                'valueyay',
-                'valuesomething',
-                'somevalue',
-                'anothervalue',
-              ],
-              allowedHelp: {
-                'valueyay': 'yay valueyay',
-                'valuesomething': 'yay valuesomething',
-              },
-            );
-
           final completionLevel = CompletionLevel(
             grammar: testArgParser,
             rawArgs: const <String>[],
@@ -351,23 +285,18 @@ void main() {
 
           final completionResult = OptionValuesCompletionResult.abbr(
             completionLevel: completionLevel,
-            abbrName: 'o',
+            abbrName: 'a',
             pattern: 'va',
           );
 
-          expect(
-            completionResult.completions,
-            {
-              'value': null,
-              'valueyay': 'yay valueyay',
-              'valuesomething': 'yay valuesomething',
-            },
-          );
+          expect(completionResult.completions, {
+            'value': null,
+            'valuesomething': 'yay valuesomething',
+          });
         },
       );
-      test('renders no suggestions when there is no allowed values', () {
-        final testArgParser = ArgParser()..addOption('option', abbr: 'o');
 
+      test('renders no suggestions when there is no allowed values', () {
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
           rawArgs: const <String>[],
@@ -384,21 +313,6 @@ void main() {
       });
 
       test('render suggestions for all option values with name', () {
-        final testArgParser = ArgParser()
-          ..addOption(
-            'option',
-            abbr: 'o',
-            allowed: [
-              'value1',
-              'value2',
-              'value3',
-            ],
-            allowedHelp: {
-              'value1': 'yay value1',
-              'value3': 'yay value3',
-            },
-          );
-
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
           rawArgs: const <String>[],
@@ -408,18 +322,15 @@ void main() {
 
         final completionResult = OptionValuesCompletionResult.abbr(
           completionLevel: completionLevel,
-          abbrName: 'o',
+          abbrName: 'a',
           includeAbbrName: true,
         );
 
-        expect(
-          completionResult.completions,
-          {
-            '-ovalue1': 'yay value1',
-            '-ovalue2': null,
-            '-ovalue3': 'yay value3',
-          },
-        );
+        expect(completionResult.completions, {
+          '-avalue': null,
+          '-avaluesomething': 'yay valuesomething',
+          '-aanothervalue': null,
+        });
       });
     });
   });
