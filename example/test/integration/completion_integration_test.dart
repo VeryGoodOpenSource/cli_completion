@@ -3,8 +3,6 @@ import 'package:test/test.dart';
 
 import 'utils.dart';
 
-const notImplemmentedYet = 'not implemented yet';
-
 /// The goal for the tests in this file is to guarantee the general working of
 /// the completion suggestions given a shell request
 void main() {
@@ -49,7 +47,6 @@ void main() {
             '--rootFlag': r'A flag\: in the root command',
             '--rootOption': null,
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
@@ -59,7 +56,6 @@ void main() {
             '--rootFlag': r'A flag\: in the root command',
             '--rootOption': null,
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
@@ -69,7 +65,15 @@ void main() {
             '--rootFlag': r'A flag\: in the root command',
             '--rootOption': null,
           },
-          skip: notImplemmentedYet,
+        );
+
+        testCompletion(
+          'partially written name with preceding dash',
+          forLine: 'example_cli - --r',
+          suggests: {
+            '--rootFlag': r'A flag\: in the root command',
+            '--rootOption': null,
+          },
         );
       });
 
@@ -81,7 +85,6 @@ void main() {
             '-h': 'Print this usage information.',
             '-f': r'A flag\: in the root command',
           },
-          skip: notImplemmentedYet,
         );
       });
 
@@ -89,14 +92,12 @@ void main() {
         'totally written option',
         forLine: 'example_cli --rootflag',
         suggests: noSuggestions,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'totally written option (abbr)',
         forLine: 'example_cli -f',
         suggests: noSuggestions,
-        skip: notImplemmentedYet,
       );
     });
 
@@ -146,18 +147,6 @@ void main() {
           },
         );
       });
-
-      group(
-        'invalid command structure',
-        () {
-          testCompletion(
-            'suggests nothing when there is an unkown command',
-            forLine: 'example_cli unknown some',
-            suggests: noSuggestions,
-            skip: notImplemmentedYet,
-          );
-        },
-      );
     });
   });
 
@@ -203,9 +192,16 @@ void main() {
       );
 
       testCompletion(
+        'flags in between',
+        forLine: 'example_cli -f some_command',
+        suggests: allOptionsInThisLevel,
+      );
+
+      testCompletion(
         'options in between',
         forLine: 'example_cli -f --rootOption yay some_command',
         suggests: allOptionsInThisLevel,
+        tags: 'known-issues',
       );
 
       testCompletion(
@@ -234,14 +230,12 @@ void main() {
         'just double dash',
         forLine: 'example_cli some_command --',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'just double dash with lots of spaces in between',
         forLine: 'example_cli    some_command      --',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
@@ -251,7 +245,6 @@ void main() {
           '--multi-d': 'An discrete option that can be passed multiple times ',
           '--multi-c': 'An continuous option that can be passed multiple times',
         },
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
@@ -260,7 +253,6 @@ void main() {
         suggests: {
           '--discrete': 'A discrete option with "allowed" values (mandatory)',
         },
-        skip: notImplemmentedYet,
       );
     });
 
@@ -271,7 +263,6 @@ void main() {
         suggests: {
           '--allowed': 'A discrete option with "allowed" values (mandatory)',
         },
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
@@ -281,7 +272,6 @@ void main() {
           '--defined-values':
               'A discrete option with "allowed" values (mandatory)',
         },
-        skip: notImplemmentedYet,
       );
     });
 
@@ -290,7 +280,6 @@ void main() {
         'just dash',
         forLine: 'example_cli some_command -',
         suggests: allAbbreviationssInThisLevel,
-        skip: notImplemmentedYet,
       );
     });
 
@@ -299,14 +288,12 @@ void main() {
         'do not complete hidden options',
         forLine: 'example_cli some_command --hidd',
         suggests: noSuggestions,
-        skip: notImplemmentedYet,
       );
 
       testCompletion(
         'do not complete ubnknown options',
         forLine: 'example_cli some_command --invalid',
         suggests: noSuggestions,
-        skip: notImplemmentedYet,
       );
     });
 
@@ -320,7 +307,6 @@ void main() {
             'bar': 'bar help',
             'faa': 'faa help',
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
@@ -330,14 +316,12 @@ void main() {
             'foo': 'foo help',
             'faa': 'faa help',
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
           '**do not** suggest possible options when using equals/quote syntax',
           forLine: 'example_cli some_command --discrete="',
           suggests: noSuggestions,
-          skip: notImplemmentedYet,
         );
       });
 
@@ -350,7 +334,6 @@ void main() {
             'bar': 'bar help',
             'faa': 'faa help',
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
@@ -361,7 +344,6 @@ void main() {
             'bar': 'bar help',
             'faa': 'faa help',
           },
-          skip: notImplemmentedYet,
         );
       });
 
@@ -370,21 +352,18 @@ void main() {
           'suggest nothing when previous option is continuous',
           forLine: 'example_cli some_command --continuous  ',
           suggests: noSuggestions,
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
           'suggest all options when previous option is continuous with a value',
           forLine: 'example_cli some_command --continuous="yeahoo" ',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
           'suggest all options when previous option is continuous with a value',
           forLine: 'example_cli some_command --continuous yeahoo ',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
         );
       });
 
@@ -393,14 +372,12 @@ void main() {
           'suggest all options when a flag was declared',
           forLine: 'example_cli some_command --flag  ',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
           'suggest all options when a negated flag was declared',
           forLine: 'example_cli some_command --no-flag  ',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
         );
       });
     });
@@ -409,23 +386,74 @@ void main() {
       group('discrete', () {
         testCompletion(
           'suggest possible options',
+          forLine: 'example_cli some_command -d ',
+          suggests: {
+            'foo': 'foo help',
+            'bar': 'bar help',
+            'faa': 'faa help',
+          },
+        );
+
+        testCompletion(
+          'suggest possible options in a joined form',
           forLine: 'example_cli some_command -d',
           suggests: {
             '-dfoo': 'foo help',
             '-dbar': 'bar help',
             '-dfaa': 'faa help',
           },
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
           'suggest matching options',
+          forLine: 'example_cli some_command  -d f',
+          suggests: {
+            'foo': 'foo help',
+            'faa': 'faa help',
+          },
+        );
+
+        testCompletion(
+          'suggest matching options in a joined form',
           forLine: 'example_cli some_command  -df',
           suggests: {
             '-dfoo': 'foo help',
             '-dfaa': 'faa help',
           },
-          skip: notImplemmentedYet,
+        );
+      });
+
+      group('continuous', () {
+        testCompletion(
+          'suggest nothing when previous option is continuous',
+          forLine: 'example_cli some_command -n ',
+          suggests: {},
+        );
+
+        testCompletion(
+          'suggest nothing when continuous option is joined',
+          forLine: 'example_cli some_command -n',
+          suggests: {},
+        );
+
+        testCompletion(
+          'suggest nothing when typing its value',
+          forLine: 'example_cli some_command -n something',
+          suggests: {},
+        );
+
+        testCompletion(
+          'suggest nothing when joining abbreviations',
+          forLine: 'example_cli some_command -dn',
+          suggests: {},
+        );
+      });
+
+      group('flag', () {
+        testCompletion(
+          'suggest all options when a flag was declared',
+          forLine: 'example_cli some_command -f  ',
+          suggests: allOptionsInThisLevel,
         );
       });
     });
@@ -435,13 +463,12 @@ void main() {
         'just dash with a space after',
         forLine: 'example_cli some_command - ',
         suggests: allOptionsInThisLevel,
-        skip: notImplemmentedYet,
       );
     });
 
     group(
-      skip: notImplemmentedYet,
       'repeating options',
+      tags: 'known-issues',
       () {
         group('non multi options', () {});
 
@@ -482,21 +509,18 @@ void main() {
           'basic usage',
           forLine: 'example_cli some_other_command subcommand',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
           'basic usage with lots of spaces in between',
           forLine: 'example_cli    some_other_command    subcommand',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
         );
 
         testCompletion(
           'basic usage with args in between',
           forLine: 'example_cli -f some_other_command subcommand',
           suggests: allOptionsInThisLevel,
-          skip: notImplemmentedYet,
         );
       });
 

@@ -66,6 +66,35 @@ void main() {
     );
   });
 
+  group('AllAbbrOptionsCompletionResult', () {
+    test(
+      'render suggestions for all abbreviated options ins a completion level',
+      () {
+        final testArgParser = ArgParser()
+          ..addOption('option1')
+          ..addOption('option2', abbr: 'a')
+          ..addFlag('flag1')
+          ..addFlag('flag2', abbr: 'b', help: 'yay flag1 2');
+
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const [],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = AllAbbrOptionsCompletionResult(
+          completionLevel: completionLevel,
+        );
+
+        expect(
+          completionResult.completions,
+          {'-a': null, '-b': 'yay flag1 2'},
+        );
+      },
+    );
+  });
+
   group('MatchingCommandsCompletionResult', () {
     test(
       'renders suggestions only for sub commands that starts with pattern',
@@ -84,7 +113,7 @@ void main() {
             _TestCommand(
               name: 'command2',
               description: 'yay command 2',
-              aliases: ['alias'],
+              aliases: ['command2alias'],
             ),
             _TestCommand(
               name: 'weird_command',
@@ -110,5 +139,199 @@ void main() {
         );
       },
     );
+  });
+
+  group('MatchingOptionsCompletionResult', () {
+    test(
+      'renders suggestions only for options that starts with pattern',
+      () {
+        final testArgParser = ArgParser()
+          ..addOption('option1')
+          ..addOption(
+            'noption2',
+            aliases: ['option2alias'],
+            help: 'yay noption2',
+          )
+          ..addFlag('oflag1');
+
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = MatchingOptionsCompletionResult(
+          completionLevel: completionLevel,
+          pattern: 'o',
+        );
+
+        expect(
+          completionResult.completions,
+          {
+            '--option1': null,
+            '--option2alias': 'yay noption2',
+            '--oflag1': null,
+          },
+        );
+      },
+    );
+  });
+
+  group('OptionValuesCompletionResult', () {
+    final testArgParser = ArgParser()
+      ..addOption('continuous', abbr: 'c')
+      ..addOption(
+        'allowed',
+        abbr: 'a',
+        allowed: [
+          'value',
+          'valuesomething',
+          'anothervalue',
+        ],
+        allowedHelp: {
+          'valueyay': 'yay valueyay',
+          'valuesomething': 'yay valuesomething',
+        },
+      );
+
+    group('OptionValuesCompletionResult.new', () {
+      test('render suggestions for all option values', () {
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = OptionValuesCompletionResult(
+          completionLevel: completionLevel,
+          optionName: 'allowed',
+        );
+
+        expect(completionResult.completions, {
+          'value': null,
+          'valuesomething': 'yay valuesomething',
+          'anothervalue': null,
+        });
+      });
+      test(
+        'renders suggestions for option values that starts with pattern',
+        () {
+          final completionLevel = CompletionLevel(
+            grammar: testArgParser,
+            rawArgs: const <String>[],
+            visibleSubcommands: const [],
+            visibleOptions: testArgParser.options.values.toList(),
+          );
+
+          final completionResult = OptionValuesCompletionResult(
+            completionLevel: completionLevel,
+            optionName: 'allowed',
+            pattern: 'va',
+          );
+
+          expect(completionResult.completions, {
+            'value': null,
+            'valuesomething': 'yay valuesomething',
+          });
+        },
+      );
+      test('renders no suggestions when there is no allowed values', () {
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = OptionValuesCompletionResult(
+          completionLevel: completionLevel,
+          optionName: 'continuous',
+        );
+
+        expect(completionResult.completions, isEmpty);
+      });
+    });
+    group('OptionValuesCompletionResult.abbr', () {
+      test('render suggestions for all option values', () {
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = OptionValuesCompletionResult.abbr(
+          completionLevel: completionLevel,
+          abbrName: 'a',
+        );
+
+        expect(completionResult.completions, {
+          'value': null,
+          'valuesomething': 'yay valuesomething',
+          'anothervalue': null,
+        });
+      });
+      test(
+        'renders suggestions for option values that starts with pattern',
+        () {
+          final completionLevel = CompletionLevel(
+            grammar: testArgParser,
+            rawArgs: const <String>[],
+            visibleSubcommands: const [],
+            visibleOptions: testArgParser.options.values.toList(),
+          );
+
+          final completionResult = OptionValuesCompletionResult.abbr(
+            completionLevel: completionLevel,
+            abbrName: 'a',
+            pattern: 'va',
+          );
+
+          expect(completionResult.completions, {
+            'value': null,
+            'valuesomething': 'yay valuesomething',
+          });
+        },
+      );
+
+      test('renders no suggestions when there is no allowed values', () {
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = OptionValuesCompletionResult.abbr(
+          completionLevel: completionLevel,
+          abbrName: 'o',
+        );
+
+        expect(completionResult.completions, isEmpty);
+      });
+
+      test('render suggestions for all option values with name', () {
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = OptionValuesCompletionResult.abbr(
+          completionLevel: completionLevel,
+          abbrName: 'a',
+          includeAbbrName: true,
+        );
+
+        expect(completionResult.completions, {
+          '-avalue': null,
+          '-avaluesomething': 'yay valuesomething',
+          '-aanothervalue': null,
+        });
+      });
+    });
   });
 }

@@ -3,18 +3,44 @@ import 'package:cli_completion/src/handling/arg_parser_extension.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('isOption', () {
+    test('detects options', () {
+      expect(isOption('--'), isTrue);
+      expect(isOption('--o'), isTrue);
+      expect(isOption('--option'), isTrue);
+      expect(isOption('--opt1on'), isTrue);
+      expect(isOption('--opTion'), isTrue);
+      expect(isOption('--option="value"'), isTrue);
+      expect(isOption('--option=value'), isTrue);
+    });
+    test('discards not options', () {
+      expect(isOption('-'), isFalse);
+      expect(isOption('-o'), isFalse);
+      expect(isOption('cake'), isFalse);
+      expect(isOption('-- wow'), isFalse);
+    });
+  });
+  group('isAbbr', () {
+    test('detects abbreviations', () {
+      expect(isAbbr('-'), isTrue);
+      expect(isAbbr('-y'), isTrue);
+      expect(isAbbr('-yay'), isTrue);
+    });
+    test('discards not abbreviations', () {
+      expect(isAbbr('--'), isFalse);
+      expect(isAbbr('--option'), isFalse);
+      expect(isAbbr('cake'), isFalse);
+      expect(isAbbr('- wow'), isFalse);
+    });
+  });
   group('ArgParserExtension', () {
     group('tryParseCommandsOnly', () {
-      final rootArgParser = ArgParser()
-        ..addOption(
-          'rootOption',
-          mandatory: true, //  this should be disregarded
-        );
+      final rootArgParser = ArgParser()..addFlag('rootFlag');
       final subArgPasrser = ArgParser();
       rootArgParser.addCommand('subcommand', subArgPasrser);
 
       test('parses commands only disregarding strict option rules', () {
-        final args = '--rootOption value subcommand'.split(' ');
+        final args = '--rootFlag subcommand'.split(' ');
         final results = rootArgParser.tryParseCommandsOnly(args);
 
         expect(results, isNotNull);
@@ -24,8 +50,6 @@ void main() {
         expect(
           results.arguments,
           <String>[
-            '--rootOption',
-            'value',
             'subcommand',
           ],
         );
@@ -38,7 +62,7 @@ void main() {
           ),
         );
 
-        expect(results.options, <String>{'rootOption'});
+        expect(results.options, <String>{});
       });
 
       test('returns null when args make no sense', () {
