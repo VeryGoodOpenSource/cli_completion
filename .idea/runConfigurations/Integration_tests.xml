@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Integration tests" type="DartTestRunConfigurationType" factoryName="Dart Test">
+    <option name="filePath" value="$PROJECT_DIR$/example/test/integration/completion_integration_test.dart" />
+    <option name="testRunnerOptions" value="--run-skipped -t integration -x known-issues" />
+    <method v="2" />
+  </configuration>
+</component>

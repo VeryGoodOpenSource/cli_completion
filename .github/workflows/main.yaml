@@ -39,4 +39,4 @@ jobs:
         run: dart pub get
 
       - name: 🧪 Run Tests
-        run: dart test -t integration
+        run: dart test --run-skipped -t integration -x known-issues
