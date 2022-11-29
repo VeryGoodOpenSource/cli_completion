@@ -1,17 +1,42 @@
 import 'dart:io';
 
 import 'package:example/src/command_runner.dart';
-import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:test/test.dart';
 
 class MockStdout extends Mock implements Stdout {}
 
-Map<String, String> prepareEnvForLineInput(
-  String line, {
-  int? cursorIndex,
-}) {
+Matcher suggests(Map<String, String?> suggestions, {int? whenCursorIsAt}) =>
+    CliCompletionMatcher(
+      suggestions,
+      cursorIndex: whenCursorIsAt,
+    );
+
+class CliCompletionMatcher extends CustomMatcher {
+  CliCompletionMatcher(
+    Map<String, String?> suggestions, {
+    this.cursorIndex,
+  }) : super(
+          'Completes with the expected suggestions',
+          'suggestions',
+          completion(suggestions),
+        );
+
+  final int? cursorIndex;
+
+  @override
+  Object? featureValueOf(dynamic line) {
+    if (line is! String) {
+      throw ArgumentError.value(line, 'line', 'must be a String');
+    }
+
+    return runCompletionCommand(line, cursorIndex: cursorIndex);
+  }
+}
+
+/// Simulate the shell behavior of completing a command line.
+Map<String, String> prepareEnvForLineInput(String line, {int? cursorIndex}) {
   final cpoint = cursorIndex ?? line.length;
   var cword = 0;
   line.split(' ').fold(0, (value, element) {
@@ -38,6 +63,7 @@ Future<Map<String, String?>> runCompletionCommand(
   when(() {
     stdout.writeln(any());
   }).thenAnswer((invocation) {
+    // Simulate the shell behavior of interpreting the output of the completion.
     final line = invocation.positionalArguments.first as String;
 
     // A regex that finds all colons, except the ones preceded by backslash
@@ -47,6 +73,7 @@ Future<Map<String, String?>> runCompletionCommand(
 
     map[res.first] = description;
   });
+
   await IOOverrides.runZoned(
     stdout: () => stdout,
     () async {
@@ -60,20 +87,4 @@ Future<Map<String, String?>> runCompletionCommand(
   );
 
   return map;
-}
-
-@isTest
-void testCompletion(
-  String description, {
-  required String forLine,
-  required Map<String, String?> suggests,
-  dynamic tags,
-}) {
-  test(
-    description,
-    () async {
-      await expectLater(runCompletionCommand(forLine), completion(suggests));
-    },
-    tags: tags,
-  );
 }
