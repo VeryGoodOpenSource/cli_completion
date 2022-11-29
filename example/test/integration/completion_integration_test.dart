@@ -197,7 +197,7 @@ void main() {
       '--trueflag': 'A flag that cannot be negated'
     };
 
-    final allAbbreviationssInThisLevel = <String, String?>{
+    final allAbbreviationsInThisLevel = <String, String?>{
       '-h': 'Print this usage information.',
       '-d': 'A discrete option with "allowed" values (mandatory)',
       '-m': 'An discrete option that can be passed multiple times ',
@@ -333,7 +333,7 @@ void main() {
       test('just dash', () async {
         await expectLater(
           'example_cli some_command -',
-          suggests(allAbbreviationssInThisLevel),
+          suggests(allAbbreviationsInThisLevel),
         );
       });
     });

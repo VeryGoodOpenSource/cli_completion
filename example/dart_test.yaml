@@ -1,6 +1,5 @@
 tags:
   integration:
-
-  # This tag is used to mark tests that map to a scenario not supported by the library.
+    skip: "Integration tests should run on its own workflow"
   known-issues:
-    skip: true
+    skip: "Integration test that map to a scenario not supported by the library"
