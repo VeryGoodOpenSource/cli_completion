@@ -170,6 +170,19 @@ void main() {
         });
       });
     });
+
+    group('cursor not at the end', () {
+      test(
+        'suggests nothing when cursor is not at the end of the sentence',
+        () async {
+          await expectLater(
+            'example_cli -f some',
+            // 'example_cli -f so|me'
+            suggests(noSuggestions, whenCursorIsAt: 17),
+          );
+        },
+      );
+    });
   });
 
   group('some_command', () {

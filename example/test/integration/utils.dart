@@ -7,10 +7,10 @@ import 'package:test/test.dart';
 
 class MockStdout extends Mock implements Stdout {}
 
-Matcher suggests(Map<String, String?> suggestions, {int? cursorIndex}) =>
+Matcher suggests(Map<String, String?> suggestions, {int? whenCursorIsAt}) =>
     CliCompletionMatcher(
       suggestions,
-      cursorIndex: cursorIndex,
+      cursorIndex: whenCursorIsAt,
     );
 
 class CliCompletionMatcher extends CustomMatcher {
