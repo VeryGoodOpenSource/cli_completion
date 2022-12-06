@@ -1,4 +1,4 @@
-import 'package:cli_completion/cli_completion.dart';
+import 'package:cli_completion/handling.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -13,8 +13,8 @@ void main() {
         final state = CompletionState.fromEnvironment(environment);
         expect(state, isNotNull);
         expect(state!.cword, 3);
-        expect(state.cpoint, 39);
-        expect(state.cline, 'example_cli some_command --discrete foo');
+        expect(state.point, 39);
+        expect(state.line, 'example_cli some_command --discrete foo');
         expect(state.args, [
           'some_command',
           '--discrete',

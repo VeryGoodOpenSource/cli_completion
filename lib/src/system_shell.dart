@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-/// The Supported shells
+/// The Supported shells.
 enum SystemShell {
   /// The Zsh shell: https://www.zsh.org/
   zsh,
@@ -10,7 +10,10 @@ enum SystemShell {
   /// GNU Bash shell: https://www.gnu.org/software/bash/
   bash;
 
-  /// Identifies the current shell.
+  /// Identifies the current shell based on the [Platform.environment].
+  ///
+  /// Pass [environmentOverride] to override the default value of
+  /// [Platform.environment].
   ///
   /// Based on https://stackoverflow.com/a/3327022
   static SystemShell? current({
@@ -28,7 +31,7 @@ enum SystemShell {
     if (basename == 'zsh') {
       return SystemShell.zsh;
     } else if (RegExp(r'bash(\.exe)?$').hasMatch(basename)) {
-      // on windows basename can be bash.exe
+      // On windows basename can be bash.exe
       return SystemShell.bash;
     }
 

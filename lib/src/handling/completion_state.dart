@@ -7,14 +7,18 @@ import 'package:meta/meta.dart';
 /// {@template completion_state}
 /// A description of the state of a user input when requesting completion.
 /// {@endtemplate}
+///
+/// Created when parsing a completion request (when the user hits tab), it
+/// contains the information regarding the state of the user input in that
+/// moment.
 @immutable
 class CompletionState extends Equatable {
   /// {@macro completion_state}
   @visibleForTesting
   const CompletionState({
     required this.cword,
-    required this.cpoint,
-    required this.cline,
+    required this.point,
+    required this.line,
     required this.args,
   });
 
@@ -22,10 +26,10 @@ class CompletionState extends Equatable {
   final int cword;
 
   /// The position of the cursor upon completion request
-  final int cpoint;
+  final int point;
 
   /// The user prompt that is being completed
-  final String cline;
+  final String line;
 
   /// The arguments that were passed by the user so far
   final Iterable<String> args;
@@ -39,24 +43,24 @@ class CompletionState extends Equatable {
     Map<String, String>? environmentOverride,
   ]) {
     final environment = environmentOverride ?? Platform.environment;
-    final cword = environment['COMP_CWORD'];
-    final cpoint = environment['COMP_POINT'];
-    final compLine = environment['COMP_LINE'];
+    final compCword = environment['COMP_CWORD'];
+    final compPoint = environment['COMP_POINT'];
+    final line = environment['COMP_LINE'];
 
-    if (cword == null || cpoint == null || compLine == null) {
+    if (compCword == null || compPoint == null || line == null) {
       return null;
     }
 
-    final cwordInt = int.tryParse(cword);
-    final cpointInt = int.tryParse(cpoint);
+    final cwordInt = int.tryParse(compCword);
+    final pointInt = int.tryParse(compPoint);
 
-    if (cwordInt == null || cpointInt == null) {
+    if (cwordInt == null || pointInt == null) {
       return null;
     }
 
-    final args = compLine.trimLeft().split(' ').skip(1);
+    final args = line.trimLeft().split(' ').skip(1);
 
-    if (cpointInt < compLine.length) {
+    if (pointInt < line.length) {
       // Do not complete when the cursor is not at the end of the line
       return null;
     }
@@ -69,12 +73,12 @@ class CompletionState extends Equatable {
 
     return CompletionState(
       cword: cwordInt,
-      cpoint: cpointInt,
-      cline: compLine,
+      point: pointInt,
+      line: line,
       args: args,
     );
   }
 
   @override
-  List<Object?> get props => [cword, cpoint, cline, args];
+  List<Object?> get props => [cword, point, line, args];
 }

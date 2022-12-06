@@ -124,7 +124,7 @@ class MatchingCommandsCompletionResult extends CompletionResult {
 
 /// {@template matching_options_completion_result}
 /// A [CompletionResult] that suggests the options in a [completionLevel] that
-/// matches [pattern] (A.K.A: startsWith).
+/// starts with [pattern].
 /// {@endtemplate}
 ///
 /// If an option does not match the pattern, its aliases will be checked.
@@ -161,15 +161,15 @@ class MatchingOptionsCompletionResult extends CompletionResult {
 }
 
 /// {@template option_values_completion_result}
-/// A [CompletionResult] that suggests the values of options given an
+/// A [CompletionResult] that suggests the values of an option given its
 /// [optionName] and its [completionLevel].
 /// {@endtemplate}
 ///
-/// For Options with [Option.allowed] values, the suggestions will be those
+/// For options with [Option.allowed] values, the suggestions will be those
 /// values with [Option.allowedHelp] as description.
 ///
-/// If [pattern] is not null, only the values that match the pattern will be
-/// suggested.
+/// If [pattern] is not null, only the values that starts with the pattern will
+/// be suggested.
 ///
 /// Use [OptionValuesCompletionResult.isAbbr] to suggest the values of an option
 /// in an abbreviated form.
@@ -191,7 +191,7 @@ class OptionValuesCompletionResult extends CompletionResult {
   })  : isAbbr = true,
         optionName = abbrName;
 
-  /// The [CompletionLevel] in which the suggested options are supposed to be
+  /// The [CompletionLevel] in which the suggested option is supposed to be
   /// located at.
   final CompletionLevel completionLevel;
 
@@ -206,6 +206,9 @@ class OptionValuesCompletionResult extends CompletionResult {
 
   /// Whether the option name should be included in the suggestions.
   /// This is only used when [isAbbr] is true.
+  ///
+  /// If true, suggestions will look like `-psomething` where `p` is the
+  /// abbreviated option name and `something` is the suggested value.
   final bool includeAbbrName;
 
   @override
