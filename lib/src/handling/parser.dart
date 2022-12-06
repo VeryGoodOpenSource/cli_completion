@@ -1,7 +1,7 @@
 import 'package:args/args.dart';
 import 'package:cli_completion/handling.dart';
+
 import 'package:cli_completion/src/handling/arg_parser_extension.dart';
-import 'package:cli_completion/src/handling/completion_level.dart';
 
 /// {@template completion_parser}
 /// The workhorse of the completion system.

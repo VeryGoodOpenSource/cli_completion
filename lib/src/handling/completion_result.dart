@@ -1,5 +1,5 @@
 import 'package:args/args.dart';
-import 'package:cli_completion/src/handling/completion_level.dart';
+import 'package:cli_completion/handling.dart';
 import 'package:meta/meta.dart';
 
 /// {@template completion_result}

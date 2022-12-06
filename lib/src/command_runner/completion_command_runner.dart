@@ -4,8 +4,7 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/handling.dart';
-import 'package:cli_completion/src/exceptions.dart';
-import 'package:cli_completion/src/install/completion_installation.dart';
+import 'package:cli_completion/install.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 

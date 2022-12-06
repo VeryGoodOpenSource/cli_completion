@@ -1,4 +1,4 @@
-import 'package:cli_completion/src/system_shell.dart';
+import 'package:cli_completion/handling.dart';
 import 'package:test/test.dart';
 
 void main() {

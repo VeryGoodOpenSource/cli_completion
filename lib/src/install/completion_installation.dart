@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:cli_completion/src/exceptions.dart';
-import 'package:cli_completion/src/install/shell_completion_configuration.dart';
-import 'package:cli_completion/src/system_shell.dart';
+import 'package:cli_completion/install.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
