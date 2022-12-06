@@ -1,6 +1,6 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
-import 'package:cli_completion/src/handling/arg_parser_extension.dart';
+import 'package:cli_completion/src/parsing/arg_parser_extension.dart';
 import 'package:meta/meta.dart';
 
 /// {@template completion_level}

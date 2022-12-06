@@ -1,6 +1,6 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
-import 'package:cli_completion/handling.dart';
+import 'package:cli_completion/completion_parsing.dart';
 import 'package:test/test.dart';
 
 class _TestCommand extends Command<void> {
