@@ -1,4 +1,4 @@
-import 'package:cli_completion/install.dart';
+import 'package:cli_completion/installer.dart';
 import 'package:meta/meta.dart';
 
 /// A type definition for functions that creates the content of a

@@ -1,4 +1,4 @@
-import 'package:cli_completion/install.dart';
+import 'package:cli_completion/installer.dart';
 import 'package:test/test.dart';
 
 void main() {

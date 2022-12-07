@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
-import 'package:cli_completion/parse_completion.dart';
+import 'package:cli_completion/parser.dart';
 
 /// {@template handle_completion_request_command}
 /// A hidden [Command] added by [CompletionCommandRunner] that handles the

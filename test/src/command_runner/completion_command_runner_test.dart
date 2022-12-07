@@ -1,7 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
-import 'package:cli_completion/install.dart';
-import 'package:cli_completion/parse_completion.dart';
+import 'package:cli_completion/installer.dart';
+import 'package:cli_completion/parser.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
