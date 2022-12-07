@@ -15,6 +15,9 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
   _TestCompletionCommandRunner() : super('test', 'Test command runner');
 
   @override
+  bool enableAutoInstall = true;
+
+  @override
   // ignore: overridden_fields
   final Logger completionLogger = MockLogger();
 
@@ -52,6 +55,10 @@ class _TestCompletionResult extends CompletionResult {
 }
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(Level.error);
+  });
+
   group('CompletionCommandRunner', () {
     test('can be instantiated', () {
       final commandRunner = _TestCompletionCommandRunner();
@@ -105,40 +112,72 @@ void main() {
       );
     });
 
-    test('Tries to install completion file test subcommand', () async {
-      final commandRunner = _TestCompletionCommandRunner()
-        ..addCommand(_TestUserCommand())
-        ..mockCompletionInstallation = MockCompletionInstallation();
+    group('auto install', () {
+      test('Tries to install completion files on test subcommand', () async {
+        final commandRunner = _TestCompletionCommandRunner()
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = MockCompletionInstallation();
 
-      await commandRunner.run(['ahoy']);
+        await commandRunner.run(['ahoy']);
 
-      verify(() => commandRunner.completionInstallation.install('test'))
-          .called(1);
+        verify(() => commandRunner.completionInstallation.install('test'))
+            .called(1);
 
-      verify(
-        () => commandRunner.completionInstallationLogger.level = Level.error,
-      ).called(1);
+        verify(
+          () => commandRunner.completionInstallationLogger.level = Level.error,
+        ).called(1);
+      });
+
+      test('does not auto install when it is disabled', () async {
+        final commandRunner = _TestCompletionCommandRunner()
+          ..enableAutoInstall = false
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = MockCompletionInstallation();
+
+        await commandRunner.run(['ahoy']);
+
+        verifyNever(() => commandRunner.completionInstallation.install('test'));
+
+        verifyNever(
+          () => commandRunner.completionInstallationLogger.level = any(),
+        );
+      });
     });
 
-    test('When something goes wrong on install, it logs as error', () async {
+    test(
+      'When it throws CompletionInstallationException, it logs as a warning',
+      () async {
+        final commandRunner = _TestCompletionCommandRunner()
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = MockCompletionInstallation();
+
+        when(
+          () => commandRunner.completionInstallation.install('test'),
+        ).thenThrow(
+          CompletionInstallationException(message: 'oops', rootCommand: 'test'),
+        );
+
+        await commandRunner.run(['ahoy']);
+
+        verify(() => commandRunner.completionInstallationLogger.warn(any()))
+            .called(1);
+      },
+    );
+
+    test('When an unknown exception happens during a install, it logs as error',
+        () async {
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand())
         ..mockCompletionInstallation = MockCompletionInstallation();
 
       when(
         () => commandRunner.completionInstallation.install('test'),
-      ).thenThrow(
-        CompletionInstallationException(message: 'oops', rootCommand: 'test'),
-      );
+      ).thenThrow(Exception('oops'));
 
       await commandRunner.run(['ahoy']);
 
-      verify(
-        () {
-          commandRunner.completionInstallationLogger
-              .err('Could not install completion scripts for test: oops');
-        },
-      ).called(1);
+      verify(() => commandRunner.completionInstallationLogger.err(any()))
+          .called(1);
     });
 
     group('renderCompletionResult', () {
