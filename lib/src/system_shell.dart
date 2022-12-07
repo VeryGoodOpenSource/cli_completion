@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-/// The Supported shells.
+/// The supported shells.
 enum SystemShell {
   /// The Zsh shell: https://www.zsh.org/
   zsh,
