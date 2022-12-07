@@ -21,8 +21,18 @@ enum SystemShell {
   }) {
     final environment = environmentOverride ?? Platform.environment;
 
-    // TODO(renancaraujo): this detects the "login shell", which can be
-    // different from the actual shell.
+    // Heuristic: if ZSH_NAME is set, must be zsh
+    final isZSH = environment['ZSH_NAME'] != null;
+    if (isZSH) {
+      return SystemShell.zsh;
+    }
+
+    // Heuristic: if BASH is set, must be bash
+    final isBash = environment['BASH'] != null;
+    if (isBash) {
+      return SystemShell.bash;
+    }
+
     final envShell = environment['SHELL'];
     if (envShell == null || envShell.isEmpty) return null;
 
