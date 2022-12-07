@@ -42,6 +42,15 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
 
   CompletionInstallation? _completionInstallation;
 
+  /// Define whether the installation of the completion files should done
+  /// automatically upon the first command run.
+  ///
+  /// If set to false the user will have to manually install the completion
+  /// files via the `install-completion-files` command.
+  ///
+  /// Override this field to disable auto installation.
+  bool get enableAutoInstall => true;
+
   /// The [CompletionInstallation] used to install completion files.
   CompletionInstallation get completionInstallation {
     var completionInstallation = _completionInstallation;
@@ -62,7 +71,8 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
       InstallCompletionFilesCommand.commandName,
     ];
 
-    if (!reservedCommands.contains(topLevelResults.command?.name)) {
+    if (enableAutoInstall &&
+        !reservedCommands.contains(topLevelResults.command?.name)) {
       // When auto installing, use error level to display messages.
       tryInstallCompletionFiles(Level.error);
     }
@@ -77,6 +87,8 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
       completionInstallationLogger.level = level;
       completionInstallation.install(executableName);
     } on CompletionInstallationException catch (e) {
+      completionInstallationLogger.warn(e.toString());
+    } on Exception catch (e) {
       completionInstallationLogger.err(e.toString());
     }
   }
