@@ -23,7 +23,7 @@ class CompletionInstallation {
   /// Creates a [CompletionInstallation] given the current [systemShell].
   ///
   /// If [systemShell] is null, it will assume that the current shell is
-  /// unknown and [configuration] will  be null.
+  /// unknown and [configuration] will be null.
   ///
   /// Pass [isWindowsOverride] to override the default value of
   /// [Platform.isWindows].
