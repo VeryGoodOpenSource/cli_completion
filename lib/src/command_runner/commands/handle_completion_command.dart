@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:args/command_runner.dart';
-import 'package:cli_completion/src/command_runner/completion_command_runner.dart';
-import 'package:cli_completion/src/handling/completion_level.dart';
-import 'package:cli_completion/src/handling/completion_state.dart';
-import 'package:cli_completion/src/handling/parser.dart';
+import 'package:cli_completion/cli_completion.dart';
+import 'package:cli_completion/parser.dart';
 
 /// {@template handle_completion_request_command}
 /// A hidden [Command] added by [CompletionCommandRunner] that handles the

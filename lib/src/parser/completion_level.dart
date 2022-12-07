@@ -1,10 +1,10 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
-import 'package:cli_completion/src/handling/arg_parser_extension.dart';
+import 'package:cli_completion/src/parser/arg_parser_extension.dart';
 import 'package:meta/meta.dart';
 
 /// {@template completion_level}
-/// The necessary information to produce completion for [CommandRunner] based
+/// The necessary information to produce completion for [CommandRunner]-based
 /// cli applications.
 /// {@endtemplate}
 ///
@@ -33,16 +33,17 @@ class CompletionLevel {
   /// ```
   /// root_command -f command1 command2 -o
   /// ```
-  /// Consider `root_command` the cli executable and command1`  a sub command
+  /// Consider `root_command` the cli executable and command1` a sub command
   /// of `root_command` and `command2` a sub command of `command1`.
   ///
   /// In a scenario where the user requests completion for this line, all
   /// possible suggestions (options, flags and sub commands) should be declared
   /// under the [ArgParser] object belonging to `command2`, all the args
-  /// preceding `command2` are not considered for completion.
+  /// preceding `command2` are **not** considered for completion.
   ///
-  /// if the user input does not respect the known structure of commands,
-  /// it returns null.
+  /// if the user input does not respect the known structure of commands, or if
+  /// there is any error when parsing the command structure, the
+  /// [CompletionLevel] will be `null`.
   static CompletionLevel? find(
     Iterable<String> rootArgs,
     ArgParser runnerGrammar,

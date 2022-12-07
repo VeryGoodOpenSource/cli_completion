@@ -1,14 +1,12 @@
 import 'dart:io';
 
-import 'package:cli_completion/src/exceptions.dart';
-import 'package:cli_completion/src/install/shell_completion_configuration.dart';
-import 'package:cli_completion/src/system_shell.dart';
+import 'package:cli_completion/installer.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 /// {@template shell_completion_installation}
-/// A description of a completion installation process for a specific shell.
+/// Manages the installation of completion scripts for the current shell.
 ///
 /// Creation should be done via [CompletionInstallation.fromSystemShell].
 /// {@endtemplate}
@@ -22,7 +20,16 @@ class CompletionInstallation {
     required this.environment,
   });
 
-  /// Creates a [CompletionInstallation] given the current [SystemShell].
+  /// Creates a [CompletionInstallation] given the current [systemShell].
+  ///
+  /// If [systemShell] is null, it will assume that the current shell is
+  /// unknown and [configuration] will be null.
+  ///
+  /// Pass [isWindowsOverride] to override the default value of
+  /// [Platform.isWindows].
+  ///
+  /// Pass [environmentOverride] to override the default value of
+  /// [Platform.environment].
   factory CompletionInstallation.fromSystemShell({
     required SystemShell? systemShell,
     required Logger logger,
@@ -54,11 +61,18 @@ class CompletionInstallation {
   /// equals to [Platform.environment].
   final Map<String, String> environment;
 
-  /// The associated [ShellCompletionConfiguration].
+  /// The associated [ShellCompletionConfiguration] inferred from the current
+  /// shell. It is null if the current shell is unknown.
   final ShellCompletionConfiguration? configuration;
 
   /// Define the [Directory] in which the
   /// completion configuration files will be stored.
+  ///
+  /// If [isWindows] is true, it will return the directory defined by
+  /// %LOCALAPPDATA%/DartCLICompletion
+  ///
+  /// If [isWindows] is false, it will return the directory defined by
+  /// $HOME/.dart_cli_completion
   @visibleForTesting
   Directory get completionConfigDir {
     if (isWindows) {
@@ -72,8 +86,17 @@ class CompletionInstallation {
     }
   }
 
-  /// Install completion configuration hooks for a [rootCommand] in the
+  /// Install completion configuration files for a [rootCommand] in the
   /// current shell.
+  ///
+  /// It will create:
+  /// - A completion script file in [completionConfigDir] that is named after
+  /// the [rootCommand] and the current shell (e.g. `very_good.bash`).
+  /// - A config file in [completionConfigDir] that is named after the current
+  /// shell (e.g. `bash-config.bash`) that sources the aforementioned
+  /// completion script file.
+  /// - A line in the shell config file (e.g. `.bash_profile`) that sources
+  /// the aforementioned config file.
   void install(String rootCommand) {
     final configuration = this.configuration;
 
@@ -95,7 +118,10 @@ class CompletionInstallation {
     writeToShellConfigFile(rootCommand);
   }
 
-  /// Create a directory in which the completion config files shall be saved
+  /// Create a directory in which the completion config files shall be saved.
+  /// If the directory already exists, it will do nothing.
+  ///
+  /// The directory is defined by [completionConfigDir].
   @visibleForTesting
   void createCompletionConfigDir() {
     final completionConfigDirPath = completionConfigDir.path;
@@ -117,6 +143,13 @@ class CompletionInstallation {
 
   /// Creates a configuration file exclusively to [rootCommand] and the
   /// identified shell.
+  ///
+  /// The file will be named after the [rootCommand] and the current shell
+  /// (e.g. `very_good.bash`).
+  ///
+  /// The file will be created in [completionConfigDir].
+  ///
+  /// If the file already exists, it will do nothing.
   @visibleForTesting
   void writeCompletionScriptForCommand(String rootCommand) {
     final configuration = this.configuration!;
@@ -185,7 +218,7 @@ class CompletionInstallation {
       _resolveHome(configuration!.shellRCFile, environment);
 
   /// Write a source to the completion global script in the shell configuration
-  /// file, which its location is described by the [configuration]
+  /// file, which its location is described by the [configuration].
   @visibleForTesting
   void writeToShellConfigFile(String rootCommand) {
     final configuration = this.configuration!;

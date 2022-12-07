@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:args/command_runner.dart';
-import 'package:cli_completion/src/command_runner/completion_command_runner.dart';
-
+import 'package:cli_completion/cli_completion.dart';
 import 'package:mason_logger/mason_logger.dart';
 
 /// {@template install_completion_command}
-/// A hidden [Command] added by [CompletionCommandRunner] that can be used to
-/// manually install the completion files
+/// A hidden [Command] added by [CompletionCommandRunner] that handles the
+/// "install-completion-files" sub command.
+///
+/// It can be used to manually install the completion files
 /// (otherwise automatically installed by [CompletionCommandRunner]).
 /// {@endtemplate}
 ///

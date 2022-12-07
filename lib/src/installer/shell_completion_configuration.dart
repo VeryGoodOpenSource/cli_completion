@@ -1,4 +1,4 @@
-import 'package:cli_completion/src/system_shell.dart';
+import 'package:cli_completion/installer.dart';
 import 'package:meta/meta.dart';
 
 /// A type definition for functions that creates the content of a
@@ -10,10 +10,12 @@ typedef CompletionScriptTemplate = String Function(String rootCommand);
 typedef SourceStringTemplate = String Function(String scriptPath);
 
 /// {@template shell_completion_configuration}
-/// Describes the configuration of a completion script in a specific shell.
+/// Describes all the configuration needed to install completion scripts on a
+/// specific shell.
 ///
 /// See:
-/// - [zshConfiguration] for zsh
+/// - [ShellCompletionConfiguration.fromSystemShell] to retrieve the
+/// configuration for a [SystemShell].
 @immutable
 class ShellCompletionConfiguration {
   /// {@macro shell_completion_configuration}
