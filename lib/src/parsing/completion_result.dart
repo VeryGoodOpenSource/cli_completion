@@ -168,7 +168,7 @@ class MatchingOptionsCompletionResult extends CompletionResult {
 /// For options with [Option.allowed] values, the suggestions will be those
 /// values with [Option.allowedHelp] as description.
 ///
-/// If [pattern] is not null, only the values that starts with the pattern will
+/// If [pattern] is not null, only the values that start with the pattern will
 /// be suggested.
 ///
 /// Use [OptionValuesCompletionResult.isAbbr] to suggest the values of an option
