@@ -1,4 +1,4 @@
-import 'package:cli_completion/completion_parsing.dart';
+import 'package:cli_completion/parse_completion.dart';
 import 'package:test/test.dart';
 
 void main() {

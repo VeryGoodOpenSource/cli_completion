@@ -1,5 +1,5 @@
 import 'package:args/args.dart';
-import 'package:cli_completion/completion_parsing.dart';
+import 'package:cli_completion/parse_completion.dart';
 
 import 'package:cli_completion/src/parsing/arg_parser_extension.dart';
 
