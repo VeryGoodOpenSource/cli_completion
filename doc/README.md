@@ -73,4 +73,4 @@ faa  -- faa help
 foo  -- foo help
 ```
 
-For more use cases, see the [integration tests file](https://github.com/VeryGoodOpenSource/cli_completion/blob/main/example/test/integration/completion_integration_test.dart).
+For more use cases, check out the [integration tests](https://github.com/VeryGoodOpenSource/cli_completion/blob/main/example/test/integration/completion_integration_test.dart).
