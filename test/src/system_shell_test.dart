@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('SystemShell', () {
-    group('fromCurrentShell', () {
+    group('current', () {
       test('instantiated without env', () {
         expect(
           SystemShell.current,
@@ -11,61 +11,85 @@ void main() {
         );
       });
 
-      test('identifies zsh', () {
-        final result = SystemShell.current(
-          environmentOverride: {
-            'SHELL': '/foo/bar/zsh',
-          },
-        );
-
-        expect(result, SystemShell.zsh);
-      });
-
-      test('identifies bash shell', () {
-        final result = SystemShell.current(
-          environmentOverride: {
-            'SHELL': '/foo/bar/bash',
-          },
-        );
-
-        expect(result, SystemShell.bash);
-
-        final resultWindows = SystemShell.current(
-          environmentOverride: {
-            'SHELL': r'c:\foo\bar\bash.exe',
-          },
-        );
-
-        expect(resultWindows, SystemShell.bash);
-      });
-
-      group('identifies no shell', () {
-        test('for no shell env', () {
-          final result = SystemShell.current(
-            environmentOverride: {},
-          );
-
-          expect(result, null);
-        });
-
-        test('for empty shell env', () {
+      group('Heuristics', () {
+        test('identifies zsh', () {
           final result = SystemShell.current(
             environmentOverride: {
-              'SHELL': '',
+              'ZSH_NAME': 'zsh',
             },
           );
 
-          expect(result, null);
+          expect(result, SystemShell.zsh);
         });
 
-        test('for extraneous shell', () {
+        test('identifies bash', () {
           final result = SystemShell.current(
             environmentOverride: {
-              'SHELL': '/usr/bin/someshell',
+              'BASH': '/bin/bash',
             },
           );
 
-          expect(result, null);
+          expect(result, SystemShell.bash);
+        });
+      });
+
+      group(r'When checking $SHELL', () {
+        test('identifies zsh', () {
+          final result = SystemShell.current(
+            environmentOverride: {
+              'SHELL': '/foo/bar/zsh',
+            },
+          );
+
+          expect(result, SystemShell.zsh);
+        });
+
+        test('identifies bash shell', () {
+          final result = SystemShell.current(
+            environmentOverride: {
+              'SHELL': '/foo/bar/bash',
+            },
+          );
+
+          expect(result, SystemShell.bash);
+
+          final resultWindows = SystemShell.current(
+            environmentOverride: {
+              'SHELL': r'c:\foo\bar\bash.exe',
+            },
+          );
+
+          expect(resultWindows, SystemShell.bash);
+        });
+
+        group('identifies no shell', () {
+          test('for no shell env', () {
+            final result = SystemShell.current(
+              environmentOverride: {},
+            );
+
+            expect(result, null);
+          });
+
+          test('for empty shell env', () {
+            final result = SystemShell.current(
+              environmentOverride: {
+                'SHELL': '',
+              },
+            );
+
+            expect(result, null);
+          });
+
+          test('for extraneous shell', () {
+            final result = SystemShell.current(
+              environmentOverride: {
+                'SHELL': '/usr/bin/someshell',
+              },
+            );
+
+            expect(result, null);
+          });
         });
       });
     });
