@@ -32,7 +32,7 @@ To disable this behavior, set `enableAutoInstall` to false on your `CompletionCo
 
 `CompletionCommandRunner` is responsible for handling the `completion` sub-command and reading some particular environment variables that contain the state of the user input upon tab press.
 
-Once it parses the user input, it reads the ArgParser grammar to create valid suggestions.
+Once it parses the user input, it reads the `ArgParser` grammar to create valid suggestions.
 
 ### Use Cases
 
