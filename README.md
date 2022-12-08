@@ -71,8 +71,8 @@ Example:
 Future<int?> runCommand(ArgResults topLevelResults) async {
   if (topLevelResults.command?.name == 'completion') {
     super.runCommand(topLevelResults);
-		return;
-	}
+      return;
+  }
   // ... analytics and other unrelated stuff 
 ```
 
