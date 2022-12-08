@@ -29,7 +29,7 @@ The class `CompletionCommandRunner` tries to create these files upon any command
 
 To disable this behavior, set `enableAutoInstall` to false on your `CompletionCommandRunner` subclass.
 
-### How parsing completion works
+### How Parsing Completion Works
 
 `CompletionCommandRunner` is responsible for handling the `completion` sub-command and reading some particular environment variables that contain the state of the user input upon tab press.
 
