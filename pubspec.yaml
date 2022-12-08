@@ -1,7 +1,6 @@
 name: cli_completion
 description: Completion toolkit for Command runner based Dart CLIs
-version: 0.1.0+1
-publish_to: none
+version: 0.1.0
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
