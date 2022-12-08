@@ -13,17 +13,21 @@ void main() {
 
       group('Heuristics', () {
         test('identifies zsh', () {
-          final result = SystemShell.current(environmentOverride: {
-            'ZSH_NAME': 'zsh',
-          });
+          final result = SystemShell.current(
+            environmentOverride: {
+              'ZSH_NAME': 'zsh',
+            },
+          );
 
           expect(result, SystemShell.zsh);
         });
 
         test('identifies bash', () {
-          final result = SystemShell.current(environmentOverride: {
-            'BASH': '/bin/bash',
-          });
+          final result = SystemShell.current(
+            environmentOverride: {
+              'BASH': '/bin/bash',
+            },
+          );
 
           expect(result, SystemShell.bash);
         });
