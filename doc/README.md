@@ -6,7 +6,7 @@ It is inspired by Kevin Moore's package [completion](https://pub.dev/packages/co
 
 It works on bash and zsh on Linux, macOS, and Windows.
 
-## How this lib works
+## How It Works
 
 There are several ways to achieve shell completions for CLI commands. Most of them depend on which shell you are using and, in some cases, the terminal.
 
