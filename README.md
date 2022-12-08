@@ -10,7 +10,7 @@
 
 ---
 
-Completion functionality for Dart Command-Line Interfaces built using CommandRunner.
+Completion functionality for Dart Command-Line Interfaces built using `CommandRunner`.
 
 Developed with 💙 by [Very Good Ventures][very_good_ventures_link] 🦄
 
