@@ -57,7 +57,7 @@ $ example_cli install-completion-files
 
 ## Documentation 📝
 
-For a high level view on how this package works, check the [documentation][docs_link].
+For an overview of how this package works, check out the [documentation][docs_link].
 
 ### ⚠️ Using analytics
 
