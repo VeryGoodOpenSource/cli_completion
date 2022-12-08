@@ -4,6 +4,8 @@
 [![Very Good Ventures][logo_white]][very_good_ventures_link_dark]
 [![Very Good Ventures][logo_black]][very_good_ventures_link_light]
 
+[![ci][ci_badge]][ci_link]
+[![coverage][coverage_badge]][ci_link]
 [![pub package][pub_badge]][pub_link]
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
@@ -90,3 +92,6 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
 [docs_link]: https://github.com/VeryGoodOpenSource/cli_completion/tree/main/doc
 [pub_link]: https://cli_completion.pckg.pub
 [pub_badge]: https://img.shields.io/pub/v/cli_completion.svg
+[coverage_badge]: https://raw.githubusercontent.com/VeryGoodOpenSource/cli_completion/main/coverage_badge.svg
+[ci_badge]: https://github.com/VeryGoodOpenSource/cli_completion/workflows/main/badge.svg
+[ci_link]: https://github.com/VeryGoodOpenSource/cli_completion/actions
