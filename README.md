@@ -59,11 +59,11 @@ $ example_cli install-completion-files
 
 For a high level view on how this package works, check the [documentation][docs_link].
 
-### ⚠️ When using analytics
+### ⚠️ Using analytics
 
-The handling completion requests should be processed straightforwardly.
+Handling completion requests should be straightforward.
 
-If there are any checks (like analytics, telemetry, or anything that you may have on `run` or `runCommand` overrides) before running subcommands, make sure you fast-track the `completion` command, skipping all the unnecessary computations.
+If there are any checks (like analytics, telemetry, or anything that you may have on `run` or `runCommand` overrides) before running subcommands, make sure you fast track the `completion` command to skip all of the unnecessary computations.
 
 Example:
 
