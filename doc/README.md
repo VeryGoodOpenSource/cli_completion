@@ -1,7 +1,6 @@
-# Completion CLI docs
+# CLI Completion
 
-
-`cli_completion` is a dart package that aims to enable dart-made CLI applications to receive shell completions without too much setup required from both package maintainers and package users and customizing completions suggestions programmatically.
+`cli_completion` is a Dart package that aims to enable Dart-made CLI applications to receive shell completions without too much setup required from both package maintainers and users. You can also customize completion suggestions programmatically.
 
 It is inspired by Kevin Moore's package [completion](https://pub.dev/packages/completion) and the excellent [tab tab package](https://github.com/mklabs/tabtab) for JS CLIs.
 
