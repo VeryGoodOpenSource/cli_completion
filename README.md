@@ -18,7 +18,7 @@ Developed with 💙 by [Very Good Ventures][very_good_ventures_link] 🦄
 
 ## Installation 💻
 
-**❗ In order to start using Cli Completion you must have the [Dart SDK][dart_install_link] installed
+**❗ In order to start using CLI Completion you must have the [Dart SDK][dart_install_link] installed
 on your machine.**
 
 ```
