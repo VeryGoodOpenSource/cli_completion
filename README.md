@@ -37,8 +37,6 @@ import 'package:cli_completion/cli_completion.dart';
 class ExampleCommandRunner extends CompletionCommandRunner<int> {
 ...
 ```
-
-
 This will make the first command run to install the completion files automatically. To disable that behavior, set `enableAutoInstall` to false:
 
 ```dart
