@@ -57,6 +57,8 @@ $ example_cli install-completion-files
 
 For an overview of how this package works, check out the [documentation][docs_link].
 
+---
+
 ### ⚠️ Using analytics
 
 Handling completion requests should be straightforward.
@@ -86,5 +88,5 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
 [very_good_ventures_link_light]: https://verygood.ventures#gh-light-mode-only
 [very_good_ventures_link_dark]: https://verygood.ventures#gh-dark-mode-only
 [very_good_workflows_link]: https://github.com/VeryGoodOpenSource/very_good_workflows
-[docs_link]: doc/
+[docs_link]: https://github.com/VeryGoodOpenSource/cli_completion/tree/main/doc
 [pub_link]: https://cli_completion.pckg.pub
