@@ -89,3 +89,4 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
 [very_good_workflows_link]: https://github.com/VeryGoodOpenSource/very_good_workflows
 [docs_link]: https://github.com/VeryGoodOpenSource/cli_completion/tree/main/doc
 [pub_link]: https://cli_completion.pckg.pub
+[pub_badge]: https://img.shields.io/pub/v/cli_completion.svg
