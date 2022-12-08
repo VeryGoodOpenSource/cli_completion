@@ -52,6 +52,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   bool get enableAutoInstall => true;
 
   /// The [CompletionInstallation] used to install completion files.
+  @visibleForTesting
   CompletionInstallation get completionInstallation {
     var completionInstallation = _completionInstallation;
 
