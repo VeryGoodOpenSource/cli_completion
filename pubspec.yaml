@@ -1,5 +1,5 @@
 name: cli_completion
-description: Completion toolkit for Command runner based Dart CLIs
+description: Completion functionality for Dart Command-Line Interfaces built using CommandRunner. Built by Very Good Ventures.
 version: 0.1.0
 
 environment:
