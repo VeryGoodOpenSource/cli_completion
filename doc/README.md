@@ -53,7 +53,7 @@ $ example_cli some|
 some_command        -- This is help for some_command
 ```
 
-Hides aliases and hidden options/commands:
+Hides aliases and hidden options and commands:
 ```bash
 $ example_cli some_command|
 --continuous   -- A continuous option: any value is allowed
