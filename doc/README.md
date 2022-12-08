@@ -34,12 +34,11 @@ To disable this behavior, set `enableAutoInstall` to false on your `CompletionCo
 
 Once it parses the user input, it reads the ArgParser grammar to create valid suggestions.
 
-### Some completion use cases
+### Use Cases
 
 You can find below some completion use cases that is handled by this package:
 
-
-Completes with options and sub commands:
+Completes with options and subcommands:
 ```bash
 $ example_cli |
 --rootFlag          -- A flag: in the root command
