@@ -14,7 +14,7 @@ The approach used by `cli_completion` is to create shell script files in a direc
 
 We call this process [installation](#the-installation-process).
 
-After the completion, scripts are installed and sourced (via `source ~/.zshrc`)
+After the completion, scripts are installed and sourced (via `source ~/.zshrc`).
 
 These scripts instruct the shell to call the “completion” subcommand in the CLI when the user presses <TAB>.
 
