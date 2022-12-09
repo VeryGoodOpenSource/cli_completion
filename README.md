@@ -1,8 +1,9 @@
 
 # CLI Completion
 
-[![Very Good Ventures][logo_white]][very_good_ventures_link_dark]
 [![Very Good Ventures][logo_black]][very_good_ventures_link_light]
+[![Very Good Ventures][logo_white]][very_good_ventures_link_dark]
+
 
 [![ci][ci_badge]][ci_link]
 [![coverage][coverage_badge]][ci_link]
@@ -11,6 +12,8 @@
 [![License: MIT][license_badge]][license_link]
 
 ---
+
+![screen][screen_gif]
 
 Completion functionality for Dart Command-Line Interfaces built using `CommandRunner`.
 
@@ -41,7 +44,7 @@ class ExampleCommandRunner extends CompletionCommandRunner<int> {
 This will make the first command run to install the completion files automatically. To disable that behavior, set `enableAutoInstall` to false:
 
 ```dart
-class ExampleCommandRunner extends **CompletionCommandRunner**<int> {
+class ExampleCommandRunner extends CompletionCommandRunner<int> {
   
   @override
   bool get enableAutoInstall => false;
@@ -81,6 +84,7 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
 [dart_install_link]: https://dart.dev/get-dart
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
+[screen_gif]: https://raw.githubusercontent.com/VeryGoodOpenSource/cli_completion/main/doc/screen.gif
 [logo_black]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_black.png#gh-light-mode-only
 [logo_white]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_white.png#gh-dark-mode-only
 [very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
