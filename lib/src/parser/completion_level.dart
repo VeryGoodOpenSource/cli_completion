@@ -21,6 +21,7 @@ class CompletionLevel {
     required this.rawArgs,
     required this.visibleSubcommands,
     required this.visibleOptions,
+    required this.validOptionsResult,
   });
 
   /// Given a user input [rootArgs] and the [runnerGrammar], it finds the
@@ -90,6 +91,8 @@ class CompletionLevel {
       rawArgs = rootArgs.toList();
     }
 
+    final validOptionsResult = originalGrammar.findValidOptions(rawArgs);
+
     final visibleSubcommands = subcommands?.values.where((command) {
           return !command.hidden;
         }).toList() ??
@@ -104,12 +107,15 @@ class CompletionLevel {
       rawArgs: rawArgs,
       visibleSubcommands: visibleSubcommands,
       visibleOptions: visibleOptions,
+      validOptionsResult: validOptionsResult,
     );
   }
 
   /// The [ArgParser] declared in the [CommandRunner] or [Command] that
   /// needs completion.
   final ArgParser grammar;
+
+  final ArgResults? validOptionsResult;
 
   /// The user input that needs completion starting from the
   /// command/sub_command being completed.
@@ -121,4 +127,12 @@ class CompletionLevel {
 
   /// The visible options declared by [grammar].
   final List<Option> visibleOptions;
+
+  bool shouldCompleteOption(String optionName) {
+    final wasParsed = validOptionsResult?.wasParsed(optionName) ?? false;
+    if (wasParsed) {
+      return grammar.findByNameOrAlias(optionName)!.isMultiple;
+    }
+    return true;
+  }
 }

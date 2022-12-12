@@ -47,6 +47,12 @@ class AllOptionsAndCommandsCompletionResult extends CompletionResult {
       mapCompletions[subcommand.name] = subcommand.description;
     }
     for (final option in completionLevel.visibleOptions) {
+      if (!completionLevel.shouldCompleteOption(option.name)) {
+        continue;
+      }
+      if (option.negatable ?? false) {
+        mapCompletions['--no-${option.name}'] = option.help;
+      }
       mapCompletions['--${option.name}'] = option.help;
     }
     return mapCompletions;
@@ -74,6 +80,9 @@ class AllAbbrOptionsCompletionResult extends CompletionResult {
   Map<String, String?> get completions {
     final mapCompletions = <String, String?>{};
     for (final option in completionLevel.visibleOptions) {
+      if (!completionLevel.shouldCompleteOption(option.name)) {
+        continue;
+      }
       final abbr = option.abbr;
       if (abbr != null) {
         mapCompletions['-$abbr'] = option.help;
@@ -146,6 +155,13 @@ class MatchingOptionsCompletionResult extends CompletionResult {
   Map<String, String?> get completions {
     final mapCompletions = <String, String?>{};
     for (final option in completionLevel.visibleOptions) {
+      if (!completionLevel.shouldCompleteOption(option.name)) {
+        continue;
+      }
+      if ((option.negatable ?? false) &&
+          'no-${option.name}'.startsWith(pattern)) {
+        mapCompletions['--no-${option.name}'] = option.help;
+      }
       if (option.name.startsWith(pattern)) {
         mapCompletions['--${option.name}'] = option.help;
       } else {
