@@ -294,8 +294,8 @@ void main() {
           verify(
             () => logger.detail(
               '\n'
-              'Completion files installed. To enable completion, run the following '
-              'command in your shell:\n'
+              'Completion files installed. To enable completion, run the '
+              'following command in your shell:\n'
               'source ${path.join(tempDir.path, '.zshrc')}\n',
             ),
           ).called(1);
@@ -341,8 +341,8 @@ void main() {
           verifyNever(
             () => logger.detail(
               '\n'
-              'Completion files installed. To enable completion, run the following '
-              'command in your shell:\n'
+              'Completion files installed. To enable completion, run the '
+              'following command in your shell:\n'
               'source ${path.join(tempDir.path, '.zshrc')}\n',
             ),
           );
