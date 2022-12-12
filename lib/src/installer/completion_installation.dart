@@ -278,12 +278,13 @@ class CompletionInstallation {
   void adviseSource(String rootCommand) {
     final level = logger.level;
     logger
-      ..level = Level.debug
-      ..detail(
+      ..level = Level.info
+      ..info(
         '\n'
         'Completion files installed. To enable completion, run the following '
         'command in your shell:\n'
-        'source $_shellRCFilePath\n',
+        '${lightCyan.wrap('source $_shellRCFilePath')}'
+        '\n',
       )
       ..level = level;
   }

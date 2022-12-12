@@ -289,10 +289,10 @@ void main() {
 
           installation.install('very_good');
 
-          verify(() => logger.level = Level.debug).called(1);
+          verify(() => logger.level = Level.info).called(1);
 
           verify(
-            () => logger.detail(
+            () => logger.info(
               '\n'
               'Completion files installed. To enable completion, run the '
               'following command in your shell:\n'
@@ -339,7 +339,7 @@ void main() {
           verifyNever(() => logger.level = Level.debug);
 
           verifyNever(
-            () => logger.detail(
+            () => logger.info(
               '\n'
               'Completion files installed. To enable completion, run the '
               'following command in your shell:\n'
