@@ -118,7 +118,7 @@ class CompletionInstallation {
     writeToShellConfigFile(rootCommand);
 
     if (completionFileCreated) {
-      adviseSource(rootCommand);
+      _logSourceInstructions(rootCommand);
     }
   }
 
@@ -274,8 +274,7 @@ class CompletionInstallation {
   }
 
   /// Tells the user to source the shell configuration file.
-  @visibleForTesting
-  void adviseSource(String rootCommand) {
+  void _logSourceInstructions(String rootCommand) {
     final level = logger.level;
     logger
       ..level = Level.info
