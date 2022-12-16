@@ -113,9 +113,13 @@ class CompletionInstallation {
     );
 
     createCompletionConfigDir();
-    writeCompletionScriptForCommand(rootCommand);
+    final completionFileCreated = writeCompletionScriptForCommand(rootCommand);
     writeCompletionConfigForShell(rootCommand);
     writeToShellConfigFile(rootCommand);
+
+    if (completionFileCreated) {
+      _logSourceInstructions(rootCommand);
+    }
   }
 
   /// Create a directory in which the completion config files shall be saved.
@@ -150,8 +154,10 @@ class CompletionInstallation {
   /// The file will be created in [completionConfigDir].
   ///
   /// If the file already exists, it will do nothing.
+  ///
+  /// Returns true if the file was created, false otherwise.
   @visibleForTesting
-  void writeCompletionScriptForCommand(String rootCommand) {
+  bool writeCompletionScriptForCommand(String rootCommand) {
     final configuration = this.configuration!;
     final completionConfigDirPath = completionConfigDir.path;
     final commandScriptName = '$rootCommand.${configuration.name}';
@@ -170,10 +176,12 @@ class CompletionInstallation {
         'A script file for $rootCommand was already found on '
         '$commandScriptPath.',
       );
-      return;
+      return false;
     }
 
     scriptFile.writeAsStringSync(configuration.scriptTemplate(rootCommand));
+
+    return true;
   }
 
   /// Adds a reference for the command-specific config file created on
@@ -263,6 +271,21 @@ class CompletionInstallation {
         configuration.completionConfigForShellFileName,
       ),
     );
+  }
+
+  /// Tells the user to source the shell configuration file.
+  void _logSourceInstructions(String rootCommand) {
+    final level = logger.level;
+    logger
+      ..level = Level.info
+      ..info(
+        '\n'
+        'Completion files installed. To enable completion, run the following '
+        'command in your shell:\n'
+        '${lightCyan.wrap('source $_shellRCFilePath')}'
+        '\n',
+      )
+      ..level = level;
   }
 
   void _sourceScriptOnFile({
