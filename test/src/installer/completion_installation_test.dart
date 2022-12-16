@@ -14,6 +14,7 @@ void main() {
 
   setUp(() {
     logger = MockLogger();
+    when(() => logger.level).thenReturn(Level.quiet);
     tempDir = Directory.systemTemp.createTempSync();
   });
 
@@ -145,11 +146,11 @@ void main() {
 
         expect(configFile.existsSync(), false);
 
-        installation
-          ..createCompletionConfigDir()
-          ..writeCompletionScriptForCommand('very_good');
+        installation.createCompletionConfigDir();
+        var result = installation.writeCompletionScriptForCommand('very_good');
 
         expect(configFile.existsSync(), true);
+        expect(result, true);
 
         expect(
           configFile.readAsStringSync(),
@@ -166,7 +167,9 @@ void main() {
           ),
         );
 
-        installation.writeCompletionScriptForCommand('very_good');
+        result = installation.writeCompletionScriptForCommand('very_good');
+
+        expect(result, false);
 
         verify(
           () => logger.warn(
@@ -286,6 +289,17 @@ void main() {
 
           installation.install('very_good');
 
+          verify(() => logger.level = Level.info).called(1);
+
+          verify(
+            () => logger.info(
+              '\n'
+              'Completion files installed. To enable completion, run the '
+              'following command in your shell:\n'
+              'source ${path.join(tempDir.path, '.zshrc')}\n',
+            ),
+          ).called(1);
+
           reset(logger);
 
           // install again
@@ -321,6 +335,17 @@ void main() {
               '${path.join(tempDir.path, '.zshrc')}.',
             ),
           ).called(1);
+
+          verifyNever(() => logger.level = Level.debug);
+
+          verifyNever(
+            () => logger.info(
+              '\n'
+              'Completion files installed. To enable completion, run the '
+              'following command in your shell:\n'
+              'source ${path.join(tempDir.path, '.zshrc')}\n',
+            ),
+          );
         },
       );
 
