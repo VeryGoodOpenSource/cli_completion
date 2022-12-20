@@ -15,6 +15,7 @@ void main() {
         'some_other_command': 'This is help for some_other_command',
         '--help': 'Print this usage information.',
         '--rootFlag': r'A flag\: in the root command',
+        '--no-rootFlag': r'A flag\: in the root command',
         '--rootOption': null,
       };
 
@@ -55,6 +56,7 @@ void main() {
             suggests({
               '--help': 'Print this usage information.',
               '--rootFlag': r'A flag\: in the root command',
+              '--no-rootFlag': r'A flag\: in the root command',
               '--rootOption': null,
             }),
           );
@@ -190,10 +192,15 @@ void main() {
       '--help': 'Print this usage information.',
       '--discrete': 'A discrete option with "allowed" values (mandatory)',
       '--continuous': r'A continuous option\: any value is allowed',
+      '--no-option':
+          'An option that starts with "no" just to make confusion with negated '
+              'flags',
       '--multi-d': 'An discrete option that can be passed multiple times ',
       '--multi-c': 'An continuous option that can be passed multiple times',
       '--flag': null,
+      '--no-flag': null,
       '--inverseflag': 'A flag that the default value is true',
+      '--no-inverseflag': 'A flag that the default value is true',
       '--trueflag': 'A flag that cannot be negated'
     };
 
@@ -294,6 +301,29 @@ void main() {
                 'An discrete option that can be passed multiple times ',
             '--multi-c':
                 'An continuous option that can be passed multiple times',
+          }),
+        );
+      });
+
+      test('suggests negated flags', () async {
+        await expectLater(
+          'example_cli some_command --n',
+          suggests({
+            '--no-option':
+                'An option that starts with "no" just to make confusion with '
+                    'negated flags',
+            '--no-flag': null,
+            '--no-inverseflag': 'A flag that the default value is true'
+          }),
+        );
+      });
+
+      test('suggests negated flags (aliases)', () async {
+        await expectLater(
+          'example_cli some_command --no-i',
+          suggests({
+            '--no-itIsAFlag': null,
+            '--no-inverseflag': 'A flag that the default value is true'
           }),
         );
       });
@@ -544,21 +574,27 @@ void main() {
         test('do not include flag after it is specified', () async {
           await expectLater(
             'example_cli some_command --flag  ',
-            suggests(allOptionsInThisLevel.except('--flag')),
+            suggests(
+              allOptionsInThisLevel.except('--flag').except('--no-flag'),
+            ),
           );
         });
 
         test('do not include flag after it is specified (abbr)', () async {
           await expectLater(
             'example_cli some_command -f ',
-            suggests(allOptionsInThisLevel.except('--flag')),
+            suggests(
+              allOptionsInThisLevel.except('--flag').except('--no-flag'),
+            ),
           );
         });
 
         test('do not include negated flag after it is specified', () async {
           await expectLater(
             'example_cli some_command --no-flag ',
-            suggests(allOptionsInThisLevel.except('--flag')),
+            suggests(
+              allOptionsInThisLevel.except('--flag').except('--no-flag'),
+            ),
           );
         });
 
@@ -640,6 +676,7 @@ void main() {
       final allOptionsInThisLevel = <String, String?>{
         '--help': 'Print this usage information.',
         '--flag': 'a flag just to show we are in the subcommand',
+        '--no-flag': 'a flag just to show we are in the subcommand',
       };
       group('empty', () {
         test('basic usage', () async {

@@ -28,7 +28,11 @@ void main() {
       () {
         final testArgParser = ArgParser()
           ..addOption('option1')
-          ..addFlag('option2', help: 'yay option 2');
+          ..addFlag('option2', help: 'yay option 2')
+          ..addFlag(
+            'trueflag',
+            negatable: false,
+          );
 
         final completionLevel = CompletionLevel(
           grammar: testArgParser,
@@ -59,6 +63,8 @@ void main() {
             'command2': 'yay command 2',
             '--option1': null,
             '--option2': 'yay option 2',
+            '--no-option2': 'yay option 2',
+            '--trueflag': null,
           },
         );
       },
@@ -171,6 +177,53 @@ void main() {
             '--option1': null,
             '--option2alias': 'yay noption2',
             '--oflag1': null,
+          },
+        );
+      },
+    );
+
+    test(
+      'renders suggestions only for negated flags',
+      () {
+        final testArgParser = ArgParser()
+          ..addOption('option1')
+          ..addOption(
+            'noption2',
+            aliases: ['option2alias'],
+            help: 'yay noption2',
+          )
+          ..addFlag('flag', aliases: ['aliasforflag'])
+          ..addFlag('trueflag', negatable: false);
+
+        final completionLevel = CompletionLevel(
+          grammar: testArgParser,
+          rawArgs: const <String>[],
+          visibleSubcommands: const [],
+          visibleOptions: testArgParser.options.values.toList(),
+        );
+
+        final completionResult = MatchingOptionsCompletionResult(
+          completionLevel: completionLevel,
+          pattern: 'no',
+        );
+
+        expect(
+          completionResult.completions,
+          {
+            '--noption2': 'yay noption2',
+            '--no-flag': null,
+          },
+        );
+
+        final completionResultAlias = MatchingOptionsCompletionResult(
+          completionLevel: completionLevel,
+          pattern: 'no-a',
+        );
+
+        expect(
+          completionResultAlias.completions,
+          {
+            '--no-aliasforflag': null,
           },
         );
       },
