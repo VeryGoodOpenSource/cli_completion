@@ -419,42 +419,6 @@ void main() {
             suggests(noSuggestions),
           );
         });
-
-        test(
-          'suggest all options when previous option is continuous with a value',
-          () async {
-            await expectLater(
-              'example_cli some_command --continuous="yeahoo" ',
-              suggests(allOptionsInThisLevel),
-            );
-          },
-        );
-
-        test(
-          'suggest all options when previous option is continuous with a value',
-          () async {
-            await expectLater(
-              'example_cli some_command --continuous yeahoo ',
-              suggests(allOptionsInThisLevel),
-            );
-          },
-        );
-      });
-
-      group('flags', () {
-        test('suggest all options when a flag was declared', () async {
-          await expectLater(
-            'example_cli some_command --flag  ',
-            suggests(allOptionsInThisLevel),
-          );
-        });
-
-        test('suggest all options when a negated flag was declared', () async {
-          await expectLater(
-            'example_cli some_command --no-flag  ',
-            suggests(allOptionsInThisLevel),
-          );
-        });
       });
     });
 
@@ -532,15 +496,6 @@ void main() {
           );
         });
       });
-
-      group('flag', () {
-        test('suggest all options when a flag was declared', () async {
-          await expectLater(
-            'example_cli some_command -f  ',
-            suggests(allOptionsInThisLevel),
-          );
-        });
-      });
     });
 
     group('invalid options', () {
@@ -552,15 +507,109 @@ void main() {
       });
     });
 
-    group(
-      'repeating options',
-      tags: 'known-issues',
-      () {
-        group('non multi options', () {});
+    group('repeating options', () {
+      group('non multi options', () {
+        test('do not include option after it is specified', () async {
+          await expectLater(
+            'example_cli some_command --discrete foo ',
+            suggests(allOptionsInThisLevel.except('--discrete')),
+          );
+        });
 
-        group('multi options', () {});
-      },
-    );
+        test('do not include abbr option after it is specified', () async {
+          await expectLater(
+            'example_cli some_command --discrete foo -',
+            suggests(allAbbreviationsInThisLevel.except('-d')),
+          );
+        });
+
+        test('do not include option after it is specified as abbr', () async {
+          await expectLater(
+            'example_cli some_command -d foo ',
+            suggests(allOptionsInThisLevel.except('--discrete')),
+          );
+        });
+
+        test(
+          'do not include option after it is specified as joined abbr',
+          () async {
+            await expectLater(
+              'example_cli some_command -dfoo ',
+              suggests(allOptionsInThisLevel.except('--discrete')),
+            );
+          },
+          tags: 'known-issues',
+        );
+
+        test('do not include flag after it is specified', () async {
+          await expectLater(
+            'example_cli some_command --flag  ',
+            suggests(allOptionsInThisLevel.except('--flag')),
+          );
+        });
+
+        test('do not include flag after it is specified (abbr)', () async {
+          await expectLater(
+            'example_cli some_command -f ',
+            suggests(allOptionsInThisLevel.except('--flag')),
+          );
+        });
+
+        test('do not include negated flag after it is specified', () async {
+          await expectLater(
+            'example_cli some_command --no-flag ',
+            suggests(allOptionsInThisLevel.except('--flag')),
+          );
+        });
+
+        test('do not regard negation of non negatable flag', () async {
+          await expectLater(
+            'example_cli some_command --no-trueflag ',
+            suggests(allOptionsInThisLevel),
+          );
+        });
+      });
+
+      group('multi options', () {
+        test('include multi option after it is specified', () async {
+          await expectLater(
+            'example_cli some_command --multi-c yeahoo ',
+            suggests(allOptionsInThisLevel),
+          );
+        });
+
+        test('include multi option after it is specified (abbr)', () async {
+          await expectLater(
+            'example_cli some_command -n yeahoo ',
+            suggests(allOptionsInThisLevel),
+          );
+        });
+
+        test(
+          'include option after it is specified (abbr joined)',
+          () async {
+            await expectLater(
+              'example_cli some_command -nyeahoo ',
+              suggests(allOptionsInThisLevel),
+            );
+          },
+          tags: 'known-issues',
+        );
+
+        test('include discrete multi option value after it is specified',
+            () async {
+          await expectLater(
+            'example_cli some_command --multi-d bar -m ',
+            suggests({
+              'fii': 'fii help',
+              'bar': 'bar help',
+              'fee': 'fee help',
+              'i have space': 'an allowed option with space on it'
+            }),
+          );
+        });
+      });
+    });
   });
 
   group('some_other_command', () {

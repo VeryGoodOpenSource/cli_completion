@@ -39,7 +39,7 @@ void main() {
       final subArgPasrser = ArgParser();
       rootArgParser.addCommand('subcommand', subArgPasrser);
 
-      test('parses commands only disregarding strict option rules', () {
+      test('parses commands only disregarding all option rules', () {
         final args = '--rootFlag subcommand'.split(' ');
         final results = rootArgParser.tryParseCommandsOnly(args);
 
@@ -72,11 +72,92 @@ void main() {
         expect(results, isNull);
       });
 
-      test('returns null when args make no sense', () {
+      test('parses args with leading spaces', () {
         final args = '         subcommand'.split(' ');
         final results = rootArgParser.tryParseCommandsOnly(args);
 
         expect(results, isNotNull);
+      });
+    });
+    group('findValidOptions', () {
+      final argParser = ArgParser()
+        ..addFlag(
+          'flag',
+          abbr: 'f',
+          aliases: ['flagalias'],
+        )
+        ..addOption('mandatoryOption', mandatory: true)
+        ..addMultiOption('multiOption', allowed: ['a', 'b', 'c'])
+        ..addCommand('subcommand', ArgParser());
+
+      group('parses the minimal amount of valid options', () {
+        test('options values and abbr', () {
+          final args = '-f --mandatoryOption="yay" --multiOption'.split(' ');
+          final results = argParser.findValidOptions(args);
+
+          expect(
+            results,
+            isA<ArgResults>()
+                .having((res) => res.wasParsed('flag'), 'parsed flag', true)
+                .having(
+                  (res) => res.wasParsed('mandatoryOption'),
+                  'parsed mandatoryOption',
+                  true,
+                )
+                .having(
+                  (res) => res.wasParsed('multiOption'),
+                  'parsed multiOption',
+                  false,
+                ),
+          );
+        });
+        test('alias', () {
+          final args = '--flagalias --mandatoryOption'.split(' ');
+          final results = argParser.findValidOptions(args);
+
+          expect(
+            results,
+            isA<ArgResults>()
+                .having((res) => res.wasParsed('flag'), 'parsed flag', true)
+                .having(
+                  (res) => res.wasParsed('mandatoryOption'),
+                  'parsed mandatoryOption',
+                  false,
+                )
+                .having(
+                  (res) => res.wasParsed('multiOption'),
+                  'parsed multiOption',
+                  false,
+                ),
+          );
+        });
+      });
+      test('returns null when there is no valid options', () {
+        final args = '--extraneousOption --flag'.split(' ');
+        final results = argParser.findValidOptions(args);
+
+        expect(results, isNull);
+      });
+      test('disregard sub command', () {
+        final args = '--flag subcommand'.split(' ');
+        final results = argParser.findValidOptions(args);
+
+        expect(
+          results,
+          isA<ArgResults>()
+              .having((res) => res.wasParsed('flag'), 'parsed flag', true)
+              .having(
+                (res) => res.wasParsed('mandatoryOption'),
+                'parsed mandatoryOption',
+                false,
+              )
+              .having(
+                (res) => res.wasParsed('multiOption'),
+                'parsed multiOption',
+                false,
+              )
+              .having((res) => res.command, 'command', isNull),
+        );
       });
     });
   });

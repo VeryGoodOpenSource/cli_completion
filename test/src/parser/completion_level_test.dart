@@ -26,7 +26,12 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
       description: 'subcommand level 2',
     );
     subCommand.addSubcommand(subSubCommand);
-    subSubCommand.argParser.addFlag('level2Flag');
+    subSubCommand.argParser
+      ..addFlag('level2Flag')
+      ..addOption(
+        'level2Option',
+        mandatory: true,
+      );
 
     final subSubSubCommand = _TestCommand(
       name: 'subsubsubcommand',
@@ -76,6 +81,15 @@ void main() {
           ]);
 
           expect(
+            completionLevel.parsedOptions,
+            isA<ArgResults>().having(
+              (results) => results.wasParsed('level2Flag'),
+              'parsed level2Flag',
+              true,
+            ),
+          );
+
+          expect(
             completionLevel.visibleOptions,
             isA<List<Option>>()
                 .having(
@@ -91,7 +105,7 @@ void main() {
                 .having(
                   (list) => list[1].name,
                   'second option in the last level',
-                  'level2Flag',
+                  'level2Option',
                 ),
           );
 
