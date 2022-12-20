@@ -33,6 +33,11 @@ class SomeCommand extends Command<int> {
         'continuous', // intentionally, this one does not have an abbr
         help: 'A continuous option: any value is allowed',
       )
+      ..addOption(
+        'no-option',
+        help: 'An option that starts with "no" just to make confusion '
+            'with negated flags',
+      )
       ..addMultiOption(
         'multi-d',
         abbr: 'm',
@@ -57,8 +62,14 @@ class SomeCommand extends Command<int> {
         help: 'An continuous option that can be passed multiple times',
       )
       ..addFlag(
+        'hiddenflag',
+        hide: true,
+        help: 'A hidden flag',
+      )
+      ..addFlag(
         'flag',
         abbr: 'f',
+        aliases: ['itIsAFlag'],
       )
       ..addFlag(
         'inverseflag',

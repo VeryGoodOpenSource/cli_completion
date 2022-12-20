@@ -48,6 +48,9 @@ class AllOptionsAndCommandsCompletionResult extends CompletionResult {
     }
     for (final option in completionLevel.visibleOptions) {
       mapCompletions['--${option.name}'] = option.help;
+      if (option.negatable ?? false) {
+        mapCompletions['--no-${option.name}'] = option.help;
+      }
     }
     return mapCompletions;
   }
@@ -146,6 +149,19 @@ class MatchingOptionsCompletionResult extends CompletionResult {
   Map<String, String?> get completions {
     final mapCompletions = <String, String?>{};
     for (final option in completionLevel.visibleOptions) {
+      final isNegatable = option.negatable ?? false;
+      if (isNegatable) {
+        if (option.negatedName.startsWith(pattern)) {
+          mapCompletions['--${option.negatedName}'] = option.help;
+        } else {
+          for (final negatedAlias in option.negatedAliases) {
+            if (negatedAlias.startsWith(pattern)) {
+              mapCompletions['--$negatedAlias'] = option.help;
+            }
+          }
+        }
+      }
+
       if (option.name.startsWith(pattern)) {
         mapCompletions['--${option.name}'] = option.help;
       } else {
@@ -235,4 +251,10 @@ class OptionValuesCompletionResult extends CompletionResult {
           allowed: option?.allowedHelp?[allowed]
     };
   }
+}
+
+extension on Option {
+  String get negatedName => 'no-$name';
+
+  Iterable<String> get negatedAliases => aliases.map((e) => 'no-$e');
 }
