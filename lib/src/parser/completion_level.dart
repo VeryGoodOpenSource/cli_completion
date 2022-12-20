@@ -18,6 +18,7 @@ class CompletionLevel {
   @visibleForTesting
   const CompletionLevel({
     required this.grammar,
+    this.parsedOptions,
     required this.rawArgs,
     required this.visibleSubcommands,
     required this.visibleOptions,
@@ -90,17 +91,24 @@ class CompletionLevel {
       rawArgs = rootArgs.toList();
     }
 
+    final validOptionsResult = originalGrammar.findValidOptions(rawArgs);
+
     final visibleSubcommands = subcommands?.values.where((command) {
           return !command.hidden;
         }).toList() ??
         [];
 
     final visibleOptions = originalGrammar.options.values.where((option) {
+      final wasParsed = validOptionsResult?.wasParsed(option.name) ?? false;
+      if (wasParsed) {
+        return option.isMultiple;
+      }
       return !option.hide;
     }).toList();
 
     return CompletionLevel(
       grammar: originalGrammar,
+      parsedOptions: validOptionsResult,
       rawArgs: rawArgs,
       visibleSubcommands: visibleSubcommands,
       visibleOptions: visibleOptions,
@@ -110,6 +118,10 @@ class CompletionLevel {
   /// The [ArgParser] declared in the [CommandRunner] or [Command] that
   /// needs completion.
   final ArgParser grammar;
+
+  /// An [ArgResults] that includes the valid options passed to the command on
+  /// completion level. Null if no valid options were passed.
+  final ArgResults? parsedOptions;
 
   /// The user input that needs completion starting from the
   /// command/sub_command being completed.

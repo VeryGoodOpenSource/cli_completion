@@ -88,3 +88,9 @@ Future<Map<String, String?>> runCompletionCommand(
 
   return map;
 }
+
+extension CompletionUtils on Map<String, String?> {
+  Map<String, String?> except(String key) {
+    return Map.from(this)..remove(key);
+  }
+}
