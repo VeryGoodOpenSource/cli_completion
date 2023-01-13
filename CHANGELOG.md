@@ -1,4 +1,4 @@
-# [](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.1.0+1...v) (2023-01-13)
+# [0.2.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.1.0+1...v0.2.0) (2023-01-13)
 
 ### Features
 
