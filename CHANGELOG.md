@@ -1,3 +1,11 @@
+# [0.2.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.1.0+1...v0.2.0) (2023-01-13)
+
+### Features
+
+- restrict non multi options ([#44](https://github.com/VeryGoodOpenSource/cli_completion/issues/44)) ([32dfc23](https://github.com/VeryGoodOpenSource/cli_completion/commit/32dfc23dedfa48cad2dc8fc9db5f7136fed46243))
+- suggest negatable flags ([#45](https://github.com/VeryGoodOpenSource/cli_completion/issues/45)) ([8e0049a](https://github.com/VeryGoodOpenSource/cli_completion/commit/8e0049af3801ed6bedbe52851fc1262c112d6a91))
+- Tell the user to source the config file when installation is done ([#41](https://github.com/VeryGoodOpenSource/cli_completion/issues/41)) ([53d1f08](https://github.com/VeryGoodOpenSource/cli_completion/commit/53d1f08fe0aea38d8fa22964db1806046f1adcef))
+
 # [0.1.0+1](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.1.0...v0.1.0+1) (2022-12-09)
 
 # [0.1.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/d7cdfd51b923d2d5720864b228678749f3010fb8...v0.1.0) (2022-12-08)
