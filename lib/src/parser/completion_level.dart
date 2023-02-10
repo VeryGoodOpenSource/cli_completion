@@ -18,10 +18,10 @@ class CompletionLevel {
   @visibleForTesting
   const CompletionLevel({
     required this.grammar,
-    this.parsedOptions,
     required this.rawArgs,
     required this.visibleSubcommands,
     required this.visibleOptions,
+    this.parsedOptions,
   });
 
   /// Given a user input [rootArgs] and the [runnerGrammar], it finds the
