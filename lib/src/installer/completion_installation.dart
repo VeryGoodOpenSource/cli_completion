@@ -306,7 +306,7 @@ class CompletionInstallation {
     configFile.writeAsStringSync(
       mode: FileMode.append,
       '''
-## [$scriptName] 
+\n## [$scriptName] 
 ## $description
 ${configuration!.sourceLineTemplate(scriptPath)}
 ## [/$scriptName]
