@@ -10,7 +10,7 @@ It works on bash and zsh on Linux, macOS, and Windows.
 
 There are several ways to achieve shell completions for CLI commands. Most of them depend on which shell you are using and, in some cases, the terminal.
 
-The approach used by `cli_completion` is to create shell script files in a directory under the user's home ( `~/.dart-cli-completion`  for Linux/macOS users) and then source these scripts in the shell initialization files (`~/.zshrc`, for example). For Windows users, completion information is stored in local app data (typically something like `C:\Users\You\AppData\Local`). Currently, completion will only work from a bash shell on Windows.
+The approach used by `cli_completion` is to create shell script files in a directory under the user's home ( `$XDG_CONFIG_HOME/.dart-cli-completion` or `~/.dart-cli-completion`  for Linux/macOS users) and then source these scripts in the shell initialization files (`~/.zshrc`, for example). For Windows users, completion information is stored in local app data (typically something like `C:\Users\You\AppData\Local`). Currently, completion will only work from a bash shell on Windows.
 
 We call this process [installation](#the-installation-process).
 
