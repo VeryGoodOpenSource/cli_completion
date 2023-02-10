@@ -73,20 +73,38 @@ void main() {
         );
       });
 
-      test('gets config dir location on posix', () {
-        final installation = CompletionInstallation(
-          configuration: zshConfiguration,
-          logger: logger,
-          isWindows: false,
-          environment: {
-            'HOME': tempDir.path,
-          },
-        );
+      group('gets config dir location on posix ()', () {
+        test('respects XDG home', () {
+          final installation = CompletionInstallation(
+            configuration: zshConfiguration,
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'XDG_CONFIG_HOME': tempDir.path,
+              'HOME': 'ooohnoooo',
+            },
+          );
 
-        expect(
-          installation.completionConfigDir.path,
-          path.join(tempDir.path, '.dart-cli-completion'),
-        );
+          expect(
+            installation.completionConfigDir.path,
+            path.join(tempDir.path, '.dart-cli-completion'),
+          );
+        });
+        test('defaults to home', () {
+          final installation = CompletionInstallation(
+            configuration: zshConfiguration,
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDir.path,
+            },
+          );
+
+          expect(
+            installation.completionConfigDir.path,
+            path.join(tempDir.path, '.dart-cli-completion'),
+          );
+        });
       });
     });
 
