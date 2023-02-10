@@ -1,4 +1,6 @@
 @Tags(['integration'])
+library integration_tests;
+
 import 'package:test/test.dart';
 
 import 'utils.dart';
