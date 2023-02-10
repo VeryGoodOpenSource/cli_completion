@@ -72,7 +72,7 @@ class CompletionInstallation {
   /// %LOCALAPPDATA%/DartCLICompletion
   ///
   /// If [isWindows] is false, it will return the directory defined by
-  /// $HOME/.dart_cli_completion
+  /// $XDG_CONFIG_HOME/.dart_cli_completion or $HOME/.dart_cli_completion
   @visibleForTesting
   Directory get completionConfigDir {
     if (isWindows) {
@@ -80,9 +80,13 @@ class CompletionInstallation {
       final localAppData = environment['LOCALAPPDATA']!;
       return Directory(path.join(localAppData, 'DartCLICompletion'));
     } else {
-      // Use home on posix systems
-      final home = environment['HOME']!;
-      return Directory(path.join(home, '.dart-cli-completion'));
+      // Try using XDG config folder
+      var dirPath = environment['XDG_CONFIG_HOME'];
+      // Fallback to $HOME if not following XDG specification
+      if (dirPath == null || dirPath.isEmpty) {
+        dirPath = environment['HOME'];
+      }
+      return Directory(path.join(dirPath!, '.dart-cli-completion'));
     }
   }
 
