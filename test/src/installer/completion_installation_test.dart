@@ -73,7 +73,7 @@ void main() {
         );
       });
 
-      group('gets config dir location on posix ()', () {
+      group('gets config dir location on posix', () {
         test('respects XDG home', () {
           final installation = CompletionInstallation(
             configuration: zshConfiguration,
