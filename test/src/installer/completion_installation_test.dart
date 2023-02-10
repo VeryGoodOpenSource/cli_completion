@@ -90,6 +90,7 @@ void main() {
             path.join(tempDir.path, '.dart-cli-completion'),
           );
         });
+
         test('defaults to home', () {
           final installation = CompletionInstallation(
             configuration: zshConfiguration,
