@@ -1,3 +1,13 @@
+# [0.3.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.2.0...v0.3.0) (2023-02-27)
+
+### Bug Fixes
+
+- completion installation ([#53](https://github.com/VeryGoodOpenSource/cli_completion/issues/53)) ([bb277bb](https://github.com/VeryGoodOpenSource/cli_completion/commit/bb277bbf802f2d397055c753377373022d24818a))
+
+### Features
+
+- store completions in `$XDG_CONFIG_HOME` instead of `$HOME` ([#50](https://github.com/VeryGoodOpenSource/cli_completion/issues/50)) ([d2d7459](https://github.com/VeryGoodOpenSource/cli_completion/commit/d2d74597fc144961c784f4285de5f68122942e05))
+
 # [0.2.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.1.0+1...v0.2.0) (2023-01-13)
 
 ### Features
