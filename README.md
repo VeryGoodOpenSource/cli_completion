@@ -65,7 +65,7 @@ For an overview of how this package works, check out the [documentation][docs_li
 
 ## Troubleshooting 🧠🔨
 
-#### Tab completion is taking too long
+### Tab completion is taking too long
 
 Handling completion requests should be straightforward.
 
@@ -83,7 +83,7 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
   // ... analytics and other unrelated stuff 
 ```
 
-#### Tab completion is not working on my zsh terminal
+### Tab completion is not working on my zsh terminal
 
 If you dont have any zsh framework such as [Oh My Zsh][oh_my_zsh], you have to start the completion system manually.
 
