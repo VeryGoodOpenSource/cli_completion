@@ -85,7 +85,7 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
 
 ### Tab completion is not working on my zsh terminal
 
-If you dont have any zsh framework such as [Oh My Zsh][oh_my_zsh], you have to start the completion system manually.
+If you are not using any zsh framework such as [Oh My Zsh][oh_my_zsh], you have to start the completion system manually.
 
 Add the following lines to your `~/.zshrc` file:
 
@@ -94,9 +94,6 @@ Add the following lines to your `~/.zshrc` file:
 autoload -Uz compinit
 compinit
 ```
-
-If you already have a zsh framework that already run those lines, you shouldnt need to do anything.
-
 
 [dart_install_link]: https://dart.dev/get-dart
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg

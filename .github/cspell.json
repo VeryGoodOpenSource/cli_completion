@@ -19,6 +19,8 @@
   "words": [
     "subcommand",
     "inverseflag",
-    "trueflag"
+    "trueflag",
+    "autoload",
+    "compinit"
   ]
 }
