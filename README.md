@@ -63,7 +63,9 @@ For an overview of how this package works, check out the [documentation][docs_li
 
 ---
 
-### ⚠️ Using analytics
+## Troubleshooting 🧠🔨
+
+### Tab completion is taking too long
 
 Handling completion requests should be straightforward.
 
@@ -79,6 +81,18 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
       return;
   }
   // ... analytics and other unrelated stuff 
+```
+
+### Tab completion is not working on my zsh terminal
+
+If you are not using any zsh framework such as [Oh My Zsh][oh_my_zsh], you have to start the completion system manually.
+
+Add the following lines to your `~/.zshrc` file:
+
+```zsh
+# Add this to the start of your zsh starter file (~/.zshrc)
+autoload -Uz compinit
+compinit
 ```
 
 [dart_install_link]: https://dart.dev/get-dart
@@ -99,3 +113,4 @@ Future<int?> runCommand(ArgResults topLevelResults) async {
 [coverage_badge]: https://raw.githubusercontent.com/VeryGoodOpenSource/cli_completion/main/coverage_badge.svg
 [ci_badge]: https://github.com/VeryGoodOpenSource/cli_completion/workflows/ci/badge.svg
 [ci_link]: https://github.com/VeryGoodOpenSource/cli_completion/actions
+[oh_my_zsh]: https://ohmyz.sh/
