@@ -220,9 +220,8 @@ class CompletionInstallation {
         command.commandScriptFile(completionConfigDir);
     // TODO(alestiago): Use a template function to create the content.
     final content = '''
-## {Completion config for "$rootCommand"
-${configuration.sourceLineTemplate(rootCommandScriptFile.path)}
-''';
+## Completion config for "$rootCommand"
+${configuration.sourceLineTemplate(rootCommandScriptFile.path)}''';
     commandEntry.appendTo(completionConfig, content: content);
     logger.info('Added config to ${completionConfig.path}');
   }
@@ -263,9 +262,8 @@ ${configuration.sourceLineTemplate(rootCommandScriptFile.path)}
 
     // TODO(alestiago): Define a template function instead.
     final content = '''
-Completion scripts setup. Remove the following line to uninstall.
-${configuration.sourceLineTemplate(shellCompletionConfigFile.path)}
-''';
+## Completion scripts setup. Remove the following line to uninstall
+${configuration.sourceLineTemplate(shellCompletionConfigFile.path)}''';
     const ScriptEntry('Completion').appendTo(
       shellRCFile,
       content: content,

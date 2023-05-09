@@ -12,10 +12,10 @@ class ScriptEntry {
   final String name;
 
   /// The start comment of the entry.
-  String get startComment => '\n## [$name]';
+  String get startComment => '\n## [$name] ';
 
   /// The end comment of the entry.
-  String get endComment => '## [/$name]\n';
+  String get endComment => '\n## [/$name]\n';
 
   /// Whether there is an entry with [name] in [file].
   ///
@@ -39,7 +39,7 @@ class ScriptEntry {
 
     final entry = StringBuffer()
       ..writeln(startComment)
-      ..writeln(content)
+      ..write(content)
       ..writeln(endComment);
 
     file.writeAsStringSync(
