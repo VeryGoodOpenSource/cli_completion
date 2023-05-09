@@ -298,6 +298,7 @@ void main() {
       test(
         'installing completion for a command when it is already installed',
         () {
+          // FIXME(alestiago): Look into this test failure.
           final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
