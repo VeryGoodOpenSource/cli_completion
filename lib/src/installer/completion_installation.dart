@@ -164,9 +164,10 @@ class CompletionInstallation {
   @visibleForTesting
   bool writeCompletionScriptForExecutable(String executableName) {
     final configuration = this.configuration!;
-    final executableCompletionScriptFile = Executable(
-      name: executableName,
-      shellName: configuration.name,
+    final executableCompletionScriptFile =
+        ExecutableCompletionConfiguration.fromShellConfiguration(
+      executabelName: executableName,
+      shellConfiguration: configuration,
     ).completionScriptFile(completionConfigDir);
 
     logger.info(
@@ -191,41 +192,42 @@ class CompletionInstallation {
   @visibleForTesting
   void writeCompletionConfigForShell(String executableName) {
     final configuration = this.configuration!;
-    final completionConfig =
+    final shellCompletionConfig =
         configuration.completionScriptFile(completionConfigDir);
 
     logger.info(
-      '''Adding config for $executableName config entry to ${completionConfig.path}''',
+      '''Adding config for $executableName config entry to ${shellCompletionConfig.path}''',
     );
 
-    if (!completionConfig.existsSync()) {
+    if (!shellCompletionConfig.existsSync()) {
       logger.info(
-        '''No file found at ${completionConfig.path}, creating one now''',
+        '''No file found at ${shellCompletionConfig.path}, creating one now''',
       );
-      completionConfig.createSync();
+      shellCompletionConfig.createSync();
     }
 
-    final executable = Executable(
-      name: executableName,
-      shellName: configuration.name,
+    final executable = ExecutableCompletionConfiguration.fromShellConfiguration(
+      executabelName: executableName,
+      shellConfiguration: configuration,
     );
     final executableEntry = executable.entry;
 
-    if (executableEntry.existsIn(completionConfig)) {
+    if (executableEntry.existsIn(shellCompletionConfig)) {
       logger.warn(
-        '''A config entry for $executableName was already found on ${completionConfig.path}.''',
+        '''A config entry for $executableName was already found on ${shellCompletionConfig.path}.''',
       );
       return;
     }
 
-    final executableScriptFile =
-        executable.completionScriptFile(completionConfigDir);
-    // TODO(alestiago): Use a template function to create the content.
-    final content = '''
-## Completion config for "$executableName"
-${configuration.sourceLineTemplate(executableScriptFile.path)}''';
-    executableEntry.appendTo(completionConfig, content: content);
-    logger.info('Added config to ${completionConfig.path}');
+    final executableScriptFile = executable.completionScriptFile(
+      completionConfigDir,
+    );
+    final content = configuration.completionReferenceTemplate(
+      executableName: executableName,
+      executableScriptFilePath: executableScriptFile.path,
+    );
+    executableEntry.appendTo(shellCompletionConfig, content: content);
+    logger.info('Added config to ${shellCompletionConfig.path}');
   }
 
   String get _shellRCFilePath =>

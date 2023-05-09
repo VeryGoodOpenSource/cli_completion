@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 /// The supported shells.
+// TODO(alestiago): Add name to this enum.
 enum SystemShell {
   /// The Zsh shell: https://www.zsh.org/
   zsh,

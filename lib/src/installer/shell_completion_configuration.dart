@@ -5,12 +5,8 @@ import 'package:meta/meta.dart';
 
 import 'package:path/path.dart' as path;
 
-/// A type definition for functions that creates the content of a
-/// completion script given a [rootCommand]
-typedef CompletionScriptTemplate = String Function(String rootCommand);
-
 /// A type definition for functions that describes
-/// the source line given a [scriptPath]
+/// the source line given a [scriptPath].
 typedef SourceStringTemplate = String Function(String scriptPath);
 
 /// {@template shell_completion_configuration}
@@ -45,22 +41,36 @@ class ShellCompletionConfiguration {
   /// {@template shell_name}
   /// A descriptive string to identify the shell among others.
   /// {@endtemplate}
+  // TODO: Remove name for the enhanced enumeration.
   final String name;
 
   /// The location of a config file that is run upon shell start.
   /// Eg: .bash_profile or .zshrc
   final String shellRCFile;
 
+  /// {@template source_line_template}
   /// Generates a line to sources of a script file.
+  /// {@endtemplate}
   final SourceStringTemplate sourceLineTemplate;
 
   /// Generates the contents of a completion script.
   final CompletionScriptTemplate scriptTemplate;
 
+  /// The template for the completion reference that is added to the
+  /// completion script file of this shell.
+  String completionReferenceTemplate({
+    required String executableName,
+    required String executableScriptFilePath,
+  }) {
+    return '''
+## Completion config for "$executableName"
+${sourceLineTemplate(executableScriptFilePath)}''';
+  }
+
   /// The configuration file for this shell.
   ///
   /// A configuration file for this shell is a barrel file that sources
-  /// the completion script for [Executable]s.
+  /// the completion script for [ExecutableCompletionConfiguration]s.
   ///
   /// The [completionConfigDir] denotes where the completion script file
   /// should be located.
