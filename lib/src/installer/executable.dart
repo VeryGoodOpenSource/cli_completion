@@ -22,6 +22,7 @@ class Executable {
   /// {@macro shell_name}
   ///
   /// Indicates where this [Executable] originated from.
+  // TODO(alestiago): Consider removing this member from [Executable].
   final String shellName;
 
   /// The completion script file for this [Executable].
