@@ -32,6 +32,7 @@ class ScriptEntry {
   /// If the [file] does not exist, it will be created.
   ///
   /// If [content] is not null, it will be added within the entry.
+  // TODO(alestiago): Consider having content as a member of the class.
   void appendTo(File file, {String? content}) {
     if (!file.existsSync()) {
       file.createSync(recursive: true);
