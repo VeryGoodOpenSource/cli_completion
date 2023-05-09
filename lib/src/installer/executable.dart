@@ -27,7 +27,7 @@ class Executable {
   /// The completion script file for this [Executable].
   ///
   /// A completion script file contains the completion script for a specific
-  /// command and shell.
+  /// executable and shell.
   ///
   /// The [completionConfigDir] denotes where the completion script file for
   /// this [Executable] should be located.
