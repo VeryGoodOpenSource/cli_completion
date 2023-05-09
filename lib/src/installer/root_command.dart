@@ -14,7 +14,9 @@ class RootCommand {
 
   /// The root name of the command.
   ///
-  /// For example the name would be `flutter` given `flutter create`.
+  /// For example:
+  /// - The name would be `flutter` given `flutter create`.
+  /// - The name would be `git` given `git commit`.
   final String name;
 
   /// {@macro shell_name}

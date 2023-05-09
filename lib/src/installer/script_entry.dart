@@ -1,8 +1,8 @@
 import 'dart:io';
 
 /// {@template script_entry}
-/// A script entry is a section of a file that is starts with [startComment]
-/// and ends with [endComment].
+/// A script entry is a section of a file that starts with [startComment] and
+/// ends with [endComment].
 /// {@endtemplate}
 class ScriptEntry {
   /// {@macro script_entry}
