@@ -5,33 +5,33 @@ import 'package:path/path.dart' as path;
 /// {@template root_command}
 /// A root command with [name] that has been ran in [shellName].
 /// {@endtemplate}
-class RootCommand {
+class Executable {
   /// {@macro root_command}
-  const RootCommand({
+  const Executable({
     required this.name,
     required this.shellName,
   });
 
-  /// The root name of the command.
+  /// The name of the executable.
   ///
   /// For example:
-  /// - The name would be `flutter` given `flutter create`.
-  /// - The name would be `git` given `git commit`.
+  /// - `flutter` given `flutter create`.
+  /// - `git` given `git commit`.
   final String name;
 
   /// {@macro shell_name}
   ///
-  /// Indicates where this [RootCommand] originated from.
+  /// Indicates where this [Executable] originated from.
   final String shellName;
 
-  /// The command script file for this [RootCommand].
+  /// The completion script file for this [Executable].
   ///
   /// A completion script file contains the completion script for a specific
   /// command and shell.
   ///
   /// The [completionConfigDir] denotes where the completion script file for
-  /// this [RootCommand] should be located.
-  File commandScriptFile(Directory completionConfigDir) {
+  /// this [Executable] should be located.
+  File completionScriptFile(Directory completionConfigDir) {
     final commandScriptPath = path.join(
       completionConfigDir.path,
       '$name.$shellName',
@@ -39,6 +39,6 @@ class RootCommand {
     return File(commandScriptPath);
   }
 
-  /// A script entry for this [RootCommand].
+  /// A script entry for this [Executable].
   ScriptEntry get entry => ScriptEntry(name);
 }

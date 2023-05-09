@@ -65,7 +65,7 @@ class ShellCompletionConfiguration {
   /// The configuration file for this shell.
   ///
   /// A configuration file for this shell is a barrel file that sources
-  /// the completion script for [RootCommand]s.
+  /// the completion script for [Executable]s.
   ///
   /// The [completionConfigDir] denotes where the completion script file
   /// should be located.

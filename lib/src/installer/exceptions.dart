@@ -5,16 +5,16 @@ class CompletionInstallationException implements Exception {
   /// {@macro completion_installation_exception}
   CompletionInstallationException({
     required this.message,
-    required this.rootCommand,
+    required this.executableName,
   });
 
   /// The error message for this exception
   final String message;
 
-  /// The command for which the installation failed.
-  final String rootCommand;
+  /// The executable name for which the installation failed.
+  final String executableName;
 
   @override
-  String toString() => 'Could not install completion scripts for $rootCommand: '
-      '$message';
+  String toString() =>
+      '''Could not install completion scripts for $executableName: $message''';
 }

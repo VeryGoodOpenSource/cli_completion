@@ -166,7 +166,8 @@ void main() {
         expect(configFile.existsSync(), false);
 
         installation.createCompletionConfigDir();
-        var result = installation.writeCompletionScriptForCommand('very_good');
+        var result =
+            installation.writeCompletionScriptForExecutable('very_good');
 
         expect(configFile.existsSync(), true);
         expect(result, true);
@@ -186,7 +187,7 @@ void main() {
           ),
         );
 
-        result = installation.writeCompletionScriptForCommand('very_good');
+        result = installation.writeCompletionScriptForExecutable('very_good');
 
         expect(result, false);
 

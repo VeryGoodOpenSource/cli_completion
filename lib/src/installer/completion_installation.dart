@@ -92,38 +92,39 @@ class CompletionInstallation {
     }
   }
 
-  /// Install completion configuration files for a [rootCommand] in the
+  /// Install completion configuration files for a [executableName] in the
   /// current shell.
   ///
   /// It will create:
   /// - A completion script file in [completionConfigDir] that is named after
-  /// the [rootCommand] and the current shell (e.g. `very_good.bash`).
+  /// the [executableName] and the current shell (e.g. `very_good.bash`).
   /// - A config file in [completionConfigDir] that is named after the current
   /// shell (e.g. `bash-config.bash`) that sources the aforementioned
   /// completion script file.
   /// - A line in the shell config file (e.g. `.bash_profile`) that sources
   /// the aforementioned config file.
-  void install(String rootCommand) {
+  void install(String executableName) {
     final configuration = this.configuration;
 
     if (configuration == null) {
       throw CompletionInstallationException(
         message: 'Unknown shell.',
-        rootCommand: rootCommand,
+        executableName: executableName,
       );
     }
 
     logger.detail(
-      '''Installing completion for the command $rootCommand on ${configuration.name}''',
+      '''Installing completion for the command $executableName on ${configuration.name}''',
     );
 
     createCompletionConfigDir();
-    final completionFileCreated = writeCompletionScriptForCommand(rootCommand);
-    writeCompletionConfigForShell(rootCommand);
-    writeToShellConfigFile(rootCommand);
+    final completionFileCreated =
+        writeCompletionScriptForExecutable(executableName);
+    writeCompletionConfigForShell(executableName);
+    writeToShellConfigFile(executableName);
 
     if (completionFileCreated) {
-      _logSourceInstructions(rootCommand);
+      _logSourceInstructions(executableName);
     }
   }
 
@@ -149,10 +150,10 @@ class CompletionInstallation {
     completionConfigDir.createSync();
   }
 
-  /// Creates a configuration file exclusively to [rootCommand] and the
+  /// Creates a configuration file exclusively to [executableName] and the
   /// identified shell.
   ///
-  /// The file will be named after the [rootCommand] and the current shell
+  /// The file will be named after the [executableName] and the current shell
   /// (e.g. `very_good.bash`).
   ///
   /// The file will be created in [completionConfigDir].
@@ -161,39 +162,39 @@ class CompletionInstallation {
   ///
   /// Returns true if the file was created, false otherwise.
   @visibleForTesting
-  bool writeCompletionScriptForCommand(String rootCommand) {
+  bool writeCompletionScriptForExecutable(String executableName) {
     final configuration = this.configuration!;
-    final rootCommandScriptFile = RootCommand(
-      name: rootCommand,
+    final executableCompletionScriptFile = Executable(
+      name: executableName,
       shellName: configuration.name,
-    ).commandScriptFile(completionConfigDir);
+    ).completionScriptFile(completionConfigDir);
 
     logger.info(
-      '''Writing completion script for $rootCommand on ${rootCommandScriptFile.path}''',
+      '''Writing completion script for $executableName on ${executableCompletionScriptFile.path}''',
     );
-    if (rootCommandScriptFile.existsSync()) {
+    if (executableCompletionScriptFile.existsSync()) {
       logger.warn(
-        '''A script file for $rootCommand was already found on ${rootCommandScriptFile.path}''',
+        '''A script file for $executableName was already found on ${executableCompletionScriptFile.path}''',
       );
       return false;
     }
 
-    rootCommandScriptFile.writeAsStringSync(
-      configuration.scriptTemplate(rootCommand),
+    executableCompletionScriptFile.writeAsStringSync(
+      configuration.scriptTemplate(executableName),
     );
     return true;
   }
 
-  /// Adds a reference for the command-specific config file created on
-  /// [writeCompletionScriptForCommand] the the global completion config file.
+  /// Adds a reference for the executable-specific config file created on
+  /// [writeCompletionScriptForExecutable] the the global completion config file.
   @visibleForTesting
-  void writeCompletionConfigForShell(String rootCommand) {
+  void writeCompletionConfigForShell(String executableName) {
     final configuration = this.configuration!;
     final completionConfig =
         configuration.completionScriptFile(completionConfigDir);
 
     logger.info(
-      '''Adding config for $rootCommand config entry to ${completionConfig.path}''',
+      '''Adding config for $executableName config entry to ${completionConfig.path}''',
     );
 
     if (!completionConfig.existsSync()) {
@@ -203,26 +204,26 @@ class CompletionInstallation {
       completionConfig.createSync();
     }
 
-    final command = RootCommand(
-      name: rootCommand,
+    final executable = Executable(
+      name: executableName,
       shellName: configuration.name,
     );
-    final commandEntry = command.entry;
+    final executableEntry = executable.entry;
 
-    if (commandEntry.existsIn(completionConfig)) {
+    if (executableEntry.existsIn(completionConfig)) {
       logger.warn(
-        '''A config entry for $rootCommand was already found on ${completionConfig.path}.''',
+        '''A config entry for $executableName was already found on ${completionConfig.path}.''',
       );
       return;
     }
 
-    final rootCommandScriptFile =
-        command.commandScriptFile(completionConfigDir);
+    final executableScriptFile =
+        executable.completionScriptFile(completionConfigDir);
     // TODO(alestiago): Use a template function to create the content.
     final content = '''
-## Completion config for "$rootCommand"
-${configuration.sourceLineTemplate(rootCommandScriptFile.path)}''';
-    commandEntry.appendTo(completionConfig, content: content);
+## Completion config for "$executableName"
+${configuration.sourceLineTemplate(executableScriptFile.path)}''';
+    executableEntry.appendTo(completionConfig, content: content);
     logger.info('Added config to ${completionConfig.path}');
   }
 
@@ -232,7 +233,7 @@ ${configuration.sourceLineTemplate(rootCommandScriptFile.path)}''';
   /// Write a source to the completion global script in the shell configuration
   /// file, which its location is described by the [configuration].
   @visibleForTesting
-  void writeToShellConfigFile(String rootCommand) {
+  void writeToShellConfigFile(String executableName) {
     final configuration = this.configuration!;
 
     logger.info(
@@ -245,7 +246,7 @@ ${configuration.sourceLineTemplate(rootCommandScriptFile.path)}''';
     final shellRCFile = File(_shellRCFilePath);
     if (!shellRCFile.existsSync()) {
       throw CompletionInstallationException(
-        rootCommand: rootCommand,
+        executableName: executableName,
         message: 'No configuration file found at ${shellRCFile.path}',
       );
     }
@@ -272,7 +273,7 @@ ${configuration.sourceLineTemplate(shellCompletionConfigFile.path)}''';
   }
 
   /// Tells the user to source the shell configuration file.
-  void _logSourceInstructions(String rootCommand) {
+  void _logSourceInstructions(String executableName) {
     final level = logger.level;
     logger
       ..level = Level.info
