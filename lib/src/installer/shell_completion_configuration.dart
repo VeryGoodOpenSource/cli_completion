@@ -58,6 +58,8 @@ class ShellCompletionConfiguration {
   final CompletionScriptTemplate scriptTemplate;
 
   /// The name for the config file for this shell.
+  // TODO(alestiago): Remove this getter in favour of [completionScriptFile] and
+  // then using path to extract the name.
   String get completionConfigForShellFileName => '$name-config.$name';
 
   /// The configuration file for this shell.
