@@ -186,7 +186,8 @@ class CompletionInstallation {
   }
 
   /// Adds a reference for the executable-specific config file created on
-  /// [writeCompletionScriptForExecutable] the the global completion config file.
+  /// [writeCompletionScriptForExecutable] the the global completion config
+  /// file.
   @visibleForTesting
   void writeCompletionConfigForShell(String executableName) {
     final configuration = this.configuration!;

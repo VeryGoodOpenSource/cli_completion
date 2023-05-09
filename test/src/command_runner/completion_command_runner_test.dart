@@ -155,7 +155,9 @@ void main() {
           () => commandRunner.completionInstallation.install('test'),
         ).thenThrow(
           CompletionInstallationException(
-              message: 'oops', executableName: 'test'),
+            message: 'oops',
+            executableName: 'test',
+          ),
         );
 
         await commandRunner.run(['ahoy']);
