@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cli_completion/installer.dart';
 import 'package:meta/meta.dart';
+
+import 'package:path/path.dart' as path;
 
 /// A type definition for functions that creates the content of a
 /// completion script given a [rootCommand]
@@ -38,7 +42,9 @@ class ShellCompletionConfiguration {
     }
   }
 
+  /// {@template shell_name}
   /// A descriptive string to identify the shell among others.
+  /// {@endtemplate}
   final String name;
 
   /// The location of a config file that is run upon shell start.
@@ -53,6 +59,21 @@ class ShellCompletionConfiguration {
 
   /// The name for the config file for this shell.
   String get completionConfigForShellFileName => '$name-config.$name';
+
+  /// The configuration file for this shell.
+  ///
+  /// A configuration file for this shell is a barrel file that sources
+  /// the completion script for [RootCommand]s.
+  ///
+  /// The [completionConfigDir] denotes where the completion script file
+  /// should be located.
+  File completionScriptFile(Directory completionConfigDir) {
+    final commandScriptPath = path.join(
+      completionConfigDir.path,
+      '$name-config.$name',
+    );
+    return File(commandScriptPath);
+  }
 }
 
 /// A [ShellCompletionConfiguration] for zsh.

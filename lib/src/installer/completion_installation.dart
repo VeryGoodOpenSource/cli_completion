@@ -65,6 +65,7 @@ class CompletionInstallation {
   /// shell. It is null if the current shell is unknown.
   final ShellCompletionConfiguration? configuration;
 
+  /// {@template completion_config_dir}
   /// Define the [Directory] in which the
   /// completion configuration files will be stored.
   ///
@@ -73,6 +74,7 @@ class CompletionInstallation {
   ///
   /// If [isWindows] is false, it will return the directory defined by
   /// $XDG_CONFIG_HOME/.dart_cli_completion or $HOME/.dart_cli_completion
+  /// {@endtemplate}
   @visibleForTesting
   Directory get completionConfigDir {
     if (isWindows) {
@@ -112,8 +114,7 @@ class CompletionInstallation {
     }
 
     logger.detail(
-      'Installing completion for the command $rootCommand '
-      'on ${configuration.name}',
+      '''Installing completion for the command $rootCommand on ${configuration.name}''',
     );
 
     createCompletionConfigDir();
@@ -135,8 +136,7 @@ class CompletionInstallation {
     final completionConfigDirPath = completionConfigDir.path;
 
     logger.info(
-      'Creating completion configuration directory '
-      'at $completionConfigDirPath',
+      '''Creating completion configuration directory at $completionConfigDirPath''',
     );
 
     if (completionConfigDir.existsSync()) {
@@ -163,28 +163,24 @@ class CompletionInstallation {
   @visibleForTesting
   bool writeCompletionScriptForCommand(String rootCommand) {
     final configuration = this.configuration!;
-    final completionConfigDirPath = completionConfigDir.path;
-    final commandScriptName = '$rootCommand.${configuration.name}';
-    final commandScriptPath = path.join(
-      completionConfigDirPath,
-      commandScriptName,
-    );
+    final rootCommandScriptFile = RootCommand(
+      name: rootCommand,
+      shellName: configuration.name,
+    ).commandScriptFile(completionConfigDir);
+
     logger.info(
-      'Writing completion script for $rootCommand on $commandScriptPath',
+      '''Writing completion script for $rootCommand on ${rootCommandScriptFile.path}''',
     );
-
-    final scriptFile = File(commandScriptPath);
-
-    if (scriptFile.existsSync()) {
+    if (rootCommandScriptFile.existsSync()) {
       logger.warn(
-        'A script file for $rootCommand was already found on '
-        '$commandScriptPath.',
+        '''A script file for $rootCommand was already found on ${rootCommandScriptFile.path}''',
       );
       return false;
     }
 
-    scriptFile.writeAsStringSync(configuration.scriptTemplate(rootCommand));
-
+    rootCommandScriptFile.writeAsStringSync(
+      configuration.scriptTemplate(rootCommand),
+    );
     return true;
   }
 
@@ -193,37 +189,42 @@ class CompletionInstallation {
   @visibleForTesting
   void writeCompletionConfigForShell(String rootCommand) {
     final configuration = this.configuration!;
-    final completionConfigDirPath = completionConfigDir.path;
+    final completionConfig =
+        configuration.completionScriptFile(completionConfigDir);
 
-    final configPath = path.join(
-      completionConfigDirPath,
-      configuration.completionConfigForShellFileName,
+    logger.info(
+      '''Adding config for $rootCommand config entry to ${completionConfig.path}''',
     );
-    logger.info('Adding config for $rootCommand config entry to $configPath');
 
-    final configFile = File(configPath);
-
-    if (!configFile.existsSync()) {
-      logger.info('No file found at $configPath, creating one now');
-      configFile.createSync();
+    if (!completionConfig.existsSync()) {
+      logger.info(
+        '''No file found at ${completionConfig.path}, creating one now''',
+      );
+      completionConfig.createSync();
     }
-    final commandScriptName = '$rootCommand.${configuration.name}';
 
-    final containsLine =
-        configFile.readAsStringSync().contains(commandScriptName);
+    final command = RootCommand(
+      name: rootCommand,
+      shellName: configuration.name,
+    );
+    final commandEntry = command.entry;
 
-    if (containsLine) {
+    if (commandEntry.existsIn(completionConfig)) {
       logger.warn(
-        'A config entry for $rootCommand was already found on $configPath.',
+        '''A config entry for $rootCommand was already found on ${completionConfig.path}.''',
       );
       return;
     }
 
-    _sourceScriptOnFile(
-      configFile: configFile,
-      scriptName: rootCommand,
-      scriptPath: path.join(completionConfigDirPath, commandScriptName),
-    );
+    final rootCommandScriptFile =
+        command.commandScriptFile(completionConfigDir);
+    // TODO(alestiago): Use a template function to create the content.
+    final content = '''
+## {Completion config for "$rootCommand"
+${configuration.sourceLineTemplate(rootCommandScriptFile.path)}
+''';
+    commandEntry.appendTo(completionConfig, content: content);
+    logger.info('Added config to ${completionConfig.path}');
   }
 
   String get _shellRCFilePath =>
@@ -236,19 +237,13 @@ class CompletionInstallation {
     final configuration = this.configuration!;
 
     logger.info(
-      'Adding dart cli completion config entry '
-      'to $_shellRCFilePath',
+      '''Adding dart cli completion config entry to $_shellRCFilePath''',
     );
 
-    final completionConfigDirPath = completionConfigDir.path;
-
-    final completionConfigPath = path.join(
-      completionConfigDirPath,
-      configuration.completionConfigForShellFileName,
-    );
+    final shellCompletionConfigFile =
+        configuration.completionScriptFile(completionConfigDir);
 
     final shellRCFile = File(_shellRCFilePath);
-
     if (!shellRCFile.existsSync()) {
       throw CompletionInstallationException(
         rootCommand: rootCommand,
@@ -257,24 +252,25 @@ class CompletionInstallation {
     }
 
     final containsLine =
-        shellRCFile.readAsStringSync().contains(completionConfigPath);
+        shellRCFile.readAsStringSync().contains(shellCompletionConfigFile.path);
 
     if (containsLine) {
-      logger.warn('A completion config entry was already found on'
-          ' $_shellRCFilePath.');
+      logger.warn(
+        '''A completion config entry was already found on $_shellRCFilePath''',
+      );
       return;
     }
 
-    _sourceScriptOnFile(
-      configFile: shellRCFile,
-      scriptName: 'Completion',
-      description: 'Completion scripts setup. '
-          'Remove the following line to uninstall',
-      scriptPath: path.join(
-        completionConfigDir.path,
-        configuration.completionConfigForShellFileName,
-      ),
+    // TODO(alestiago): Define a template function instead.
+    final content = '''
+Completion scripts setup. Remove the following line to uninstall.
+${configuration.sourceLineTemplate(shellCompletionConfigFile.path)}
+''';
+    const ScriptEntry('Completion').appendTo(
+      shellRCFile,
+      content: content,
     );
+    logger.info('Added config to ${shellRCFile.path}');
   }
 
   /// Tells the user to source the shell configuration file.
@@ -290,35 +286,6 @@ class CompletionInstallation {
         '\n',
       )
       ..level = level;
-  }
-
-  void _sourceScriptOnFile({
-    required File configFile,
-    required String scriptName,
-    required String scriptPath,
-    String? description,
-  }) {
-    assert(
-      configFile.existsSync(),
-      'Sourcing a script line into an nonexistent config file.',
-    );
-
-    final configFilePath = configFile.path;
-
-    description ??= 'Completion config for "$scriptName"';
-
-    configFile.writeAsStringSync(
-      mode: FileMode.append,
-      '''
-\n## [$scriptName] 
-## $description
-${configuration!.sourceLineTemplate(scriptPath)}
-## [/$scriptName]
-
-''',
-    );
-
-    logger.info('Added config to $configFilePath');
   }
 }
 
