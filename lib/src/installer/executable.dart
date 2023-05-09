@@ -3,7 +3,7 @@ import 'package:cli_completion/installer.dart';
 import 'package:path/path.dart' as path;
 
 /// {@template root_command}
-/// A root command with [name] that has been ran in [shellName].
+/// An executable that originated from [shellName].
 /// {@endtemplate}
 class Executable {
   /// {@macro root_command}
