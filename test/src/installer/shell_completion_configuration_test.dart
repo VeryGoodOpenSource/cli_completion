@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cli_completion/installer.dart';
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
@@ -46,11 +49,18 @@ fi
 ''');
       });
 
-      test('completionConfigForShellFileName', () {
-        expect(
-          zshConfiguration.completionConfigForShellFileName,
-          'zsh-config.zsh',
-        );
+      group('completionScriptFile', () {
+        test('name is valid', () {
+          final file = zshConfiguration.completionScriptFile(Directory('/tmp'));
+          expect(path.basename(file.path), 'zsh-config.zsh');
+        });
+
+        test('path is relative to directory', () {
+          final directory = Directory('/tmp');
+          final file = zshConfiguration.completionScriptFile(directory);
+          final expectedPath = path.join(directory.path, 'zsh-config.zsh');
+          expect(file.path, expectedPath);
+        });
       });
     });
 
@@ -103,11 +113,19 @@ fi
 ''');
       });
 
-      test('completionConfigForShellFileName', () {
-        expect(
-          bashConfiguration.completionConfigForShellFileName,
-          'bash-config.bash',
-        );
+      group('completionScriptFile', () {
+        test('name is valid', () {
+          final file =
+              bashConfiguration.completionScriptFile(Directory('/tmp'));
+          expect(path.basename(file.path), 'bash-config.bash');
+        });
+
+        test('path is relative to directory', () {
+          final directory = Directory('/tmp');
+          final file = bashConfiguration.completionScriptFile(directory);
+          final expectedPath = path.join(directory.path, 'bash-config.bash');
+          expect(file.path, expectedPath);
+        });
       });
     });
   });
