@@ -64,7 +64,7 @@ void main() {
         final fileContent = file.readAsStringSync();
         const expectedContent = '''
 $initialContent
-## [name] 
+## [name]
 $entryContent
 ## [/name]\n
 ''';

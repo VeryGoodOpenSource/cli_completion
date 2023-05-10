@@ -7,8 +7,8 @@ import 'dart:io';
 class ScriptConfigurationEntry {
   /// {@macro script_entry}
   const ScriptConfigurationEntry(this.name)
-      : _startComment = '\n## [$name]',
-        _endComment = '\n## [/$name]\n';
+      : _startComment = '## [$name]',
+        _endComment = '## [/$name]';
 
   /// The name of the entry.
   final String name;
@@ -39,9 +39,11 @@ class ScriptConfigurationEntry {
     }
 
     final entry = StringBuffer()
+      ..writeln()
       ..writeln(_startComment)
-      ..write(content)
-      ..writeln(_endComment);
+      ..writeln(content)
+      ..writeln(_endComment)
+      ..writeln();
 
     file.writeAsStringSync(
       entry.toString(),
