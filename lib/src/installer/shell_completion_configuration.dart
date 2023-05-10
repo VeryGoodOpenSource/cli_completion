@@ -21,7 +21,6 @@ class ShellCompletionConfiguration {
   /// {@macro shell_completion_configuration}
   const ShellCompletionConfiguration._({
     required this.shell,
-    required this.shellRCFile,
     required this.sourceLineTemplate,
     required this.scriptTemplate,
   });
@@ -41,10 +40,6 @@ class ShellCompletionConfiguration {
   /// {@macro system_shell}
   final SystemShell shell;
 
-  /// The location of a config file that is run upon shell start.
-  /// Eg: .bash_profile or .zshrc
-  final String shellRCFile;
-
   /// Generates a line to sources of a script file.
   final SourceStringTemplate sourceLineTemplate;
 
@@ -60,7 +55,6 @@ class ShellCompletionConfiguration {
 @visibleForTesting
 final zshConfiguration = ShellCompletionConfiguration._(
   shell: SystemShell.zsh,
-  shellRCFile: '~/.zshrc',
   sourceLineTemplate: (String scriptPath) {
     return '[[ -f $scriptPath ]] && . $scriptPath || true';
   },
@@ -93,7 +87,6 @@ fi
 @visibleForTesting
 final bashConfiguration = ShellCompletionConfiguration._(
   shell: SystemShell.bash,
-  shellRCFile: '~/.bash_profile',
   sourceLineTemplate: (String scriptPath) {
     return '[ -f $scriptPath ] && . $scriptPath || true';
   },

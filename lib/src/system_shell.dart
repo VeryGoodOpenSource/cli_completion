@@ -9,16 +9,40 @@ import 'package:path/path.dart' as path;
 /// {@endtemplate}
 enum SystemShell {
   /// The Zsh shell: https://www.zsh.org/
-  zsh('zsh'),
+  zsh(
+    'zsh',
+    runCommandFileName: '.zshrc',
+  ),
 
   /// GNU Bash shell: https://www.gnu.org/software/bash/
-  bash('bash');
+  bash(
+    'bash',
+    runCommandFileName: '.bash_profile',
+  );
 
   /// {@macro system_shell}
-  const SystemShell(this.name);
+  const SystemShell(this.name, {required String runCommandFileName})
+      : _runCommandFileName = runCommandFileName;
 
   /// A descriptive string to identify the shell among others.
   final String name;
+
+  /// The name of a config file that is run upon shell start.
+  ///
+  /// For example: `.bash_profile` or `.zshrc`.
+  final String _runCommandFileName;
+
+  /// Retrieves, from the current environment, the run command (RC) [File]
+  /// for the shell.
+  ///
+  /// It is assumed that the RC file is located at the user's home directory.
+  File runCommandFile({Map<String, String>? environmentOverride}) {
+    final environment = environmentOverride ?? Platform.environment;
+
+    final home = path.absolute(environment['HOME']!);
+    final runCommandFilePath = path.join(home, _runCommandFileName);
+    return File(runCommandFilePath);
+  }
 
   /// Identifies the current shell based on the [Platform.environment].
   ///

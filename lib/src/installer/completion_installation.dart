@@ -226,18 +226,16 @@ class CompletionInstallation {
     );
   }
 
-  String get _shellRCFilePath =>
-      _resolveHome(configuration!.shellRCFile, environment);
-
   /// Write a source to the completion global script in the shell configuration
   /// file, which its location is described by the [configuration].
   @visibleForTesting
   void writeToShellConfigFile(String rootCommand) {
     final configuration = this.configuration!;
+    final shellRunCommandFile = configuration.shell.runCommandFile();
 
     logger.info(
       'Adding dart cli completion config entry '
-      'to $_shellRCFilePath',
+      'to ${shellRunCommandFile.path}',
     );
 
     final completionConfigDirPath = completionConfigDir.path;
@@ -247,26 +245,25 @@ class CompletionInstallation {
       configuration.completionConfigForShellFileName,
     );
 
-    final shellRCFile = File(_shellRCFilePath);
-
-    if (!shellRCFile.existsSync()) {
+    if (!shellRunCommandFile.existsSync()) {
       throw CompletionInstallationException(
         rootCommand: rootCommand,
-        message: 'No configuration file found at ${shellRCFile.path}',
+        message: 'No configuration file found at ${shellRunCommandFile.path}',
       );
     }
 
     final containsLine =
-        shellRCFile.readAsStringSync().contains(completionConfigPath);
+        shellRunCommandFile.readAsStringSync().contains(completionConfigPath);
 
     if (containsLine) {
-      logger.warn('A completion config entry was already found on'
-          ' $_shellRCFilePath.');
+      logger.warn(
+        '''A completion config entry was already found on ${shellRunCommandFile.path}.''',
+      );
       return;
     }
 
     _sourceScriptOnFile(
-      configFile: shellRCFile,
+      configFile: shellRunCommandFile,
       scriptName: 'Completion',
       description: 'Completion scripts setup. '
           'Remove the following line to uninstall',
@@ -280,13 +277,16 @@ class CompletionInstallation {
   /// Tells the user to source the shell configuration file.
   void _logSourceInstructions(String rootCommand) {
     final level = logger.level;
+    final configuration = this.configuration!;
+    final shellRunCommandFile = configuration.shell.runCommandFile();
+
     logger
       ..level = Level.info
       ..info(
         '\n'
         'Completion files installed. To enable completion, run the following '
         'command in your shell:\n'
-        '${lightCyan.wrap('source $_shellRCFilePath')}'
+        '${lightCyan.wrap('source ${shellRunCommandFile.path}}')}'
         '\n',
       )
       ..level = level;
@@ -320,14 +320,4 @@ ${configuration!.sourceLineTemplate(scriptPath)}
 
     logger.info('Added config to $configFilePath');
   }
-}
-
-/// Resolve the home from a path string
-String _resolveHome(
-  String originalPath,
-  Map<String, String> environment,
-) {
-  final after = originalPath.split('~/').last;
-  final home = path.absolute(environment['HOME']!);
-  return path.join(home, after);
 }

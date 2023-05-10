@@ -1,4 +1,5 @@
 import 'package:cli_completion/parser.dart';
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
@@ -10,6 +11,26 @@ void main() {
 
       test('zsh is correct', () {
         expect(SystemShell.zsh.name, equals('zsh'));
+      });
+    });
+
+    group('runCommandFile', () {
+      const environment = {'HOME': '/foo/bar'};
+
+      test('bash path is correct', () {
+        const shell = SystemShell.bash;
+        final file = shell.runCommandFile(environmentOverride: environment);
+
+        final expectedPath = path.join(environment['HOME']!, '.bash_profile');
+        expect(file.path, equals(expectedPath));
+      });
+
+      test('zsh path is correct', () {
+        const shell = SystemShell.zsh;
+        final file = shell.runCommandFile(environmentOverride: environment);
+
+        final expectedPath = path.join(environment['HOME']!, '.zshrc');
+        expect(file.path, equals(expectedPath));
       });
     });
 
