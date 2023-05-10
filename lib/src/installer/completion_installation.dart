@@ -238,15 +238,7 @@ class CompletionInstallation {
       'to $_shellRCFilePath',
     );
 
-    final completionConfigDirPath = completionConfigDir.path;
-
-    final completionConfigPath = path.join(
-      completionConfigDirPath,
-      configuration.completionConfigForShellFileName,
-    );
-
     final shellRCFile = File(_shellRCFilePath);
-
     if (!shellRCFile.existsSync()) {
       throw CompletionInstallationException(
         rootCommand: rootCommand,
