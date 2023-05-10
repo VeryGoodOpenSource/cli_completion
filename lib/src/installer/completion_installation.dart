@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cli_completion/installer.dart';
-import 'package:cli_completion/src/installer/script_configuration_entry.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
