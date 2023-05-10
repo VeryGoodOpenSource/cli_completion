@@ -93,9 +93,9 @@ void main() {
         expect(
           commandRunner.completionInstallation,
           isA<CompletionInstallation>().having(
-            (e) => e.configuration?.name,
+            (e) => e.configuration?.shell,
             'chosen shell',
-            equals('zsh'),
+            equals(SystemShell.zsh),
           ),
         );
       });

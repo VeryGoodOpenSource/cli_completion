@@ -25,7 +25,7 @@ void main() {
           systemShell: SystemShell.bash,
           logger: logger,
         );
-        expect(installation.configuration?.name, 'bash');
+        expect(installation.configuration?.shell, SystemShell.bash);
       });
 
       test('zsh', () {
@@ -33,7 +33,7 @@ void main() {
           systemShell: SystemShell.zsh,
           logger: logger,
         );
-        expect(installation.configuration?.name, 'zsh');
+        expect(installation.configuration?.shell, SystemShell.zsh);
       });
 
       test('proxies overrides', () {

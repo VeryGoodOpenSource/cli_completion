@@ -20,7 +20,7 @@ typedef SourceStringTemplate = String Function(String scriptPath);
 class ShellCompletionConfiguration {
   /// {@macro shell_completion_configuration}
   const ShellCompletionConfiguration._({
-    required this.name,
+    required this.shell,
     required this.shellRCFile,
     required this.sourceLineTemplate,
     required this.scriptTemplate,
@@ -39,7 +39,7 @@ class ShellCompletionConfiguration {
   }
 
   /// A descriptive string to identify the shell among others.
-  final String name;
+  final SystemShell shell;
 
   /// The location of a config file that is run upon shell start.
   /// Eg: .bash_profile or .zshrc
@@ -52,13 +52,14 @@ class ShellCompletionConfiguration {
   final CompletionScriptTemplate scriptTemplate;
 
   /// The name for the config file for this shell.
-  String get completionConfigForShellFileName => '$name-config.$name';
+  String get completionConfigForShellFileName =>
+      '${shell.name}-config.${shell.name}';
 }
 
 /// A [ShellCompletionConfiguration] for zsh.
 @visibleForTesting
 final zshConfiguration = ShellCompletionConfiguration._(
-  name: 'zsh',
+  shell: SystemShell.zsh,
   shellRCFile: '~/.zshrc',
   sourceLineTemplate: (String scriptPath) {
     return '[[ -f $scriptPath ]] && . $scriptPath || true';
@@ -91,7 +92,7 @@ fi
 /// A [ShellCompletionConfiguration] for bash.
 @visibleForTesting
 final bashConfiguration = ShellCompletionConfiguration._(
-  name: 'bash',
+  shell: SystemShell.bash,
   shellRCFile: '~/.bash_profile',
   sourceLineTemplate: (String scriptPath) {
     return '[ -f $scriptPath ] && . $scriptPath || true';

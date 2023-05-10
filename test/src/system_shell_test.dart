@@ -3,6 +3,16 @@ import 'package:test/test.dart';
 
 void main() {
   group('SystemShell', () {
+    group('name', () {
+      test('bash is correct', () {
+        expect(SystemShell.bash.name, equals('bash'));
+      });
+
+      test('zsh is correct', () {
+        expect(SystemShell.zsh.name, equals('zsh'));
+      });
+    });
+
     group('current', () {
       test('instantiated without env', () {
         expect(
