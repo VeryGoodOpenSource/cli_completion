@@ -38,7 +38,7 @@ class ShellCompletionConfiguration {
     }
   }
 
-  /// A descriptive string to identify the shell among others.
+  /// {@macro system_shell}
   final SystemShell shell;
 
   /// The location of a config file that is run upon shell start.

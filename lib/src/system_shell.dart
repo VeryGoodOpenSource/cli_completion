@@ -3,7 +3,12 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 /// {@template system_shell}
-/// The supported shells.
+/// A type definition for a shell.
+///
+/// A shell shell is a computer program that exposes an operating system's
+/// services.
+///
+/// The enumerated shells are the supported shells.
 /// {@endtemplate}
 enum SystemShell {
   /// The Zsh shell: https://www.zsh.org/
