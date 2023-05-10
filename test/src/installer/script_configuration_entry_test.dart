@@ -66,7 +66,8 @@ void main() {
 $initialContent
 ## [name]
 $entryContent
-## [/name]\n
+## [/name]
+
 ''';
         expect(fileContent, equals(expectedContent));
       });
