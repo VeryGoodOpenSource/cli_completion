@@ -49,6 +49,7 @@ class ExecutableCompletionConfiguration {
   /// {@macro shell_name}
   ///
   /// Indicates where this [ExecutableCompletionConfiguration] originated from.
+  // TODO(alestiago): Consider replacing with enum and enhanced enumeration with string name member.
   final String shellName;
 
   /// {@macro source_line_template}
@@ -73,6 +74,7 @@ class ExecutableCompletionConfiguration {
   ScriptEntry get entry => ScriptEntry(name);
 }
 
+// TODO(alestiago): Consider subclassing instead of using a factory.
 /// The [CompletionScriptTemplate] for a zsh shell.
 @visibleForTesting
 CompletionScriptTemplate zshCompletionScriptTemplate = (

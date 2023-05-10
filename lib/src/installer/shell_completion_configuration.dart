@@ -83,6 +83,7 @@ ${sourceLineTemplate(executableScriptFilePath)}''';
   }
 }
 
+// TODO(alestiago): Consider subclassing instead of using a factory.
 /// A [ShellCompletionConfiguration] for zsh.
 @visibleForTesting
 final zshConfiguration = ShellCompletionConfiguration._(
