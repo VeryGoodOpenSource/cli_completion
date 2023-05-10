@@ -254,12 +254,10 @@ class CompletionInstallation {
       );
     }
 
-    final containsLine =
-        shellRCFile.readAsStringSync().contains(completionConfigPath);
-
-    if (containsLine) {
-      logger.warn('A completion config entry was already found on'
-          ' $_shellRCFilePath.');
+    if (const ScriptConfigurationEntry('Completion').existsIn(shellRCFile)) {
+      logger.warn(
+        '''A completion config entry was already found on $_shellRCFilePath.''',
+      );
       return;
     }
 
