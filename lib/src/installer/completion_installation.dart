@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cli_completion/installer.dart';
+import 'package:cli_completion/src/installer/script_configuration_entry.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
@@ -207,18 +208,15 @@ class CompletionInstallation {
       logger.info('No file found at $configPath, creating one now');
       configFile.createSync();
     }
-    final commandScriptName = '$rootCommand.${configuration.name}';
 
-    final containsLine =
-        configFile.readAsStringSync().contains(commandScriptName);
-
-    if (containsLine) {
+    if (ScriptConfigurationEntry(rootCommand).existsIn(configFile)) {
       logger.warn(
         'A config entry for $rootCommand was already found on $configPath.',
       );
       return;
     }
 
+    final commandScriptName = '$rootCommand.${configuration.name}';
     _sourceScriptOnFile(
       configFile: configFile,
       scriptName: rootCommand,
@@ -307,15 +305,12 @@ class CompletionInstallation {
 
     description ??= 'Completion config for "$scriptName"';
 
-    configFile.writeAsStringSync(
-      mode: FileMode.append,
-      '''
-\n## [$scriptName] 
+    final content = '''
 ## $description
-${configuration!.sourceLineTemplate(scriptPath)}
-## [/$scriptName]
-
-''',
+${configuration!.sourceLineTemplate(scriptPath)}''';
+    ScriptConfigurationEntry(scriptName).appendTo(
+      configFile,
+      content: content,
     );
 
     logger.info('Added config to $configFilePath');
