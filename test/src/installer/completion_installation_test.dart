@@ -225,7 +225,7 @@ void main() {
 
         // ignore: leading_newlines_in_multiline_strings
         expect(configFile.readAsStringSync(), '''
-\n## [very_good] 
+\n## [very_good]
 ## Completion config for "very_good"
 [[ -f ${configDir.path}/very_good.zsh ]] && . ${configDir.path}/very_good.zsh || true
 ## [/very_good]
