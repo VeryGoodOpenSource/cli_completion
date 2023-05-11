@@ -50,4 +50,33 @@ class ScriptConfigurationEntry {
       mode: FileMode.append,
     );
   }
+
+  /// Removes the entry with [name] from the [file].
+  ///
+  /// If the [file] does not exist, this will do nothing.
+  ///
+  /// If a file has multiple entries with the same [name], all of them will be
+  /// removed.
+  ///
+  /// If the [file] is empty after removing the entry, it will be deleted.
+  void removeFrom(File file) {
+    if (!file.existsSync()) return;
+
+    final content = file.readAsStringSync();
+
+    int entryStart;
+    int entryEnd;
+    do {
+      entryStart = content.indexOf(_startComment);
+      entryEnd = content.indexOf(_endComment) + _endComment.length;
+      final entry = content.substring(entryStart, entryEnd);
+      file.writeAsStringSync(
+        content.replaceFirst(entry, ''),
+      );
+    } while (entryStart != -1 && entryEnd != -1);
+
+    if (content.isEmpty) {
+      file.deleteSync();
+    }
+  }
 }

@@ -304,6 +304,65 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
 
     logger.info('Added config to $configFilePath');
   }
+
+  /// Uninstalls the completion for the command [executableName] on the current
+  /// shell.
+  ///
+  /// Before uninstalling, it checks if the completion is installed:
+  /// - The shell has an existing RCFile with a completion
+  /// [ScriptConfigurationEntry].
+  /// - The shell has an exisiting configuration config file with a
+  /// [ScriptConfigurationEntry] for the [executableName].
+  ///
+  /// If any of the above is not true, it throws a
+  /// [CompletionUnistallationException].
+  ///
+  /// Upon a successful uninstallation the executable [ScriptConfigurationEntry]
+  /// is removed from the shell config file. If after this removal the latter is
+  /// empty, it is deleted. In addition, the executable completion script is
+  /// deleted if it exists.
+  void uninstall(String executableName) {
+    final configuration = this.configuration!;
+    logger.detail(
+      '''Uninstalling completion for the command $executableName on ${configuration.shell.name}''',
+    );
+
+    final shellRCFile = File(_shellRCFilePath);
+    if (!const ScriptConfigurationEntry('Completion').existsIn(shellRCFile)) {
+      throw CompletionUnistallationException(
+        executableName: executableName,
+        message: 'No configuration file found at ${shellRCFile.path}',
+      );
+    }
+
+    final shellCompletionConfigurationFile = File(
+      path.join(
+        completionConfigDir.path,
+        configuration.completionConfigForShellFileName,
+      ),
+    );
+    final executableEntry = ScriptConfigurationEntry(executableName);
+    if (!executableEntry.existsIn(shellCompletionConfigurationFile)) {
+      throw CompletionUnistallationException(
+        executableName: executableName,
+        message:
+            'No script file found at ${shellCompletionConfigurationFile.path}',
+      );
+    }
+
+    final executableShellCompletionScriptFile = File(
+      path.join(
+        completionConfigDir.path,
+        '$executableName.${configuration.shell.name}',
+      ),
+    );
+    if (executableShellCompletionScriptFile.existsSync()) {
+      executableShellCompletionScriptFile.deleteSync();
+    }
+
+    executableEntry.removeFrom(shellCompletionConfigurationFile);
+    // TODO(alestiago): Add .uninstall file to avoid autocompletion installing again.
+  }
 }
 
 /// Resolve the home from a path string
