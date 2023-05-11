@@ -2,13 +2,23 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-/// The supported shells.
+/// {@template system_shell}
+/// A type definition for a shell.
+///
+/// The enumerated shells are the supported shells.
+/// {@endtemplate}
 enum SystemShell {
   /// The Zsh shell: https://www.zsh.org/
-  zsh,
+  zsh('zsh'),
 
   /// GNU Bash shell: https://www.gnu.org/software/bash/
-  bash;
+  bash('bash');
+
+  /// {@macro system_shell}
+  const SystemShell(this.name);
+
+  /// A descriptive string to identify the shell among others.
+  final String name;
 
   /// Identifies the current shell based on the [Platform.environment].
   ///
