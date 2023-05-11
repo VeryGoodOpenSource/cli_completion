@@ -215,7 +215,7 @@ class CompletionInstallation {
       return;
     }
 
-    final commandScriptName = '$rootCommand.${configuration.name}';
+    final commandScriptName = '$rootCommand.${configuration.shell.name}';
     _sourceScriptOnFile(
       configFile: configFile,
       scriptName: rootCommand,
