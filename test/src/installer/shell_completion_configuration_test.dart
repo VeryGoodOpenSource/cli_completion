@@ -11,8 +11,8 @@ void main() {
             ShellCompletionConfiguration.fromSystemShell(SystemShell.zsh);
       });
 
-      test('name', () {
-        expect(zshConfiguration.name, 'zsh');
+      test('shell', () {
+        expect(zshConfiguration.shell, SystemShell.zsh);
       });
 
       test('shellRCFile', () {
@@ -62,8 +62,8 @@ fi
             ShellCompletionConfiguration.fromSystemShell(SystemShell.bash);
       });
 
-      test('name', () {
-        expect(bashConfiguration.name, 'bash');
+      test('shell', () {
+        expect(bashConfiguration.shell, SystemShell.bash);
       });
 
       test('shellRCFile', () {

@@ -113,7 +113,7 @@ class CompletionInstallation {
 
     logger.detail(
       'Installing completion for the command $rootCommand '
-      'on ${configuration.name}',
+      'on ${configuration.shell.name}',
     );
 
     createCompletionConfigDir();
@@ -164,7 +164,7 @@ class CompletionInstallation {
   bool writeCompletionScriptForCommand(String rootCommand) {
     final configuration = this.configuration!;
     final completionConfigDirPath = completionConfigDir.path;
-    final commandScriptName = '$rootCommand.${configuration.name}';
+    final commandScriptName = '$rootCommand.${configuration.shell.name}';
     final commandScriptPath = path.join(
       completionConfigDirPath,
       commandScriptName,
