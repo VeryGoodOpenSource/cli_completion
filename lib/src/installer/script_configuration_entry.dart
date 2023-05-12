@@ -69,6 +69,7 @@ class ScriptConfigurationEntry {
     do {
       entryStart = content.indexOf(_startComment);
       entryEnd = content.indexOf(_endComment) + _endComment.length;
+      if (entryStart == -1 || entryEnd == -1) break;
       final entry = content.substring(entryStart, entryEnd);
       file.writeAsStringSync(
         content.replaceFirst(entry, ''),
