@@ -207,18 +207,15 @@ class CompletionInstallation {
       logger.info('No file found at $configPath, creating one now');
       configFile.createSync();
     }
-    final commandScriptName = '$rootCommand.${configuration.shell.name}';
 
-    final containsLine =
-        configFile.readAsStringSync().contains(commandScriptName);
-
-    if (containsLine) {
+    if (ScriptConfigurationEntry(rootCommand).existsIn(configFile)) {
       logger.warn(
         'A config entry for $rootCommand was already found on $configPath.',
       );
       return;
     }
 
+    final commandScriptName = '$rootCommand.${configuration.shell.name}';
     _sourceScriptOnFile(
       configFile: configFile,
       scriptName: rootCommand,
@@ -240,15 +237,7 @@ class CompletionInstallation {
       'to $_shellRCFilePath',
     );
 
-    final completionConfigDirPath = completionConfigDir.path;
-
-    final completionConfigPath = path.join(
-      completionConfigDirPath,
-      configuration.completionConfigForShellFileName,
-    );
-
     final shellRCFile = File(_shellRCFilePath);
-
     if (!shellRCFile.existsSync()) {
       throw CompletionInstallationException(
         rootCommand: rootCommand,
@@ -256,12 +245,10 @@ class CompletionInstallation {
       );
     }
 
-    final containsLine =
-        shellRCFile.readAsStringSync().contains(completionConfigPath);
-
-    if (containsLine) {
-      logger.warn('A completion config entry was already found on'
-          ' $_shellRCFilePath.');
+    if (const ScriptConfigurationEntry('Completion').existsIn(shellRCFile)) {
+      logger.warn(
+        '''A completion config entry was already found on $_shellRCFilePath.''',
+      );
       return;
     }
 
@@ -307,15 +294,12 @@ class CompletionInstallation {
 
     description ??= 'Completion config for "$scriptName"';
 
-    configFile.writeAsStringSync(
-      mode: FileMode.append,
-      '''
-\n## [$scriptName] 
+    final content = '''
 ## $description
-${configuration!.sourceLineTemplate(scriptPath)}
-## [/$scriptName]
-
-''',
+${configuration!.sourceLineTemplate(scriptPath)}''';
+    ScriptConfigurationEntry(scriptName).appendTo(
+      configFile,
+      content: content,
     );
 
     logger.info('Added config to $configFilePath');

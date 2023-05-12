@@ -225,7 +225,7 @@ void main() {
 
         // ignore: leading_newlines_in_multiline_strings
         expect(configFile.readAsStringSync(), '''
-\n## [very_good] 
+\n## [very_good]
 ## Completion config for "very_good"
 [[ -f ${configDir.path}/very_good.zsh ]] && . ${configDir.path}/very_good.zsh || true
 ## [/very_good]
@@ -286,7 +286,7 @@ void main() {
 
         // ignore: leading_newlines_in_multiline_strings
         expect(rcFile.readAsStringSync(), '''
-\n## [Completion] 
+\n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [[ -f ${configDir.path}/zsh-config.zsh ]] && . ${configDir.path}/zsh-config.zsh || true
 ## [/Completion]
@@ -394,7 +394,7 @@ void main() {
 
           // ignore: leading_newlines_in_multiline_strings
           expect(rcFile.readAsStringSync(), '''
-\n## [Completion] 
+\n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [[ -f ${configDir.path}/zsh-config.zsh ]] && . ${configDir.path}/zsh-config.zsh || true
 ## [/Completion]
@@ -408,12 +408,12 @@ void main() {
 
           // ignore: leading_newlines_in_multiline_strings
           expect(globalConfig.readAsStringSync(), '''
-\n## [very_good] 
+\n## [very_good]
 ## Completion config for "very_good"
 [[ -f ${configDir.path}/very_good.zsh ]] && . ${configDir.path}/very_good.zsh || true
 ## [/very_good]
 
-\n## [not_good] 
+\n## [not_good]
 ## Completion config for "not_good"
 [[ -f ${configDir.path}/not_good.zsh ]] && . ${configDir.path}/not_good.zsh || true
 ## [/not_good]
@@ -447,7 +447,7 @@ void main() {
 
           // ignore: leading_newlines_in_multiline_strings
           expect(bashProfile.readAsStringSync(), '''
-\n## [Completion] 
+\n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [ -f ${configDir.path}/bash-config.bash ] && . ${configDir.path}/bash-config.bash || true
 ## [/Completion]
