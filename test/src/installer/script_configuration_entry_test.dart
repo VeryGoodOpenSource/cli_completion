@@ -124,5 +124,102 @@ $entryContent
         expect(entry.existsIn(file), isTrue);
       });
     });
+
+    group('removeFrom', () {
+      test('returns normally when file does not exist', () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final filePath = path.join(tempDirectory.path, 'file');
+        final file = File(filePath);
+
+        final entry = ScriptConfigurationEntry('name');
+
+        expect(() => entry.removeFrom(file), returnsNormally);
+      });
+
+      test('does not change the file when file is empty', () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final filePath = path.join(tempDirectory.path, 'file');
+        final file = File(filePath)..createSync();
+
+        ScriptConfigurationEntry('name').removeFrom(file);
+
+        final content = file.readAsStringSync();
+        expect(content, isEmpty);
+      });
+
+      test('does not change the file when another entry exists in file', () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final filePath = path.join(tempDirectory.path, 'file');
+        final file = File(filePath)..createSync();
+
+        ScriptConfigurationEntry('name').appendTo(file);
+        final content = file.readAsStringSync();
+
+        ScriptConfigurationEntry('anotherName').removeFrom(file);
+
+        final newContent = file.readAsStringSync();
+        expect(content, equals(newContent));
+      });
+
+      test('removes entry from file when there is a single matching entry', () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final filePath = path.join(tempDirectory.path, 'file');
+        final file = File(filePath)..createSync();
+
+        final entry = ScriptConfigurationEntry('name')..appendTo(file);
+        expect(entry.existsIn(file), isTrue);
+
+        ScriptConfigurationEntry('name').removeFrom(file);
+        final content = file.readAsStringSync();
+        expect(content, isEmpty);
+      });
+
+      test(
+          '''removes all entries from file when there is a multiple matching entries''',
+          () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final filePath = path.join(tempDirectory.path, 'file');
+        final file = File(filePath)..createSync();
+
+        final entry = ScriptConfigurationEntry('name')
+          ..appendTo(file)
+          ..appendTo(file)
+          ..appendTo(file);
+        expect(entry.existsIn(file), isTrue);
+
+        ScriptConfigurationEntry('name').removeFrom(file);
+        final content = file.readAsStringSync();
+        expect(content, isEmpty);
+      });
+
+      test('only removes matching entries from file', () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final filePath = path.join(tempDirectory.path, 'file');
+        final file = File(filePath)..createSync();
+
+        final entry = ScriptConfigurationEntry('name')..appendTo(file);
+        expect(entry.existsIn(file), isTrue);
+
+        final anotherEntry = ScriptConfigurationEntry('anotherName')
+          ..appendTo(file);
+        expect(anotherEntry.existsIn(file), isTrue);
+
+        ScriptConfigurationEntry('name').removeFrom(file);
+        final content = file.readAsStringSync();
+        expect(content, isEmpty);
+      });
+    });
   });
 }
