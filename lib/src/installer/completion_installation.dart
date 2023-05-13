@@ -328,11 +328,18 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     );
 
     final shellRCFile = File(_shellRCFilePath);
+    if (!shellRCFile.existsSync()) {
+      throw CompletionUnistallationException(
+        executableName: executableName,
+        message: 'No shell RC file found at ${shellRCFile.path}',
+      );
+    }
+
     const completionEntry = ScriptConfigurationEntry('Completion');
     if (!completionEntry.existsIn(shellRCFile)) {
       throw CompletionUnistallationException(
         executableName: executableName,
-        message: 'No configuration file found at ${shellRCFile.path}',
+        message: 'Completion is not installed at ${shellRCFile.path}',
       );
     }
 
@@ -347,13 +354,15 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       throw CompletionUnistallationException(
         executableName: executableName,
         message:
-            'No script file found at ${shellCompletionConfigurationFile.path}',
+            '''No shell script file found at ${shellCompletionConfigurationFile.path}''',
       );
     }
 
     executableEntry.removeFrom(shellCompletionConfigurationFile);
     if (!shellCompletionConfigurationFile.existsSync()) {
-      completionEntry.removeFrom(shellRCFile);
+      // TODO(alestiago): Should we check if there are other shells installed, before
+      // deleting the completion config dir?
+      completionEntry.removeFrom(shellRCFile, shouldDelete: false);
     }
 
     final executableShellCompletionScriptFile = File(

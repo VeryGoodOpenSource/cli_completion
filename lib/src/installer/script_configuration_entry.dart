@@ -59,8 +59,9 @@ class ScriptConfigurationEntry {
   /// If a file has multiple entries with the same [name], all of them will be
   /// removed.
   ///
-  /// If the [file] is empty after removing the entry, it will be deleted.
-  void removeFrom(File file) {
+  /// If [shouldDelete] is true, the [file] will be deleted if it is empty after
+  /// removing the entry. Otherwise, the [file] will be left empty.
+  void removeFrom(File file, {bool shouldDelete = true}) {
     if (!file.existsSync()) return;
 
     final content = file.readAsStringSync();
@@ -75,7 +76,7 @@ class ScriptConfigurationEntry {
     final newContent = content.replaceAllMapped(pattern, (_) => '');
     file.writeAsStringSync(newContent);
 
-    if (newContent.trim().isEmpty) {
+    if (shouldDelete && newContent.trim().isEmpty) {
       file.deleteSync();
     }
   }
