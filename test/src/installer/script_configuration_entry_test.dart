@@ -185,7 +185,7 @@ $initialContent
         expect(content, equals(currentContent));
       });
 
-      test('removes file when there is a single matching entry', () {
+      test('removes file when there is only a single matching entry', () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
@@ -217,7 +217,8 @@ $initialContent
         expect(currentContent, isEmpty);
       });
 
-      test('''removes file when there is a multiple matching entries''', () {
+      test('''removes file when there are only multiple matching entries''',
+          () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
