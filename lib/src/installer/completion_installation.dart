@@ -358,13 +358,6 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       );
     }
 
-    executableEntry.removeFrom(shellCompletionConfigurationFile);
-    if (!shellCompletionConfigurationFile.existsSync()) {
-      // TODO(alestiago): Should we check if there are other shells installed, before
-      // deleting the completion config dir?
-      completionEntry.removeFrom(shellRCFile, shouldDelete: false);
-    }
-
     final executableShellCompletionScriptFile = File(
       path.join(
         completionConfigDir.path,
@@ -375,7 +368,10 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       executableShellCompletionScriptFile.deleteSync();
     }
 
-    // TODO(alestiago): Add .uninstall file to avoid autocompletion installing again.
+    executableEntry.removeFrom(shellCompletionConfigurationFile);
+    if (!shellCompletionConfigurationFile.existsSync()) {
+      completionEntry.removeFrom(shellRCFile, shouldDelete: false);
+    }
   }
 }
 
