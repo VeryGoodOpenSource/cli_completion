@@ -517,9 +517,133 @@ void main() {
           ..install(executableName)
           ..uninstall(executableName);
 
-        expect(rcFile.existsSync(), isTrue);
-        expect(rcFile.readAsStringSync(), isEmpty);
-        expect(installation.completionConfigDir.existsSync(), false);
+        expect(
+          rcFile.existsSync(),
+          isTrue,
+          reason: 'RC file should not be deleted.',
+        );
+        expect(
+          const ScriptConfigurationEntry('Completion').existsIn(rcFile),
+          isFalse,
+          reason: 'Completion config entry should be removed from RC file.',
+        );
+        expect(installation.completionConfigDir.existsSync(), isFalse);
+      });
+
+      test(
+          '''only deletes shell configuration when there is a single executable in multiple shells''',
+          () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final zshConfig = zshConfiguration;
+        final zshRCFile = File(path.join(tempDirectory.path, '.zshrc'))
+          ..createSync();
+
+        final bashConfig = bashConfiguration;
+        final bashRCFile = File(path.join(tempDirectory.path, '.bash_profile'))
+          ..createSync();
+
+        const executableName = 'very_good';
+
+        final bashInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDirectory.path,
+          },
+          configuration: bashConfig,
+        )..install(executableName);
+
+        final zshInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDirectory.path,
+          },
+          configuration: zshConfig,
+        )
+          ..install(executableName)
+          ..uninstall(executableName);
+
+        // Zsh should be uninstalled
+        expect(
+          zshRCFile.existsSync(),
+          isTrue,
+          reason: 'Zsh RC file should still exist.',
+        );
+        expect(
+          const ScriptConfigurationEntry('Completion').existsIn(zshRCFile),
+          isFalse,
+          reason: 'Zsh should not have completion entry.',
+        );
+
+        final zshCompletionConfigurationFile = File(
+          path.join(
+            zshInstallation.completionConfigDir.path,
+            zshConfig.completionConfigForShellFileName,
+          ),
+        );
+        expect(
+          zshCompletionConfigurationFile.existsSync(),
+          isFalse,
+          reason: 'Zsh completion configuration should be deleted.',
+        );
+
+        final zshExecutableCompletionConfigurationFile = File(
+          path.join(
+            zshInstallation.completionConfigDir.path,
+            '$executableName.zsh',
+          ),
+        );
+        expect(
+          zshExecutableCompletionConfigurationFile.existsSync(),
+          isFalse,
+          reason: 'Zsh executable completion configuration should be deleted.',
+        );
+
+        // Bash should still be installed
+        expect(
+          bashRCFile.existsSync(),
+          isTrue,
+          reason: 'Bash RC file should still exist.',
+        );
+        expect(
+          const ScriptConfigurationEntry('Completion').existsIn(bashRCFile),
+          isTrue,
+          reason: 'Bash should have completion entry.',
+        );
+
+        final bashCompletionConfigurationFile = File(
+          path.join(
+            bashInstallation.completionConfigDir.path,
+            bashConfig.completionConfigForShellFileName,
+          ),
+        );
+        expect(
+          bashCompletionConfigurationFile.existsSync(),
+          isTrue,
+          reason: 'Bash completion configuration should still exist.',
+        );
+
+        final bashExecutableCompletionConfigurationFile = File(
+          path.join(
+            bashInstallation.completionConfigDir.path,
+            '$executableName.bash',
+          ),
+        );
+        expect(
+          bashExecutableCompletionConfigurationFile.existsSync(),
+          isTrue,
+          reason:
+              'Bash executable completion configuration should still exist.',
+        );
+
+        expect(
+          bashInstallation.completionConfigDir.existsSync(),
+          isTrue,
+          reason: 'Completion configuration directory should still exist.',
+        );
       });
 
       test(
@@ -554,33 +678,50 @@ void main() {
 
         installation.uninstall(executableName);
 
-        expect(rcFile.existsSync(), isTrue);
+        expect(
+          rcFile.existsSync(),
+          isTrue,
+          reason: 'RC file should not be deleted.',
+        );
         expect(
           const ScriptConfigurationEntry('Completion').existsIn(rcFile),
           isTrue,
+          reason: 'Completion config entry should not be removed from RC file.',
         );
 
-        expect(shellCompletionConfigurationFile.existsSync(), isTrue);
+        expect(
+          shellCompletionConfigurationFile.existsSync(),
+          isTrue,
+          reason: 'Shell completion configuration should still exist.',
+        );
+
         expect(
           const ScriptConfigurationEntry(executableName)
               .existsIn(shellCompletionConfigurationFile),
           isFalse,
+          reason:
+              '''Executable completion for $executableName configuration should be removed.''',
         );
-
-        expect(
-          const ScriptConfigurationEntry(anotherExecutableName)
-              .existsIn(shellCompletionConfigurationFile),
-          isTrue,
-        );
-
         final executableCompletionConfigurationFile = File(
           path.join(
             installation.completionConfigDir.path,
             '$executableName.zsh',
           ),
         );
-        expect(executableCompletionConfigurationFile.existsSync(), false);
+        expect(
+          executableCompletionConfigurationFile.existsSync(),
+          false,
+          reason:
+              '''Executable completion configuration for $executableName should be deleted.''',
+        );
 
+        expect(
+          const ScriptConfigurationEntry(anotherExecutableName)
+              .existsIn(shellCompletionConfigurationFile),
+          isTrue,
+          reason:
+              '''Executable completion configuration for $anotherExecutableName should still exist.''',
+        );
         final anotherExecutableCompletionConfigurationFile = File(
           path.join(
             installation.completionConfigDir.path,
@@ -590,6 +731,8 @@ void main() {
         expect(
           anotherExecutableCompletionConfigurationFile.existsSync(),
           isTrue,
+          reason:
+              '''Executable completion configuration for $anotherExecutableName should still exist.''',
         );
       });
 

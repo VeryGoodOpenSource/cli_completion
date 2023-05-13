@@ -372,6 +372,10 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     if (!shellCompletionConfigurationFile.existsSync()) {
       completionEntry.removeFrom(shellRCFile, shouldDelete: false);
     }
+
+    if (completionConfigDir.listSync().isEmpty) {
+      completionConfigDir.deleteSync();
+    }
   }
 }
 
