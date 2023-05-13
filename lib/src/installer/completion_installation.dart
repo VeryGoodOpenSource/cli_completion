@@ -311,16 +311,19 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
   /// Before uninstalling, it checks if the completion is installed:
   /// - The shell has an existing RCFile with a completion
   /// [ScriptConfigurationEntry].
-  /// - The shell has an exisiting configuration config file with a
+  /// - The shell has an exisiting completion configuration file with a
   /// [ScriptConfigurationEntry] for the [executableName].
   ///
   /// If any of the above is not true, it throws a
   /// [CompletionUnistallationException].
   ///
   /// Upon a successful uninstallation the executable [ScriptConfigurationEntry]
-  /// is removed from the shell config file. If after this removal the latter is
-  /// empty, it is deleted together with the the executable completion script
-  /// and the completion [ScriptConfigurationEntry] from the shell RC file.
+  /// is removed from the shell configuration file. If after this removal the
+  /// latter is empty, it is deleted together with the the executable completion
+  /// script and the completion [ScriptConfigurationEntry] from the shell RC
+  /// file. In the case that there are no other completion scripts installed on
+  /// other shells the completion config directory is deleted, leaving the
+  /// user's system as it was before the installation.
   void uninstall(String executableName) {
     final configuration = this.configuration!;
     logger.detail(
