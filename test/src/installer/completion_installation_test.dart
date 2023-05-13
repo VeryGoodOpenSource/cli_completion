@@ -541,6 +541,43 @@ void main() {
       });
 
       test(
+          '''deletes entire completion configuration when there is a single executable with a missing completion script''',
+          () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final configuration = zshConfiguration;
+        final installation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDirectory.path,
+          },
+          configuration: configuration,
+        );
+
+        final rcFile = File(path.join(tempDirectory.path, '.zshrc'))
+          ..createSync();
+        const ScriptConfigurationEntry('Completion').appendTo(rcFile);
+
+        final shellCompletionConfigurationFile = File(
+          path.join(
+            installation.completionConfigDir.path,
+            configuration.completionConfigForShellFileName,
+          ),
+        );
+        const executableName = 'very_good';
+        const ScriptConfigurationEntry(executableName)
+            .appendTo(shellCompletionConfigurationFile);
+
+        installation.uninstall(executableName);
+
+        expect(rcFile.existsSync(), isTrue);
+        expect(rcFile.readAsStringSync(), isEmpty);
+        expect(shellCompletionConfigurationFile.existsSync(), false);
+      });
+
+      test(
           '''deletes executable completion configuration when there are multiple installed executables''',
           () {
         final tempDirectory = Directory.systemTemp.createTempSync();
