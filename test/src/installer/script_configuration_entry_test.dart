@@ -56,16 +56,35 @@ void main() {
         const initialContent = 'hello world\n';
         file.writeAsStringSync(initialContent);
 
-        final entry = ScriptConfigurationEntry('name');
         const entryContent = 'hello world';
-
-        entry.appendTo(file, content: entryContent);
+        ScriptConfigurationEntry('name').appendTo(file, content: entryContent);
 
         final fileContent = file.readAsStringSync();
         const expectedContent = '''
 $initialContent
 ## [name]
 $entryContent
+## [/name]
+
+''';
+        expect(fileContent, equals(expectedContent));
+      });
+
+      test('correctly appends content when null', () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final filePath = path.join(tempDirectory.path, 'file');
+        final file = File(filePath)..createSync();
+        const initialContent = 'hello world\n';
+        file.writeAsStringSync(initialContent);
+
+        ScriptConfigurationEntry('name').appendTo(file);
+
+        final fileContent = file.readAsStringSync();
+        const expectedContent = '''
+$initialContent
+## [name]
 ## [/name]
 
 ''';
@@ -138,7 +157,7 @@ $entryContent
         expect(() => entry.removeFrom(file), returnsNormally);
       });
 
-      test('does not change the file when file is empty', () {
+      test('deletes file when file is empty', () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
@@ -147,8 +166,7 @@ $entryContent
 
         ScriptConfigurationEntry('name').removeFrom(file);
 
-        final content = file.readAsStringSync();
-        expect(content, isEmpty);
+        expect(file.existsSync(), isFalse);
       });
 
       test('does not change the file when another entry exists in file', () {
@@ -163,11 +181,11 @@ $entryContent
 
         ScriptConfigurationEntry('anotherName').removeFrom(file);
 
-        final newContent = file.readAsStringSync();
-        expect(content, equals(newContent));
+        final currentContent = file.readAsStringSync();
+        expect(content, equals(currentContent));
       });
 
-      test('removes entry from file when there is a single matching entry', () {
+      test('removes file when there is a single matching entry', () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
@@ -178,13 +196,10 @@ $entryContent
         expect(entry.existsIn(file), isTrue);
 
         ScriptConfigurationEntry('name').removeFrom(file);
-        final content = file.readAsStringSync();
-        expect(content, isEmpty);
+        expect(file.existsSync(), isFalse);
       });
 
-      test(
-          '''removes all entries from file when there is a multiple matching entries''',
-          () {
+      test('''removes file when there is a multiple matching entries''', () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
@@ -198,8 +213,7 @@ $entryContent
         expect(entry.existsIn(file), isTrue);
 
         ScriptConfigurationEntry('name').removeFrom(file);
-        final content = file.readAsStringSync();
-        expect(content, isEmpty);
+        expect(file.existsSync(), isFalse);
       });
 
       test('only removes matching entries from file', () {
@@ -211,14 +225,15 @@ $entryContent
 
         final entry = ScriptConfigurationEntry('name')..appendTo(file);
         expect(entry.existsIn(file), isTrue);
+        final newContent = file.readAsStringSync();
 
         final anotherEntry = ScriptConfigurationEntry('anotherName')
           ..appendTo(file);
         expect(anotherEntry.existsIn(file), isTrue);
 
-        ScriptConfigurationEntry('name').removeFrom(file);
-        final content = file.readAsStringSync();
-        expect(content, isEmpty);
+        ScriptConfigurationEntry('anotherName').removeFrom(file);
+        final actualContent = file.readAsStringSync();
+        expect(actualContent, equals(newContent));
       });
     });
   });
