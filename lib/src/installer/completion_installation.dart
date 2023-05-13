@@ -319,8 +319,8 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
   ///
   /// Upon a successful uninstallation the executable [ScriptConfigurationEntry]
   /// is removed from the shell config file. If after this removal the latter is
-  /// empty, it is deleted. In addition, the executable completion script is
-  /// deleted if it exists.
+  /// empty, it is deleted together with the the executable completion script
+  /// and the completion [ScriptConfigurationEntry] from the shell RC file.
   void uninstall(String executableName) {
     final configuration = this.configuration!;
     logger.detail(
@@ -328,7 +328,8 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     );
 
     final shellRCFile = File(_shellRCFilePath);
-    if (!const ScriptConfigurationEntry('Completion').existsIn(shellRCFile)) {
+    const completionEntry = ScriptConfigurationEntry('Completion');
+    if (!completionEntry.existsIn(shellRCFile)) {
       throw CompletionUnistallationException(
         executableName: executableName,
         message: 'No configuration file found at ${shellRCFile.path}',
@@ -350,6 +351,11 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       );
     }
 
+    executableEntry.removeFrom(shellCompletionConfigurationFile);
+    if (!shellCompletionConfigurationFile.existsSync()) {
+      completionEntry.removeFrom(shellRCFile);
+    }
+
     final executableShellCompletionScriptFile = File(
       path.join(
         completionConfigDir.path,
@@ -360,7 +366,6 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       executableShellCompletionScriptFile.deleteSync();
     }
 
-    executableEntry.removeFrom(shellCompletionConfigurationFile);
     // TODO(alestiago): Add .uninstall file to avoid autocompletion installing again.
   }
 }
