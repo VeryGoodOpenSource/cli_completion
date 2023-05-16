@@ -129,7 +129,7 @@ Uninstalls _jsonDecodeUninstalls(Map<String, dynamic> json) {
   return UnmodifiableMapView(newUninstalls);
 }
 
-/// Returns a JSON representation of this [Uninstalls].
+/// Returns a JSON representation of the given [Uninstalls].
 String _jsonEncodeUninstalls(Uninstalls uninstalls) {
   return jsonEncode({
     for (final entry in uninstalls.entries)
