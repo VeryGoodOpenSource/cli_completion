@@ -144,39 +144,6 @@ String _jsonEncodeUninstalls(Uninstalls uninstalls) {
   });
 }
 
-/// Provides convinience methods for [Uninstalls].
-extension UninstallsExtension on Uninstalls {
-  /// Returns a new [Uninstalls] with the given [command] added to
-  /// [systemShell].
-  Uninstalls add({required String command, required SystemShell systemShell}) {
-    final modifiable = _modifiable();
-
-    if (modifiable.containsKey(systemShell)) {
-      modifiable[systemShell]!.add(command);
-    } else {
-      modifiable[systemShell] = {command};
-    }
-
-    return UnmodifiableMapView(
-      modifiable.map((key, value) => MapEntry(key, UnmodifiableSetView(value))),
-    );
-  }
-
-  /// Returns a new [Uninstalls] with the given [command] removed from
-  /// [systemShell].
-  void remove({required String command, required SystemShell systemShell}) {
-    final modifiable = _modifiable();
-
-    if (modifiable.containsKey(systemShell)) {
-      modifiable[systemShell]!.remove(command);
-    }
-  }
-
-  Map<SystemShell, Set<String>> _modifiable() {
-    return map((key, value) => MapEntry(key, value.toSet()));
-  }
-}
-
 extension on String {
   /// Whether this [String] can be parsed into a [SystemShell].
   bool canParseSystemShell() {
