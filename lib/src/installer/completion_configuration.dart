@@ -113,8 +113,8 @@ Uninstalls _jsonDecodeUninstalls(Map<String, dynamic> json) {
         final newUninstalls = <SystemShell, UnmodifiableSetView<String>>{};
 
         for (final entry in decodedUninstalls.entries) {
-          if (!entry.key.canParseSystemShell()) continue;
-          final systemShell = entry.key.toSystemShell();
+          final systemShell = SystemShell.tryParse(entry.key);
+          if (systemShell == null) continue;
           final uninstallSet = <String>{};
           if (entry.value is List) {
             for (final uninstall in entry.value as List) {
@@ -142,37 +142,4 @@ String _jsonEncodeUninstalls(Uninstalls uninstalls) {
     for (final entry in uninstalls.entries)
       entry.key.toString(): entry.value.toList(),
   });
-}
-
-extension on String {
-  /// Whether this [String] can be parsed into a [SystemShell].
-  bool canParseSystemShell() {
-    try {
-      toSystemShell();
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  /// Parses a [SystemShell] from the [String].
-  ///
-  /// The value is assumed to be a string representation of a [SystemShell]
-  /// derived from [SystemShell.toString].
-  ///
-  /// Throws an [ArgumentError] if the string cannot be parsed into a
-  /// [SystemShell].
-  SystemShell toSystemShell() {
-    if (this == SystemShell.bash.toString()) {
-      return SystemShell.bash;
-    } else if (this == SystemShell.zsh.toString()) {
-      return SystemShell.zsh;
-    } else {
-      throw ArgumentError.value(
-        this,
-        'value',
-        '''Failed to parse $SystemShell from "$this"''',
-      );
-    }
-  }
 }
