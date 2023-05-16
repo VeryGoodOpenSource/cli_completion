@@ -61,7 +61,7 @@ class ScriptConfigurationEntry {
   ///
   /// If [shouldDelete] is true, the [file] will be deleted if it is empty after
   /// removing the entry. Otherwise, the [file] will be left empty.
-  void removeFrom(File file, {bool shouldDelete = true}) {
+  void removeFrom(File file, {bool shouldDelete = false}) {
     if (!file.existsSync()) return;
 
     final content = file.readAsStringSync();

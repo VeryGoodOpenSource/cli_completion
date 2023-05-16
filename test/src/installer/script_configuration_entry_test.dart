@@ -157,14 +157,14 @@ $initialContent
         expect(() => entry.removeFrom(file), returnsNormally);
       });
 
-      test('deletes file when file is empty', () {
+      test('deletes file when file is empty and should delete', () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final filePath = path.join(tempDirectory.path, 'file');
         final file = File(filePath)..createSync();
 
-        ScriptConfigurationEntry('name').removeFrom(file);
+        ScriptConfigurationEntry('name').removeFrom(file, shouldDelete: true);
 
         expect(file.existsSync(), isFalse);
       });
@@ -185,7 +185,9 @@ $initialContent
         expect(content, equals(currentContent));
       });
 
-      test('removes file when there is only a single matching entry', () {
+      test(
+          '''removes file when there is only a single matching entry and should delete''',
+          () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
@@ -195,7 +197,7 @@ $initialContent
         final entry = ScriptConfigurationEntry('name')..appendTo(file);
         expect(entry.existsIn(file), isTrue);
 
-        ScriptConfigurationEntry('name').removeFrom(file);
+        ScriptConfigurationEntry('name').removeFrom(file, shouldDelete: true);
         expect(file.existsSync(), isFalse);
       });
 
@@ -211,13 +213,14 @@ $initialContent
         final entry = ScriptConfigurationEntry('name')..appendTo(file);
         expect(entry.existsIn(file), isTrue);
 
-        ScriptConfigurationEntry('name').removeFrom(file, shouldDelete: false);
+        ScriptConfigurationEntry('name').removeFrom(file);
         expect(file.existsSync(), isTrue);
         final currentContent = file.readAsStringSync();
         expect(currentContent, isEmpty);
       });
 
-      test('''removes file when there are only multiple matching entries''',
+      test(
+          '''removes file when there are only multiple matching entries and should delete''',
           () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
@@ -231,7 +234,7 @@ $initialContent
           ..appendTo(file);
         expect(entry.existsIn(file), isTrue);
 
-        ScriptConfigurationEntry('name').removeFrom(file);
+        ScriptConfigurationEntry('name').removeFrom(file, shouldDelete: true);
         expect(file.existsSync(), isFalse);
       });
 
