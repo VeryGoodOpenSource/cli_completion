@@ -15,7 +15,7 @@ void main() {
 
     group('fromFile', () {
       test(
-        'creates file with empty cache when file does not exist',
+        'returns empty cache when file does not exist',
         () {
           final tempDirectory = Directory.systemTemp.createTempSync();
           addTearDown(() => tempDirectory.deleteSync(recursive: true));
@@ -33,15 +33,10 @@ void main() {
             isEmpty,
             reason: 'Uninstalls should be initially empty',
           );
-          expect(
-            file.existsSync(),
-            isTrue,
-            reason: 'File should exist after cache creation',
-          );
         },
       );
 
-      test('has empty members when file is empty', () {
+      test('returns empty cache when file is empty', () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
@@ -56,7 +51,7 @@ void main() {
         );
       });
 
-      test("creates $CompletionConfiguration with the file's defined members",
+      test("returns a $CompletionConfiguration with the file's defined members",
           () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
@@ -75,7 +70,7 @@ void main() {
       });
 
       test(
-        '''creates $CompletionConfiguration with empty uninstalls if the file has a string value''',
+        '''returns a $CompletionConfiguration with empty uninstalls if the file's JSON "uninstalls" key has a string value''',
         () {
           final tempDirectory = Directory.systemTemp.createTempSync();
           addTearDown(() => tempDirectory.deleteSync(recursive: true));
@@ -95,7 +90,7 @@ void main() {
       );
 
       test(
-        '''creates $CompletionConfiguration with empty uninstalls if the file has a numeric value''',
+        '''returns a $CompletionConfiguration with empty uninstalls if file's JSON "uninstalls" key has a numeric value''',
         () {
           final tempDirectory = Directory.systemTemp.createTempSync();
           addTearDown(() => tempDirectory.deleteSync(recursive: true));

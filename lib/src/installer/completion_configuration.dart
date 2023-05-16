@@ -30,10 +30,8 @@ class CompletionConfiguration {
 
   /// Creates a [CompletionConfiguration] from the given [file] content.
   ///
-  /// If the file does not exist, an empty [CompletionConfiguration] is created
-  /// and stored in the file.
-  ///
-  /// If the file is empty, an empty [CompletionConfiguration] is created.
+  /// If the file does not exist or is empty, a [CompletionConfiguration.empty]
+  /// is created.
   ///
   /// If the file is not empty, a [CompletionConfiguration] is created from the
   /// file's content. This content is assumed to be a JSON string. The parsing
@@ -41,7 +39,7 @@ class CompletionConfiguration {
   /// handles issues without throwing an [Exception].
   factory CompletionConfiguration.fromFile(File file) {
     if (!file.existsSync()) {
-      return CompletionConfiguration.empty()..writeTo(file);
+      return CompletionConfiguration.empty();
     }
 
     final json = file.readAsStringSync();
