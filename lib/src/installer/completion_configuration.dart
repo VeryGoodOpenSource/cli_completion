@@ -196,9 +196,9 @@ extension on String {
   /// Throws an [ArgumentError] if the string cannot be parsed into a
   /// [SystemShell].
   SystemShell toSystemShell() {
-    if (_equals(SystemShell.bash.toString())) {
+    if (this == SystemShell.bash.toString()) {
       return SystemShell.bash;
-    } else if (_equals(SystemShell.zsh.toString())) {
+    } else if (this == SystemShell.zsh.toString()) {
       return SystemShell.zsh;
     } else {
       throw ArgumentError.value(
@@ -208,7 +208,4 @@ extension on String {
       );
     }
   }
-
-  bool _equals(String other) =>
-      startsWith(other) && endsWith(other) && length == other.length;
 }
