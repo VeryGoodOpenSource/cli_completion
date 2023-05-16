@@ -73,6 +73,46 @@ void main() {
           reason: 'Uninstalls should match those defined in the file',
         );
       });
+
+      test(
+        '''creates $CompletionConfiguration with empty uninstalls if the file has a string value''',
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          const json = '{"uninstalls": "very_bad"}';
+          final file = File(path.join(tempDirectory.path, 'config.json'))
+            ..writeAsStringSync(json);
+
+          final cache = CompletionConfiguration.fromFile(file);
+          expect(
+            cache.uninstalls,
+            isEmpty,
+            reason:
+                '''Uninstalls should be empty when the value is of an invalid type''',
+          );
+        },
+      );
+
+      test(
+        '''creates $CompletionConfiguration with empty uninstalls if the file has a numeric value''',
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          const json = '{"uninstalls": 1}';
+          final file = File(path.join(tempDirectory.path, 'config.json'))
+            ..writeAsStringSync(json);
+
+          final cache = CompletionConfiguration.fromFile(file);
+          expect(
+            cache.uninstalls,
+            isEmpty,
+            reason:
+                '''Uninstalls should be empty when the value is of an invalid type''',
+          );
+        },
+      );
     });
 
     group('writeTo', () {

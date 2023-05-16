@@ -108,8 +108,10 @@ Uninstalls _jsonDecodeUninstalls(Map<String, dynamic> json) {
   if (jsonUninstalls is! String) {
     return UnmodifiableMapView({});
   }
-  final decodedUninstalls = jsonDecode(jsonUninstalls);
-  if (decodedUninstalls is! Map<String, dynamic>) {
+  late final Map<String, dynamic> decodedUninstalls;
+  try {
+    decodedUninstalls = jsonDecode(jsonUninstalls) as Map<String, dynamic>;
+  } on FormatException {
     return UnmodifiableMapView({});
   }
 
