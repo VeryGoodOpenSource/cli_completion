@@ -20,7 +20,7 @@ class CompletionInstallationException implements Exception {
 }
 
 /// {@template completion_unistallation_exception}
-/// Describes an exception during the installation of completion scripts.
+/// Describes an exception during the uninstallation of completion scripts.
 /// {@endtemplate}
 class CompletionUnistallationException implements Exception {
   /// {@macro completion_unistallation_exception}
