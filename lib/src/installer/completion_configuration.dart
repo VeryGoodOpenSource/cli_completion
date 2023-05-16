@@ -100,40 +100,33 @@ class CompletionConfiguration {
 /// If the [json] is not partially or fully valid, it handles issues gracefully
 /// without throwing an [Exception].
 Uninstalls _jsonDecodeUninstalls(Map<String, dynamic> json) {
-  late final Uninstalls uninstalls;
-  if (json.containsKey(CompletionConfiguration._uninstallsJsonKey)) {
-    final rawUninstalls = json[CompletionConfiguration._uninstallsJsonKey];
-    if (rawUninstalls is! String) {
-      uninstalls = UnmodifiableMapView({});
-    } else {
-      final decodedUninstalls = jsonDecode(rawUninstalls);
-      if (decodedUninstalls is! Map<String, dynamic>) {
-        uninstalls = UnmodifiableMapView({});
-      } else {
-        final newUninstalls = <SystemShell, UnmodifiableSetView<String>>{};
-
-        for (final entry in decodedUninstalls.entries) {
-          final systemShell = SystemShell.tryParse(entry.key);
-          if (systemShell == null) continue;
-          final uninstallSet = <String>{};
-          if (entry.value is List) {
-            for (final uninstall in entry.value as List) {
-              if (uninstall is String) {
-                uninstallSet.add(uninstall);
-              }
-            }
-          }
-
-          newUninstalls[systemShell] = UnmodifiableSetView(uninstallSet);
-        }
-        uninstalls = UnmodifiableMapView(newUninstalls);
-      }
-    }
-  } else {
-    uninstalls = UnmodifiableMapView({});
+  if (!json.containsKey(CompletionConfiguration._uninstallsJsonKey)) {
+    return UnmodifiableMapView({});
+  }
+  final jsonUninstalls = json[CompletionConfiguration._uninstallsJsonKey];
+  if (jsonUninstalls is! String) {
+    return UnmodifiableMapView({});
+  }
+  final decodedUninstalls = jsonDecode(jsonUninstalls);
+  if (decodedUninstalls is! Map<String, dynamic>) {
+    return UnmodifiableMapView({});
   }
 
-  return uninstalls;
+  final newUninstalls = <SystemShell, UnmodifiableSetView<String>>{};
+  for (final entry in decodedUninstalls.entries) {
+    final systemShell = SystemShell.tryParse(entry.key);
+    if (systemShell == null) continue;
+    final uninstallSet = <String>{};
+    if (entry.value is List) {
+      for (final uninstall in entry.value as List) {
+        if (uninstall is String) {
+          uninstallSet.add(uninstall);
+        }
+      }
+    }
+    newUninstalls[systemShell] = UnmodifiableSetView(uninstallSet);
+  }
+  return UnmodifiableMapView(newUninstalls);
 }
 
 /// Returns a JSON representation of this [Uninstalls].
