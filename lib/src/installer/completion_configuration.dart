@@ -35,9 +35,9 @@ class CompletionConfiguration {
   /// If the file is empty, an empty [CompletionConfiguration] is created.
   ///
   /// If the file is not empty, a [CompletionConfiguration] is created from the
-  /// file's content. This content is assumed to be a JSON string. It doesn't
-  /// throw when the content is not a valid JSON string. Instead it gracefully
-  /// handles the missing or invalid values.
+  /// file's content. This content is assumed to be a JSON string. The parsing
+  /// is handled gracefully, so if the JSON is partially or fully invalid, it
+  /// handles issues without throwing an [Exception].
   factory CompletionConfiguration.fromFile(File file) {
     if (!file.existsSync()) {
       return CompletionConfiguration.empty()..writeTo(file);
