@@ -305,14 +305,14 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     logger.info('Added config to $configFilePath');
   }
 
-  /// Uninstalls the completion for the command [executableName] on the current
+  /// Uninstalls the completion for the command [rootCommand] on the current
   /// shell.
   ///
   /// Before uninstalling, it checks if the completion is installed:
   /// - The shell has an existing RCFile with a completion
   /// [ScriptConfigurationEntry].
   /// - The shell has an exisiting completion configuration file with a
-  /// [ScriptConfigurationEntry] for the [executableName].
+  /// [ScriptConfigurationEntry] for the [rootCommand].
   ///
   /// If any of the above is not true, it throws a
   /// [CompletionUnistallationException].
@@ -324,16 +324,16 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
   /// file. In the case that there are no other completion scripts installed on
   /// other shells the completion config directory is deleted, leaving the
   /// user's system as it was before the installation.
-  void uninstall(String executableName) {
+  void uninstall(String rootCommand) {
     final configuration = this.configuration!;
     logger.detail(
-      '''Uninstalling completion for the command $executableName on ${configuration.shell.name}''',
+      '''Uninstalling completion for the command $rootCommand on ${configuration.shell.name}''',
     );
 
     final shellRCFile = File(_shellRCFilePath);
     if (!shellRCFile.existsSync()) {
       throw CompletionUnistallationException(
-        executableName: executableName,
+        executableName: rootCommand,
         message: 'No shell RC file found at ${shellRCFile.path}',
       );
     }
@@ -341,7 +341,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     const completionEntry = ScriptConfigurationEntry('Completion');
     if (!completionEntry.existsIn(shellRCFile)) {
       throw CompletionUnistallationException(
-        executableName: executableName,
+        executableName: rootCommand,
         message: 'Completion is not installed at ${shellRCFile.path}',
       );
     }
@@ -352,10 +352,10 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
         configuration.completionConfigForShellFileName,
       ),
     );
-    final executableEntry = ScriptConfigurationEntry(executableName);
+    final executableEntry = ScriptConfigurationEntry(rootCommand);
     if (!executableEntry.existsIn(shellCompletionConfigurationFile)) {
       throw CompletionUnistallationException(
-        executableName: executableName,
+        executableName: rootCommand,
         message:
             '''No shell script file found at ${shellCompletionConfigurationFile.path}''',
       );
@@ -364,7 +364,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     final executableShellCompletionScriptFile = File(
       path.join(
         completionConfigDir.path,
-        '$executableName.${configuration.shell.name}',
+        '$rootCommand.${configuration.shell.name}',
       ),
     );
     if (executableShellCompletionScriptFile.existsSync()) {

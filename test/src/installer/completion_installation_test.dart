@@ -496,7 +496,7 @@ void main() {
 
     group('uninstall', () {
       test(
-          '''deletes entire completion configuration when there is a single executable''',
+          '''deletes entire completion configuration when there is a single command''',
           () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
@@ -505,7 +505,7 @@ void main() {
         final rcFile = File(path.join(tempDirectory.path, '.zshrc'))
           ..createSync();
 
-        const executableName = 'very_good';
+        const rootCommand = 'very_good';
         final installation = CompletionInstallation(
           logger: logger,
           isWindows: false,
@@ -514,8 +514,8 @@ void main() {
           },
           configuration: configuration,
         )
-          ..install(executableName)
-          ..uninstall(executableName);
+          ..install(rootCommand)
+          ..uninstall(rootCommand);
 
         expect(
           rcFile.existsSync(),
@@ -531,7 +531,7 @@ void main() {
       });
 
       test(
-          '''only deletes shell configuration when there is a single executable in multiple shells''',
+          '''only deletes shell configuration when there is a single command in multiple shells''',
           () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
@@ -544,7 +544,7 @@ void main() {
         final bashRCFile = File(path.join(tempDirectory.path, '.bash_profile'))
           ..createSync();
 
-        const executableName = 'very_good';
+        const rootCommand = 'very_good';
 
         final bashInstallation = CompletionInstallation(
           logger: logger,
@@ -553,7 +553,7 @@ void main() {
             'HOME': tempDirectory.path,
           },
           configuration: bashConfig,
-        )..install(executableName);
+        )..install(rootCommand);
 
         final zshInstallation = CompletionInstallation(
           logger: logger,
@@ -563,8 +563,8 @@ void main() {
           },
           configuration: zshConfig,
         )
-          ..install(executableName)
-          ..uninstall(executableName);
+          ..install(rootCommand)
+          ..uninstall(rootCommand);
 
         // Zsh should be uninstalled
         expect(
@@ -590,16 +590,16 @@ void main() {
           reason: 'Zsh completion configuration should be deleted.',
         );
 
-        final zshExecutableCompletionConfigurationFile = File(
+        final zshCommandCompletionConfigurationFile = File(
           path.join(
             zshInstallation.completionConfigDir.path,
-            '$executableName.zsh',
+            '$rootCommand.zsh',
           ),
         );
         expect(
-          zshExecutableCompletionConfigurationFile.existsSync(),
+          zshCommandCompletionConfigurationFile.existsSync(),
           isFalse,
-          reason: 'Zsh executable completion configuration should be deleted.',
+          reason: 'Zsh command completion configuration should be deleted.',
         );
 
         // Bash should still be installed
@@ -626,17 +626,16 @@ void main() {
           reason: 'Bash completion configuration should still exist.',
         );
 
-        final bashExecutableCompletionConfigurationFile = File(
+        final bashCommandCompletionConfigurationFile = File(
           path.join(
             bashInstallation.completionConfigDir.path,
-            '$executableName.bash',
+            '$rootCommand.bash',
           ),
         );
         expect(
-          bashExecutableCompletionConfigurationFile.existsSync(),
+          bashCommandCompletionConfigurationFile.existsSync(),
           isTrue,
-          reason:
-              'Bash executable completion configuration should still exist.',
+          reason: 'Bash command completion configuration should still exist.',
         );
 
         expect(
@@ -647,14 +646,14 @@ void main() {
       });
 
       test(
-          '''only deletes executable completion configuration when there are multiple installed executables''',
+          '''only deletes command completion configuration when there are multiple installed commands''',
           () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final configuration = zshConfiguration;
-        const executableName = 'very_good';
-        const anotherExecutableName = 'not_good';
+        const commandName = 'very_good';
+        const anotherCommandName = 'not_good';
 
         final rcFile = File(path.join(tempDirectory.path, '.zshrc'))
           ..createSync();
@@ -666,8 +665,8 @@ void main() {
           },
           configuration: configuration,
         )
-          ..install(executableName)
-          ..install(anotherExecutableName);
+          ..install(commandName)
+          ..install(anotherCommandName);
 
         final shellCompletionConfigurationFile = File(
           path.join(
@@ -676,7 +675,7 @@ void main() {
           ),
         );
 
-        installation.uninstall(executableName);
+        installation.uninstall(commandName);
 
         expect(
           rcFile.existsSync(),
@@ -696,43 +695,43 @@ void main() {
         );
 
         expect(
-          const ScriptConfigurationEntry(executableName)
+          const ScriptConfigurationEntry(commandName)
               .existsIn(shellCompletionConfigurationFile),
           isFalse,
           reason:
-              '''Executable completion for $executableName configuration should be removed.''',
+              '''Command completion for $commandName configuration should be removed.''',
         );
-        final executableCompletionConfigurationFile = File(
+        final commandCompletionConfigurationFile = File(
           path.join(
             installation.completionConfigDir.path,
-            '$executableName.zsh',
+            '$commandName.zsh',
           ),
         );
         expect(
-          executableCompletionConfigurationFile.existsSync(),
+          commandCompletionConfigurationFile.existsSync(),
           false,
           reason:
-              '''Executable completion configuration for $executableName should be deleted.''',
+              '''Command completion configuration for $commandName should be deleted.''',
         );
 
         expect(
-          const ScriptConfigurationEntry(anotherExecutableName)
+          const ScriptConfigurationEntry(anotherCommandName)
               .existsIn(shellCompletionConfigurationFile),
           isTrue,
           reason:
-              '''Executable completion configuration for $anotherExecutableName should still exist.''',
+              '''Command completion configuration for $anotherCommandName should still exist.''',
         );
-        final anotherExecutableCompletionConfigurationFile = File(
+        final anotherCommandCompletionConfigurationFile = File(
           path.join(
             installation.completionConfigDir.path,
-            '$anotherExecutableName.zsh',
+            '$anotherCommandName.zsh',
           ),
         );
         expect(
-          anotherExecutableCompletionConfigurationFile.existsSync(),
+          anotherCommandCompletionConfigurationFile.existsSync(),
           isTrue,
           reason:
-              '''Executable completion configuration for $anotherExecutableName should still exist.''',
+              '''Command completion configuration for $anotherCommandName should still exist.''',
         );
       });
 
