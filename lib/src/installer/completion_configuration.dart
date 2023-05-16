@@ -14,7 +14,8 @@ typedef Uninstalls
     = UnmodifiableMapView<SystemShell, UnmodifiableSetView<String>>;
 
 /// {@template completion_configuration}
-/// A configuration that stores data on how to handle command completions.
+/// A configuration that stores information on how to handle command
+/// completions.
 /// {@endtemplate}
 @immutable
 class CompletionConfiguration {
