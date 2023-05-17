@@ -25,7 +25,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   CompletionCommandRunner(super.executableName, super.description) {
     addCommand(HandleCompletionRequestCommand<T>());
     addCommand(InstallCompletionFilesCommand<T>());
-    addCommand(UnistallCompletionFilesCommand());
+    addCommand(UnistallCompletionFilesCommand<T>());
   }
 
   /// The [Logger] used to prompt the completion suggestions.
