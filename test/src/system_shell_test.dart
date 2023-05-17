@@ -103,5 +103,43 @@ void main() {
         });
       });
     });
+
+    group('tryParse', () {
+      group('returns bash', () {
+        test('when given "bash"', () {
+          expect(
+            SystemShell.tryParse('bash'),
+            equals(SystemShell.bash),
+          );
+        });
+
+        test('when given "SystemShell.bash"', () {
+          expect(
+            SystemShell.tryParse('SystemShell.bash'),
+            equals(SystemShell.bash),
+          );
+        });
+      });
+
+      group('returns zsh', () {
+        test('when given "zsh"', () {
+          expect(
+            SystemShell.tryParse('zsh'),
+            equals(SystemShell.zsh),
+          );
+        });
+
+        test('when given "SystemShell.zsh"', () {
+          expect(
+            SystemShell.tryParse('SystemShell.zsh'),
+            equals(SystemShell.zsh),
+          );
+        });
+      });
+
+      test('returns null for unknown shell', () {
+        expect(SystemShell.tryParse('unknown'), equals(null));
+      });
+    });
   });
 }

@@ -54,7 +54,16 @@ enum SystemShell {
       // On windows basename can be bash.exe
       return SystemShell.bash;
     }
+    return null;
+  }
 
+  /// Tries to parse a [SystemShell] from a [String].
+  ///
+  /// Returns `null` if the [value] does not match any of the shells.
+  static SystemShell? tryParse(String value) {
+    for (final shell in SystemShell.values) {
+      if (value == shell.name || value == shell.toString()) return shell;
+    }
     return null;
   }
 }
