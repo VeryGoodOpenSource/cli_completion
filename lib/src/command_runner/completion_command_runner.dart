@@ -7,7 +7,6 @@ import 'package:cli_completion/installer.dart';
 import 'package:cli_completion/parser.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
-import 'package:path/path.dart';
 
 /// {@template completion_command_runner}
 /// A [CommandRunner] that takes care of installing shell completion scripts
