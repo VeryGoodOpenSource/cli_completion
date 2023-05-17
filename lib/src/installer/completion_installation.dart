@@ -311,7 +311,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
   /// Before uninstalling, it checks if the completion is installed:
   /// - The shell has an existing RCFile with a completion
   /// [ScriptConfigurationEntry].
-  /// - The shell has an exisiting completion configuration file with a
+  /// - The shell has an existing completion configuration file with a
   /// [ScriptConfigurationEntry] for the [rootCommand].
   ///
   /// If any of the above is not true, it throws a
