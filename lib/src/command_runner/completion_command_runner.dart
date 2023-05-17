@@ -7,6 +7,7 @@ import 'package:cli_completion/installer.dart';
 import 'package:cli_completion/parser.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart';
 
 /// {@template completion_command_runner}
 /// A [CommandRunner] that takes care of installing shell completion scripts
@@ -25,6 +26,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   CompletionCommandRunner(super.executableName, super.description) {
     addCommand(HandleCompletionRequestCommand<T>());
     addCommand(InstallCompletionFilesCommand<T>());
+    addCommand(UnistallCompletionFilesCommand());
   }
 
   /// The [Logger] used to prompt the completion suggestions.
@@ -88,6 +90,19 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
       completionInstallationLogger.level = level;
       completionInstallation.install(executableName);
     } on CompletionInstallationException catch (e) {
+      completionInstallationLogger.warn(e.toString());
+    } on Exception catch (e) {
+      completionInstallationLogger.err(e.toString());
+    }
+  }
+
+  /// Tries to uninstall completion files for the current shell.
+  @internal
+  void tryUninstallCompletionFiles(Level level) {
+    try {
+      completionInstallationLogger.level = level;
+      completionInstallation.uninstall(executableName);
+    } on CompletionUnistallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
     } on Exception catch (e) {
       completionInstallationLogger.err(e.toString());
