@@ -493,5 +493,339 @@ void main() {
         },
       );
     });
+
+    group('uninstall', () {
+      test(
+          '''deletes entire completion configuration when there is a single command''',
+          () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final configuration = zshConfiguration;
+        final rcFile = File(path.join(tempDirectory.path, '.zshrc'))
+          ..createSync();
+
+        const rootCommand = 'very_good';
+        final installation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDirectory.path,
+          },
+          configuration: configuration,
+        )
+          ..install(rootCommand)
+          ..uninstall(rootCommand);
+
+        expect(
+          rcFile.existsSync(),
+          isTrue,
+          reason: 'RC file should not be deleted.',
+        );
+        expect(
+          const ScriptConfigurationEntry('Completion').existsIn(rcFile),
+          isFalse,
+          reason: 'Completion config entry should be removed from RC file.',
+        );
+        expect(installation.completionConfigDir.existsSync(), isFalse);
+      });
+
+      test(
+          '''only deletes shell configuration when there is a single command in multiple shells''',
+          () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final zshConfig = zshConfiguration;
+        final zshRCFile = File(path.join(tempDirectory.path, '.zshrc'))
+          ..createSync();
+
+        final bashConfig = bashConfiguration;
+        final bashRCFile = File(path.join(tempDirectory.path, '.bash_profile'))
+          ..createSync();
+
+        const rootCommand = 'very_good';
+
+        final bashInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDirectory.path,
+          },
+          configuration: bashConfig,
+        )..install(rootCommand);
+
+        final zshInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDirectory.path,
+          },
+          configuration: zshConfig,
+        )
+          ..install(rootCommand)
+          ..uninstall(rootCommand);
+
+        // Zsh should be uninstalled
+        expect(
+          zshRCFile.existsSync(),
+          isTrue,
+          reason: 'Zsh RC file should still exist.',
+        );
+        expect(
+          const ScriptConfigurationEntry('Completion').existsIn(zshRCFile),
+          isFalse,
+          reason: 'Zsh should not have completion entry.',
+        );
+
+        final zshCompletionConfigurationFile = File(
+          path.join(
+            zshInstallation.completionConfigDir.path,
+            zshConfig.completionConfigForShellFileName,
+          ),
+        );
+        expect(
+          zshCompletionConfigurationFile.existsSync(),
+          isFalse,
+          reason: 'Zsh completion configuration should be deleted.',
+        );
+
+        final zshCommandCompletionConfigurationFile = File(
+          path.join(
+            zshInstallation.completionConfigDir.path,
+            '$rootCommand.zsh',
+          ),
+        );
+        expect(
+          zshCommandCompletionConfigurationFile.existsSync(),
+          isFalse,
+          reason: 'Zsh command completion configuration should be deleted.',
+        );
+
+        // Bash should still be installed
+        expect(
+          bashRCFile.existsSync(),
+          isTrue,
+          reason: 'Bash RC file should still exist.',
+        );
+        expect(
+          const ScriptConfigurationEntry('Completion').existsIn(bashRCFile),
+          isTrue,
+          reason: 'Bash should have completion entry.',
+        );
+
+        final bashCompletionConfigurationFile = File(
+          path.join(
+            bashInstallation.completionConfigDir.path,
+            bashConfig.completionConfigForShellFileName,
+          ),
+        );
+        expect(
+          bashCompletionConfigurationFile.existsSync(),
+          isTrue,
+          reason: 'Bash completion configuration should still exist.',
+        );
+
+        final bashCommandCompletionConfigurationFile = File(
+          path.join(
+            bashInstallation.completionConfigDir.path,
+            '$rootCommand.bash',
+          ),
+        );
+        expect(
+          bashCommandCompletionConfigurationFile.existsSync(),
+          isTrue,
+          reason: 'Bash command completion configuration should still exist.',
+        );
+
+        expect(
+          bashInstallation.completionConfigDir.existsSync(),
+          isTrue,
+          reason: 'Completion configuration directory should still exist.',
+        );
+      });
+
+      test(
+          '''only deletes command completion configuration when there are multiple installed commands''',
+          () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final configuration = zshConfiguration;
+        const commandName = 'very_good';
+        const anotherCommandName = 'not_good';
+
+        final rcFile = File(path.join(tempDirectory.path, '.zshrc'))
+          ..createSync();
+        final installation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDirectory.path,
+          },
+          configuration: configuration,
+        )
+          ..install(commandName)
+          ..install(anotherCommandName);
+
+        final shellCompletionConfigurationFile = File(
+          path.join(
+            installation.completionConfigDir.path,
+            configuration.completionConfigForShellFileName,
+          ),
+        );
+
+        installation.uninstall(commandName);
+
+        expect(
+          rcFile.existsSync(),
+          isTrue,
+          reason: 'RC file should not be deleted.',
+        );
+        expect(
+          const ScriptConfigurationEntry('Completion').existsIn(rcFile),
+          isTrue,
+          reason: 'Completion config entry should not be removed from RC file.',
+        );
+
+        expect(
+          shellCompletionConfigurationFile.existsSync(),
+          isTrue,
+          reason: 'Shell completion configuration should still exist.',
+        );
+
+        expect(
+          const ScriptConfigurationEntry(commandName)
+              .existsIn(shellCompletionConfigurationFile),
+          isFalse,
+          reason:
+              '''Command completion for $commandName configuration should be removed.''',
+        );
+        final commandCompletionConfigurationFile = File(
+          path.join(
+            installation.completionConfigDir.path,
+            '$commandName.zsh',
+          ),
+        );
+        expect(
+          commandCompletionConfigurationFile.existsSync(),
+          false,
+          reason:
+              '''Command completion configuration for $commandName should be deleted.''',
+        );
+
+        expect(
+          const ScriptConfigurationEntry(anotherCommandName)
+              .existsIn(shellCompletionConfigurationFile),
+          isTrue,
+          reason:
+              '''Command completion configuration for $anotherCommandName should still exist.''',
+        );
+        final anotherCommandCompletionConfigurationFile = File(
+          path.join(
+            installation.completionConfigDir.path,
+            '$anotherCommandName.zsh',
+          ),
+        );
+        expect(
+          anotherCommandCompletionConfigurationFile.existsSync(),
+          isTrue,
+          reason:
+              '''Command completion configuration for $anotherCommandName should still exist.''',
+        );
+      });
+
+      group('throws a CompletionUnistallationException', () {
+        test('when RC file does not exist', () {
+          final installation = CompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDir.path,
+            },
+            configuration: zshConfiguration,
+          );
+          final rcFile = File(path.join(tempDir.path, '.zshrc'));
+
+          expect(
+            () => installation.uninstall('very_good'),
+            throwsA(
+              isA<CompletionUnistallationException>().having(
+                (e) => e.message,
+                'message',
+                equals('No shell RC file found at ${rcFile.path}'),
+              ),
+            ),
+          );
+        });
+
+        test('when RC file does not have a completion entry', () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          final installation = CompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDirectory.path,
+            },
+            configuration: zshConfiguration,
+          );
+
+          final rcFile = File(path.join(tempDirectory.path, '.zshrc'))
+            ..createSync();
+
+          expect(
+            () => installation.uninstall('very_good'),
+            throwsA(
+              isA<CompletionUnistallationException>().having(
+                (e) => e.message,
+                'message',
+                equals('Completion is not installed at ${rcFile.path}'),
+              ),
+            ),
+          );
+        });
+
+        test('when RC file has a completion entry but no script file', () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          final configuration = zshConfiguration;
+          final installation = CompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDirectory.path,
+            },
+            configuration: configuration,
+          );
+
+          final rcFile = File(path.join(tempDirectory.path, '.zshrc'))
+            ..createSync();
+          const ScriptConfigurationEntry('Completion').appendTo(rcFile);
+
+          final shellCompletionConfigurationFile = File(
+            path.join(
+              installation.completionConfigDir.path,
+              configuration.completionConfigForShellFileName,
+            ),
+          );
+
+          expect(
+            () => installation.uninstall('very_good'),
+            throwsA(
+              isA<CompletionUnistallationException>().having(
+                (e) => e.message,
+                'message',
+                equals(
+                  '''No shell script file found at ${shellCompletionConfigurationFile.path}''',
+                ),
+              ),
+            ),
+          );
+        });
+      });
+    });
   });
 }

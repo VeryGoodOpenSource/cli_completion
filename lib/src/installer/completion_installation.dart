@@ -304,6 +304,85 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
 
     logger.info('Added config to $configFilePath');
   }
+
+  /// Uninstalls the completion for the command [rootCommand] on the current
+  /// shell.
+  ///
+  /// Before uninstalling, it checks if the completion is installed:
+  /// - The shell has an existing RCFile with a completion
+  /// [ScriptConfigurationEntry].
+  /// - The shell has an existing completion configuration file with a
+  /// [ScriptConfigurationEntry] for the [rootCommand].
+  ///
+  /// If any of the above is not true, it throws a
+  /// [CompletionUnistallationException].
+  ///
+  /// Upon a successful uninstallation the executable [ScriptConfigurationEntry]
+  /// is removed from the shell configuration file. If after this removal the
+  /// latter is empty, it is deleted together with the the executable completion
+  /// script and the completion [ScriptConfigurationEntry] from the shell RC
+  /// file. In the case that there are no other completion scripts installed on
+  /// other shells the completion config directory is deleted, leaving the
+  /// user's system as it was before the installation.
+  void uninstall(String rootCommand) {
+    final configuration = this.configuration!;
+    logger.detail(
+      '''Uninstalling completion for the command $rootCommand on ${configuration.shell.name}''',
+    );
+
+    final shellRCFile = File(_shellRCFilePath);
+    if (!shellRCFile.existsSync()) {
+      throw CompletionUnistallationException(
+        executableName: rootCommand,
+        message: 'No shell RC file found at ${shellRCFile.path}',
+      );
+    }
+
+    const completionEntry = ScriptConfigurationEntry('Completion');
+    if (!completionEntry.existsIn(shellRCFile)) {
+      throw CompletionUnistallationException(
+        executableName: rootCommand,
+        message: 'Completion is not installed at ${shellRCFile.path}',
+      );
+    }
+
+    final shellCompletionConfigurationFile = File(
+      path.join(
+        completionConfigDir.path,
+        configuration.completionConfigForShellFileName,
+      ),
+    );
+    final executableEntry = ScriptConfigurationEntry(rootCommand);
+    if (!executableEntry.existsIn(shellCompletionConfigurationFile)) {
+      throw CompletionUnistallationException(
+        executableName: rootCommand,
+        message:
+            '''No shell script file found at ${shellCompletionConfigurationFile.path}''',
+      );
+    }
+
+    final executableShellCompletionScriptFile = File(
+      path.join(
+        completionConfigDir.path,
+        '$rootCommand.${configuration.shell.name}',
+      ),
+    );
+    if (executableShellCompletionScriptFile.existsSync()) {
+      executableShellCompletionScriptFile.deleteSync();
+    }
+
+    executableEntry.removeFrom(
+      shellCompletionConfigurationFile,
+      shouldDelete: true,
+    );
+    if (!shellCompletionConfigurationFile.existsSync()) {
+      completionEntry.removeFrom(shellRCFile);
+    }
+
+    if (completionConfigDir.listSync().isEmpty) {
+      completionConfigDir.deleteSync();
+    }
+  }
 }
 
 /// Resolve the home from a path string

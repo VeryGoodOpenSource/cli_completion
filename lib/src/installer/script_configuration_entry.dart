@@ -38,16 +38,46 @@ class ScriptConfigurationEntry {
       file.createSync(recursive: true);
     }
 
-    final entry = StringBuffer()
+    final stringBuffer = StringBuffer()
       ..writeln()
-      ..writeln(_startComment)
-      ..writeln(content)
+      ..writeln(_startComment);
+    if (content != null) stringBuffer.writeln(content);
+    stringBuffer
       ..writeln(_endComment)
       ..writeln();
 
     file.writeAsStringSync(
-      entry.toString(),
+      stringBuffer.toString(),
       mode: FileMode.append,
     );
+  }
+
+  /// Removes the entry with [name] from the [file].
+  ///
+  /// If the [file] does not exist, this will do nothing.
+  ///
+  /// If a file has multiple entries with the same [name], all of them will be
+  /// removed.
+  ///
+  /// If [shouldDelete] is true, the [file] will be deleted if it is empty after
+  /// removing the entry. Otherwise, the [file] will be left empty.
+  void removeFrom(File file, {bool shouldDelete = false}) {
+    if (!file.existsSync()) return;
+
+    final content = file.readAsStringSync();
+    final stringPattern = '\n$_startComment.*$_endComment\n\n'
+        .replaceAll('[', r'\[')
+        .replaceAll(']', r'\]');
+    final pattern = RegExp(
+      stringPattern,
+      multiLine: true,
+      dotAll: true,
+    );
+    final newContent = content.replaceAllMapped(pattern, (_) => '');
+    file.writeAsStringSync(newContent);
+
+    if (shouldDelete && newContent.trim().isEmpty) {
+      file.deleteSync();
+    }
   }
 }
