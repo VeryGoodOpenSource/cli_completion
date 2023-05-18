@@ -110,8 +110,8 @@ void main() {
     });
 
     group('install', () {
-      // TODO(alestiago): Add checks that manual install writes into the config.json
-      // file when previously uninstalled.
+      // TODO(alestiago): Add checks that manual install writes into the
+      // config.json file when previously uninstalled.
       test('createCompletionConfigDir', () {
         final installation = CompletionInstallation(
           configuration: zshConfiguration,
