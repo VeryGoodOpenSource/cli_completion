@@ -1,12 +1,14 @@
+import 'dart:io';
+
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/installer.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
+class _MockLogger extends Mock implements Logger {}
 
-class MockCompletionInstallation extends Mock
+class _MockCompletionInstallation extends Mock
     implements CompletionInstallation {}
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
@@ -14,11 +16,11 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
 
   @override
   // ignore: overridden_fields
-  final Logger completionInstallationLogger = MockLogger();
+  final Logger completionInstallationLogger = _MockLogger();
 
   @override
   final CompletionInstallation completionInstallation =
-      MockCompletionInstallation();
+      _MockCompletionInstallation();
 }
 
 void main() {
@@ -27,6 +29,11 @@ void main() {
 
     setUp(() {
       commandRunner = _TestCompletionCommandRunner();
+
+      final completionInstallation = commandRunner.completionInstallation;
+      final completionInstallationFile = File('test-config.json');
+      when(() => completionInstallation.completionConfigurationFile)
+          .thenReturn(completionInstallationFile);
     });
 
     test('can be instantiated', () {

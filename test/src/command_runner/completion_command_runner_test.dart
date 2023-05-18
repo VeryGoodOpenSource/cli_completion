@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/installer.dart';
@@ -8,7 +10,7 @@ import 'package:test/test.dart';
 
 class MockLogger extends Mock implements Logger {}
 
-class MockCompletionInstallation extends Mock
+class _MockCompletionInstallation extends Mock
     implements CompletionInstallation {}
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
@@ -114,9 +116,14 @@ void main() {
 
     group('auto install', () {
       test('Tries to install completion files on test subcommand', () async {
+        final completionInstallation = _MockCompletionInstallation();
+        final completionInstallationFile = File('test-config.json');
+        when(() => completionInstallation.completionConfigurationFile)
+            .thenReturn(completionInstallationFile);
+
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = MockCompletionInstallation();
+          ..mockCompletionInstallation = completionInstallation;
 
         await commandRunner.run(['ahoy']);
 
@@ -129,10 +136,15 @@ void main() {
       });
 
       test('does not auto install when it is disabled', () async {
+        final completionInstallation = _MockCompletionInstallation();
+        final completionInstallationFile = File('test-config.json');
+        when(() => completionInstallation.completionConfigurationFile)
+            .thenReturn(completionInstallationFile);
+
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = false
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = MockCompletionInstallation();
+          ..mockCompletionInstallation = completionInstallation;
 
         await commandRunner.run(['ahoy']);
 
@@ -147,9 +159,13 @@ void main() {
     test(
       'When it throws CompletionInstallationException, it logs as a warning',
       () async {
+        final completionInstallation = _MockCompletionInstallation();
+        final completionInstallationFile = File('test-config.json');
+        when(() => completionInstallation.completionConfigurationFile)
+            .thenReturn(completionInstallationFile);
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = MockCompletionInstallation();
+          ..mockCompletionInstallation = completionInstallation;
 
         when(
           () => commandRunner.completionInstallation.install('test'),
@@ -166,9 +182,14 @@ void main() {
 
     test('When an unknown exception happens during a install, it logs as error',
         () async {
+      final completionInstallation = _MockCompletionInstallation();
+      final completionInstallationFile = File('test-config.json');
+      when(() => completionInstallation.completionConfigurationFile)
+          .thenReturn(completionInstallationFile);
+
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand())
-        ..mockCompletionInstallation = MockCompletionInstallation();
+        ..mockCompletionInstallation = completionInstallation;
 
       when(
         () => commandRunner.completionInstallation.install('test'),
@@ -185,7 +206,7 @@ void main() {
         'logs a warning wen it throws $CompletionUninstallationException',
         () async {
           final commandRunner = _TestCompletionCommandRunner()
-            ..mockCompletionInstallation = MockCompletionInstallation();
+            ..mockCompletionInstallation = _MockCompletionInstallation();
 
           when(
             () => commandRunner.completionInstallation.uninstall('test'),
@@ -207,7 +228,7 @@ void main() {
         'logs an error when an unknown exception happens during a install',
         () async {
           final commandRunner = _TestCompletionCommandRunner()
-            ..mockCompletionInstallation = MockCompletionInstallation();
+            ..mockCompletionInstallation = _MockCompletionInstallation();
 
           when(
             () => commandRunner.completionInstallation.uninstall('test'),
