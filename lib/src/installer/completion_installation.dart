@@ -394,13 +394,12 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     if (!shellCompletionConfigurationFile.existsSync()) {
       completionEntry.removeFrom(shellRCFile);
     }
-
     final completionConfigDirContent = completionConfigDir.listSync();
     final onlyHasConfigurationFile = completionConfigDirContent.length == 1 &&
-        completionConfigDirContent.first.path ==
-            shellCompletionConfigurationFile.path;
+        path.absolute(completionConfigDirContent.first.path) ==
+            path.absolute(completionConfigurationFile.path);
     if (completionConfigDirContent.isEmpty || onlyHasConfigurationFile) {
-      completionConfigDir.deleteSync();
+      completionConfigDir.deleteSync(recursive: true);
     } else {
       final completionConfiguration =
           CompletionConfiguration.fromFile(completionConfigurationFile);
