@@ -101,7 +101,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     try {
       completionInstallationLogger.level = level;
       completionInstallation.uninstall(executableName);
-    } on CompletionUnistallationException catch (e) {
+    } on CompletionUninstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
     } on Exception catch (e) {
       completionInstallationLogger.err(e.toString());

@@ -22,9 +22,9 @@ class CompletionInstallationException implements Exception {
 /// {@template completion_unistallation_exception}
 /// Describes an exception during the uninstallation of completion scripts.
 /// {@endtemplate}
-class CompletionUnistallationException implements Exception {
+class CompletionUninstallationException implements Exception {
   /// {@macro completion_unistallation_exception}
-  CompletionUnistallationException({
+  CompletionUninstallationException({
     required this.message,
     required this.rootCommand,
   });

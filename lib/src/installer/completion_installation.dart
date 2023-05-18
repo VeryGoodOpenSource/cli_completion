@@ -315,7 +315,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
   /// [ScriptConfigurationEntry] for the [rootCommand].
   ///
   /// If any of the above is not true, it throws a
-  /// [CompletionUnistallationException].
+  /// [CompletionUninstallationException].
   ///
   /// Upon a successful uninstallation the executable [ScriptConfigurationEntry]
   /// is removed from the shell configuration file. If after this removal the
@@ -332,7 +332,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
 
     final shellRCFile = File(_shellRCFilePath);
     if (!shellRCFile.existsSync()) {
-      throw CompletionUnistallationException(
+      throw CompletionUninstallationException(
         rootCommand: rootCommand,
         message: 'No shell RC file found at ${shellRCFile.path}',
       );
@@ -340,7 +340,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
 
     const completionEntry = ScriptConfigurationEntry('Completion');
     if (!completionEntry.existsIn(shellRCFile)) {
-      throw CompletionUnistallationException(
+      throw CompletionUninstallationException(
         rootCommand: rootCommand,
         message: 'Completion is not installed at ${shellRCFile.path}',
       );
@@ -354,7 +354,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     );
     final executableEntry = ScriptConfigurationEntry(rootCommand);
     if (!executableEntry.existsIn(shellCompletionConfigurationFile)) {
-      throw CompletionUnistallationException(
+      throw CompletionUninstallationException(
         rootCommand: rootCommand,
         message:
             '''No shell script file found at ${shellCompletionConfigurationFile.path}''',

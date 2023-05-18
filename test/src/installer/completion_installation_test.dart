@@ -750,7 +750,7 @@ void main() {
           expect(
             () => installation.uninstall('very_good'),
             throwsA(
-              isA<CompletionUnistallationException>().having(
+              isA<CompletionUninstallationException>().having(
                 (e) => e.message,
                 'message',
                 equals('No shell RC file found at ${rcFile.path}'),
@@ -778,7 +778,7 @@ void main() {
           expect(
             () => installation.uninstall('very_good'),
             throwsA(
-              isA<CompletionUnistallationException>().having(
+              isA<CompletionUninstallationException>().having(
                 (e) => e.message,
                 'message',
                 equals('Completion is not installed at ${rcFile.path}'),
@@ -815,7 +815,7 @@ void main() {
           expect(
             () => installation.uninstall('very_good'),
             throwsA(
-              isA<CompletionUnistallationException>().having(
+              isA<CompletionUninstallationException>().having(
                 (e) => e.message,
                 'message',
                 equals(

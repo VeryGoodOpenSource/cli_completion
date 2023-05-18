@@ -2,10 +2,10 @@ import 'package:cli_completion/installer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('$CompletionUnistallationException', () {
+  group('$CompletionUninstallationException', () {
     test('can be instantiated', () {
       expect(
-        () => CompletionUnistallationException(
+        () => CompletionUninstallationException(
           message: 'message',
           rootCommand: 'executableName',
         ),
@@ -15,7 +15,7 @@ void main() {
 
     test('has a message', () {
       expect(
-        CompletionUnistallationException(
+        CompletionUninstallationException(
           message: 'message',
           rootCommand: 'executableName',
         ).message,
@@ -25,7 +25,7 @@ void main() {
 
     test('has an executableName', () {
       expect(
-        CompletionUnistallationException(
+        CompletionUninstallationException(
           message: 'message',
           rootCommand: 'executableName',
         ).rootCommand,
@@ -36,7 +36,7 @@ void main() {
     group('toString', () {
       test('returns a string', () {
         expect(
-          CompletionUnistallationException(
+          CompletionUninstallationException(
             message: 'message',
             rootCommand: 'executableName',
           ).toString(),
@@ -46,7 +46,7 @@ void main() {
 
       test('returns a correctly formatted string', () {
         expect(
-          CompletionUnistallationException(
+          CompletionUninstallationException(
             message: 'message',
             rootCommand: 'executableName',
           ).toString(),

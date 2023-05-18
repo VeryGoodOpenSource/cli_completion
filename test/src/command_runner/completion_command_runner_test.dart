@@ -182,7 +182,7 @@ void main() {
 
     group('tryUninstallCompletionFiles', () {
       test(
-        'logs a warning wen it throws $CompletionUnistallationException',
+        'logs a warning wen it throws $CompletionUninstallationException',
         () async {
           final commandRunner = _TestCompletionCommandRunner()
             ..mockCompletionInstallation = MockCompletionInstallation();
@@ -190,7 +190,7 @@ void main() {
           when(
             () => commandRunner.completionInstallation.uninstall('test'),
           ).thenThrow(
-            CompletionUnistallationException(
+            CompletionUninstallationException(
               message: 'oops',
               rootCommand: 'test',
             ),
