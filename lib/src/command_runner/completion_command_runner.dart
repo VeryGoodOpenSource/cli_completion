@@ -76,11 +76,12 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     final completionConfiguration = CompletionConfiguration.fromFile(
       completionInstallation.completionConfigurationFile,
     );
+    final isUninstalled = systemShell != null &&
+        completionConfiguration.uninstalls
+            .contains(command: executableName, systemShell: systemShell!);
     if (enableAutoInstall &&
         !reservedCommands.contains(topLevelResults.command?.name) &&
-        systemShell != null &&
-        completionConfiguration.uninstalls
-            .contains(command: executableName, systemShell: systemShell!)) {
+        !isUninstalled) {
       // When auto installing, use error level to display messages.
       tryInstallCompletionFiles(Level.error);
     }
