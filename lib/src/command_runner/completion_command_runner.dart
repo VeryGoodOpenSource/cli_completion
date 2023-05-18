@@ -93,7 +93,6 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   void tryInstallCompletionFiles(Level level) {
     try {
       completionInstallationLogger.level = level;
-
       completionInstallation.install(executableName);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
