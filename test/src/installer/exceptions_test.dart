@@ -2,12 +2,12 @@ import 'package:cli_completion/installer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('$CompletionUnistallationException', () {
+  group('$CompletionUninstallationException', () {
     test('can be instantiated', () {
       expect(
-        () => CompletionUnistallationException(
+        () => CompletionUninstallationException(
           message: 'message',
-          executableName: 'executableName',
+          rootCommand: 'executableName',
         ),
         returnsNormally,
       );
@@ -15,9 +15,9 @@ void main() {
 
     test('has a message', () {
       expect(
-        CompletionUnistallationException(
+        CompletionUninstallationException(
           message: 'message',
-          executableName: 'executableName',
+          rootCommand: 'executableName',
         ).message,
         equals('message'),
       );
@@ -25,10 +25,10 @@ void main() {
 
     test('has an executableName', () {
       expect(
-        CompletionUnistallationException(
+        CompletionUninstallationException(
           message: 'message',
-          executableName: 'executableName',
-        ).executableName,
+          rootCommand: 'executableName',
+        ).rootCommand,
         equals('executableName'),
       );
     });
@@ -36,9 +36,9 @@ void main() {
     group('toString', () {
       test('returns a string', () {
         expect(
-          CompletionUnistallationException(
+          CompletionUninstallationException(
             message: 'message',
-            executableName: 'executableName',
+            rootCommand: 'executableName',
           ).toString(),
           isA<String>(),
         );
@@ -46,9 +46,9 @@ void main() {
 
       test('returns a correctly formatted string', () {
         expect(
-          CompletionUnistallationException(
+          CompletionUninstallationException(
             message: 'message',
-            executableName: 'executableName',
+            rootCommand: 'executableName',
           ).toString(),
           equals(
             '''Could not uninstall completion scripts for executableName: message''',

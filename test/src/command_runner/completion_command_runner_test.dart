@@ -180,6 +180,47 @@ void main() {
           .called(1);
     });
 
+    group('tryUninstallCompletionFiles', () {
+      test(
+        'logs a warning wen it throws $CompletionUninstallationException',
+        () async {
+          final commandRunner = _TestCompletionCommandRunner()
+            ..mockCompletionInstallation = MockCompletionInstallation();
+
+          when(
+            () => commandRunner.completionInstallation.uninstall('test'),
+          ).thenThrow(
+            CompletionUninstallationException(
+              message: 'oops',
+              rootCommand: 'test',
+            ),
+          );
+
+          commandRunner.tryUninstallCompletionFiles(Level.verbose);
+
+          verify(() => commandRunner.completionInstallationLogger.warn(any()))
+              .called(1);
+        },
+      );
+
+      test(
+        'logs an error when an unknown exception happens during a install',
+        () async {
+          final commandRunner = _TestCompletionCommandRunner()
+            ..mockCompletionInstallation = MockCompletionInstallation();
+
+          when(
+            () => commandRunner.completionInstallation.uninstall('test'),
+          ).thenThrow(Exception('oops'));
+
+          commandRunner.tryUninstallCompletionFiles(Level.verbose);
+
+          verify(() => commandRunner.completionInstallationLogger.err(any()))
+              .called(1);
+        },
+      );
+    });
+
     group('renderCompletionResult', () {
       test('renders predefined suggestions on zsh', () {
         const completionResult = _TestCompletionResult({
