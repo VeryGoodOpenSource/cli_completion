@@ -7,7 +7,7 @@ void main() {
       expect(
         () => CompletionUnistallationException(
           message: 'message',
-          executableName: 'executableName',
+          rootCommand: 'executableName',
         ),
         returnsNormally,
       );
@@ -17,7 +17,7 @@ void main() {
       expect(
         CompletionUnistallationException(
           message: 'message',
-          executableName: 'executableName',
+          rootCommand: 'executableName',
         ).message,
         equals('message'),
       );
@@ -27,8 +27,8 @@ void main() {
       expect(
         CompletionUnistallationException(
           message: 'message',
-          executableName: 'executableName',
-        ).executableName,
+          rootCommand: 'executableName',
+        ).rootCommand,
         equals('executableName'),
       );
     });
@@ -38,7 +38,7 @@ void main() {
         expect(
           CompletionUnistallationException(
             message: 'message',
-            executableName: 'executableName',
+            rootCommand: 'executableName',
           ).toString(),
           isA<String>(),
         );
@@ -48,7 +48,7 @@ void main() {
         expect(
           CompletionUnistallationException(
             message: 'message',
-            executableName: 'executableName',
+            rootCommand: 'executableName',
           ).toString(),
           equals(
             '''Could not uninstall completion scripts for executableName: message''',

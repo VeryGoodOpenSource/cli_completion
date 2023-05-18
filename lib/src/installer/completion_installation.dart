@@ -333,7 +333,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     final shellRCFile = File(_shellRCFilePath);
     if (!shellRCFile.existsSync()) {
       throw CompletionUnistallationException(
-        executableName: rootCommand,
+        rootCommand: rootCommand,
         message: 'No shell RC file found at ${shellRCFile.path}',
       );
     }
@@ -341,7 +341,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     const completionEntry = ScriptConfigurationEntry('Completion');
     if (!completionEntry.existsIn(shellRCFile)) {
       throw CompletionUnistallationException(
-        executableName: rootCommand,
+        rootCommand: rootCommand,
         message: 'Completion is not installed at ${shellRCFile.path}',
       );
     }
@@ -355,7 +355,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
     final executableEntry = ScriptConfigurationEntry(rootCommand);
     if (!executableEntry.existsIn(shellCompletionConfigurationFile)) {
       throw CompletionUnistallationException(
-        executableName: rootCommand,
+        rootCommand: rootCommand,
         message:
             '''No shell script file found at ${shellCompletionConfigurationFile.path}''',
       );

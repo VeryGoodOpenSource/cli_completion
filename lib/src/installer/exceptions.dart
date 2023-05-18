@@ -26,16 +26,16 @@ class CompletionUnistallationException implements Exception {
   /// {@macro completion_unistallation_exception}
   CompletionUnistallationException({
     required this.message,
-    required this.executableName,
+    required this.rootCommand,
   });
 
   /// The error message for this exception
   final String message;
 
   /// The command for which the installation failed.
-  final String executableName;
+  final String rootCommand;
 
   @override
   String toString() =>
-      '''Could not uninstall completion scripts for $executableName: $message''';
+      '''Could not uninstall completion scripts for $rootCommand: $message''';
 }
