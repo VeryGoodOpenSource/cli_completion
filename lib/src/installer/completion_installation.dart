@@ -90,6 +90,11 @@ class CompletionInstallation {
     }
   }
 
+  /// Define the [File] in which the completion configuration is stored.
+  File get completionConfigurationFile {
+    return File(path.join(completionConfigDir.path, 'config.json'));
+  }
+
   /// Install completion configuration files for a [rootCommand] in the
   /// current shell.
   ///
@@ -124,6 +129,17 @@ class CompletionInstallation {
     if (completionFileCreated) {
       _logSourceInstructions(rootCommand);
     }
+
+    final completionConfiguration =
+        CompletionConfiguration.fromFile(completionConfigurationFile);
+    completionConfiguration
+        .copyWith(
+          uninstalls: completionConfiguration.uninstalls.exclude(
+            command: rootCommand,
+            systemShell: configuration.shell,
+          ),
+        )
+        .writeTo(completionConfigurationFile);
   }
 
   /// Create a directory in which the completion config files shall be saved.
@@ -379,8 +395,23 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       completionEntry.removeFrom(shellRCFile);
     }
 
-    if (completionConfigDir.listSync().isEmpty) {
+    final completionConfigDirContent = completionConfigDir.listSync();
+    final onlyHasConfigurationFile = completionConfigDirContent.length == 1 &&
+        completionConfigDirContent.first.path ==
+            shellCompletionConfigurationFile.path;
+    if (completionConfigDirContent.isEmpty || onlyHasConfigurationFile) {
       completionConfigDir.deleteSync();
+    } else {
+      final completionConfiguration =
+          CompletionConfiguration.fromFile(completionConfigurationFile);
+      completionConfiguration
+          .copyWith(
+            uninstalls: completionConfiguration.uninstalls.include(
+              command: rootCommand,
+              systemShell: configuration.shell,
+            ),
+          )
+          .writeTo(completionConfigurationFile);
     }
   }
 }

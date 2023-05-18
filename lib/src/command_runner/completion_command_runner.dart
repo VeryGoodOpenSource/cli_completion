@@ -73,8 +73,14 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
       InstallCompletionFilesCommand.commandName,
     ];
 
+    final completionConfiguration = CompletionConfiguration.fromFile(
+      completionInstallation.completionConfigurationFile,
+    );
     if (enableAutoInstall &&
-        !reservedCommands.contains(topLevelResults.command?.name)) {
+        !reservedCommands.contains(topLevelResults.command?.name) &&
+        systemShell != null &&
+        completionConfiguration.uninstalls
+            .contains(command: executableName, systemShell: systemShell!)) {
       // When auto installing, use error level to display messages.
       tryInstallCompletionFiles(Level.error);
     }
@@ -87,6 +93,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   void tryInstallCompletionFiles(Level level) {
     try {
       completionInstallationLogger.level = level;
+
       completionInstallation.install(executableName);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());

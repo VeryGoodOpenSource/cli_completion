@@ -137,3 +137,52 @@ String _jsonEncodeUninstalls(Uninstalls uninstalls) {
       entry.key.toString(): entry.value.toList(),
   });
 }
+
+/// Provides convinience methods for [Uninstalls].
+extension UninstallsExtension on Uninstalls {
+  /// Returns a new [Uninstalls] with the given [command] added to
+  /// [systemShell].
+  Uninstalls include(
+      {required String command, required SystemShell systemShell}) {
+    final modifiable = _modifiable();
+
+    if (modifiable.containsKey(systemShell)) {
+      modifiable[systemShell]!.add(command);
+    } else {
+      modifiable[systemShell] = {command};
+    }
+
+    return UnmodifiableMapView(
+      modifiable.map((key, value) => MapEntry(key, UnmodifiableSetView(value))),
+    );
+  }
+
+  /// Returns a new [Uninstalls] with the given [command] removed from
+  /// [systemShell].
+  Uninstalls exclude({
+    required String command,
+    required SystemShell systemShell,
+  }) {
+    final modifiable = _modifiable();
+
+    if (modifiable.containsKey(systemShell)) {
+      modifiable[systemShell]!.remove(command);
+    }
+
+    return UnmodifiableMapView(
+      modifiable.map((key, value) => MapEntry(key, UnmodifiableSetView(value))),
+    );
+  }
+
+  /// Whether the [command] is contained in [systemShell].
+  bool contains({required String command, required SystemShell systemShell}) {
+    if (containsKey(systemShell)) {
+      return this[systemShell]!.contains(command);
+    }
+    return false;
+  }
+
+  Map<SystemShell, Set<String>> _modifiable() {
+    return map((key, value) => MapEntry(key, value.toSet()));
+  }
+}
