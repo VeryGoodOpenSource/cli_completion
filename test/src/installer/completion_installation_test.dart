@@ -426,6 +426,7 @@ void main() {
               'not_good.zsh',
               'very_good.zsh',
               'zsh-config.zsh',
+              'config.json',
             ]),
           );
 
@@ -462,7 +463,8 @@ void main() {
               'very_good.bash',
               'very_good.zsh',
               'zsh-config.zsh',
-              'bash-config.bash'
+              'bash-config.bash',
+              'config.json',
             ]),
           );
         },
