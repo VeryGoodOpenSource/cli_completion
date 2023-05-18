@@ -142,8 +142,10 @@ String _jsonEncodeUninstalls(Uninstalls uninstalls) {
 extension UninstallsExtension on Uninstalls {
   /// Returns a new [Uninstalls] with the given [command] added to
   /// [systemShell].
-  Uninstalls include(
-      {required String command, required SystemShell systemShell}) {
+  Uninstalls include({
+    required String command,
+    required SystemShell systemShell,
+  }) {
     final modifiable = _modifiable();
 
     if (modifiable.containsKey(systemShell)) {
