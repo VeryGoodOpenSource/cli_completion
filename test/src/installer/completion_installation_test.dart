@@ -110,6 +110,8 @@ void main() {
     });
 
     group('install', () {
+      // TODO(alestiago): Add checks that manual install writes into the config.json
+      // file when previously uninstalled.
       test('createCompletionConfigDir', () {
         final installation = CompletionInstallation(
           configuration: zshConfiguration,
@@ -497,6 +499,8 @@ void main() {
     });
 
     group('uninstall', () {
+      // TODO(alestiago): Add checks that uninstall writes into the config.json
+      // file when uninstalled.
       test(
           '''deletes entire completion configuration when there is a single command''',
           () {

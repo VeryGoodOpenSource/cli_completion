@@ -115,6 +115,8 @@ void main() {
     });
 
     group('auto install', () {
+      // TODO(alestiago): Add tests to check that no autoinstall occurs when the
+      // command has been manually uninstalled.
       test('Tries to install completion files on test subcommand', () async {
         final completionInstallation = _MockCompletionInstallation();
         final completionInstallationFile = File('test-config.json');

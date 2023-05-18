@@ -193,4 +193,13 @@ void main() {
       });
     });
   });
+
+  group('UninstallsExtension', () {
+    // TODO(alestiago): Write tests.
+    group('include', () {});
+
+    group('exclude', () {});
+
+    group('contains', () {});
+  });
 }
