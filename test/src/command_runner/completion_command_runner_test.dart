@@ -164,11 +164,17 @@ void main() {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
+        final commandRunner = _TestCompletionCommandRunner()
+          ..enableAutoInstall = true
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = completionInstallation;
+
         final completioninstallationFilePath =
             path.join(tempDirectory.path, 'test-config.json');
         final completionInstallationFile = File(completioninstallationFilePath);
         final uninstalls = Uninstalls({
-          SystemShell.zsh: UnmodifiableSetView<String>({'test'}),
+          SystemShell.zsh:
+              UnmodifiableSetView<String>({commandRunner.executableName}),
         });
         CompletionConfiguration.empty()
             .copyWith(uninstalls: uninstalls)
@@ -176,14 +182,15 @@ void main() {
         when(() => completionInstallation.completionConfigurationFile)
             .thenReturn(completionInstallationFile);
 
-        final commandRunner = _TestCompletionCommandRunner()
-          ..enableAutoInstall = true
-          ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
-
         await commandRunner.run(['ahoy']);
 
-        verifyNever(() => commandRunner.completionInstallation.install('test'));
+        verifyNever(
+          () => commandRunner.completionInstallation
+              .install(commandRunner.executableName),
+        );
+        verifyNever(
+          () => commandRunner.completionInstallationLogger.level = any(),
+        );
       });
     });
 
