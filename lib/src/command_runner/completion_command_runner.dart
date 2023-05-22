@@ -71,6 +71,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     final reservedCommands = [
       HandleCompletionRequestCommand.commandName,
       InstallCompletionFilesCommand.commandName,
+      UnistallCompletionFilesCommand.commandName,
     ];
 
     final completionConfiguration = CompletionConfiguration.fromFile(
