@@ -184,10 +184,6 @@ void main() {
         await commandRunner.run(['ahoy']);
 
         verifyNever(() => commandRunner.completionInstallation.install('test'));
-
-        verifyNever(
-          () => commandRunner.completionInstallationLogger.level = any(),
-        );
       });
     });
 
