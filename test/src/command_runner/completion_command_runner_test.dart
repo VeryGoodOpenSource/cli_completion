@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
@@ -6,6 +7,7 @@ import 'package:cli_completion/installer.dart';
 import 'package:cli_completion/parser.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 class MockLogger extends Mock implements Logger {}
@@ -115,8 +117,6 @@ void main() {
     });
 
     group('auto install', () {
-      // TODO(alestiago): Add tests to check that no autoinstall occurs when the
-      // command has been manually uninstalled.
       test('Tries to install completion files on test subcommand', () async {
         final completionInstallation = _MockCompletionInstallation();
         final completionInstallationFile = File('test-config.json');
@@ -139,12 +139,45 @@ void main() {
 
       test('does not auto install when it is disabled', () async {
         final completionInstallation = _MockCompletionInstallation();
+
         final completionInstallationFile = File('test-config.json');
         when(() => completionInstallation.completionConfigurationFile)
             .thenReturn(completionInstallationFile);
 
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = false
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = completionInstallation;
+
+        await commandRunner.run(['ahoy']);
+
+        verifyNever(() => commandRunner.completionInstallation.install('test'));
+
+        verifyNever(
+          () => commandRunner.completionInstallationLogger.level = any(),
+        );
+      });
+
+      test('does not auto install when it is unistalled', () async {
+        final completionInstallation = _MockCompletionInstallation();
+
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final completioninstallationFilePath =
+            path.join(tempDirectory.path, 'test-config.json');
+        final completionInstallationFile = File(completioninstallationFilePath);
+        final uninstalls = Uninstalls({
+          SystemShell.zsh: UnmodifiableSetView<String>({'test'}),
+        });
+        CompletionConfiguration.empty()
+            .copyWith(uninstalls: uninstalls)
+            .writeTo(completionInstallationFile);
+        when(() => completionInstallation.completionConfigurationFile)
+            .thenReturn(completionInstallationFile);
+
+        final commandRunner = _TestCompletionCommandRunner()
+          ..enableAutoInstall = true
           ..addCommand(_TestUserCommand())
           ..mockCompletionInstallation = completionInstallation;
 
