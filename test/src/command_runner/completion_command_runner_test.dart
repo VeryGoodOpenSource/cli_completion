@@ -173,7 +173,7 @@ void main() {
             path.join(tempDirectory.path, 'test-config.json');
         final completionInstallationFile = File(completioninstallationFilePath);
         final uninstalls = Uninstalls({
-          SystemShell.zsh:
+          commandRunner.systemShell!:
               UnmodifiableSetView<String>({commandRunner.executableName}),
         });
         CompletionConfiguration.empty()
