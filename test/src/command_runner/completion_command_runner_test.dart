@@ -167,7 +167,10 @@ void main() {
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = true
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
+          ..mockCompletionInstallation = completionInstallation
+          ..environmentOverride = {
+            'SHELL': '/foo/bar/zsh',
+          };
 
         final completioninstallationFilePath =
             path.join(tempDirectory.path, 'test-config.json');
