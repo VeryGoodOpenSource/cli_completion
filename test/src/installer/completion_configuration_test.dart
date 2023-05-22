@@ -2,7 +2,6 @@
 
 import 'dart:collection';
 import 'dart:io';
-import 'dart:js_util';
 
 import 'package:cli_completion/installer.dart';
 import 'package:path/path.dart' as path;
@@ -247,7 +246,9 @@ void main() {
         );
         expect(
           newUninstalls.contains(
-              command: testCommand, systemShell: anotherShell),
+            command: testCommand,
+            systemShell: anotherShell,
+          ),
           isTrue,
         );
       });
