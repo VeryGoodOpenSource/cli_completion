@@ -109,9 +109,8 @@ class CompletionInstallation {
   /// the aforementioned config file.
   ///
   /// If [hard] is true, it will overwrite the completion configuration files
-  /// even if they already exist. If false, it will check if the completion
-  /// configuration is already installed, or if it has been explicitly
-  /// uninstalled before installing it.
+  /// even if they already exist. If false, it will check if it has been
+  /// explicitly uninstalled before installing it.
   void install(String rootCommand, {bool hard = true}) {
     final configuration = this.configuration;
 
@@ -155,8 +154,7 @@ class CompletionInstallation {
   /// Wether the completion configuration files for a [rootCommand] should be
   /// installed or not.
   ///
-  /// It will return false if the root command is not already installed or it
-  /// has been explicitly uninstalled.
+  /// It will return false if the root command has been explicitly uninstalled.
   bool _shouldInstall(String rootCommand) {
     final completionConfiguration = CompletionConfiguration.fromFile(
       completionConfigurationFile,
