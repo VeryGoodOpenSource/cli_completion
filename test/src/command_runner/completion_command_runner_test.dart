@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/installer.dart';
@@ -117,9 +115,6 @@ void main() {
     group('auto install', () {
       test('Tries to install completion files on test subcommand', () async {
         final completionInstallation = _MockCompletionInstallation();
-        final completionInstallationFile = File('test-config.json');
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
 
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
@@ -138,10 +133,6 @@ void main() {
 
       test('does not auto install when it is disabled', () async {
         final completionInstallation = _MockCompletionInstallation();
-
-        final completionInstallationFile = File('test-config.json');
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
 
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = false
@@ -182,9 +173,7 @@ void main() {
       'When it throws CompletionInstallationException, it logs as a warning',
       () async {
         final completionInstallation = _MockCompletionInstallation();
-        final completionInstallationFile = File('test-config.json');
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
+
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
           ..mockCompletionInstallation = completionInstallation;
@@ -205,9 +194,6 @@ void main() {
     test('When an unknown exception happens during a install, it logs as error',
         () async {
       final completionInstallation = _MockCompletionInstallation();
-      final completionInstallationFile = File('test-config.json');
-      when(() => completionInstallation.completionConfigurationFile)
-          .thenReturn(completionInstallationFile);
 
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand())
