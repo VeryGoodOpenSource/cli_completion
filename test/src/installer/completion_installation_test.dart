@@ -496,7 +496,8 @@ void main() {
         },
       );
 
-      test('removes command from $CompletionConfiguration when uninstalled',
+      test(
+          '''removes command from $CompletionConfiguration uninstalls when uninstalled''',
           () {
         const systemShell = SystemShell.zsh;
         final installation = CompletionInstallation.fromSystemShell(
@@ -540,6 +541,81 @@ void main() {
           isFalse,
           reason:
               '''The completion configuration should not contain the uninstall for the command after install''',
+        );
+      });
+
+      test(
+          '''adds command to $CompletionConfiguration installs when installed''',
+          () {
+        const systemShell = SystemShell.zsh;
+        final installation = CompletionInstallation.fromSystemShell(
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {
+            'HOME': tempDir.path,
+          },
+          systemShell: systemShell,
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        const command = 'very_good';
+
+        installation.install(command);
+
+        final newCompletionConfiguration = CompletionConfiguration.fromFile(
+          installation.completionConfigurationFile,
+        );
+        expect(
+          newCompletionConfiguration.installs
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration installs should contain the command after install''',
+        );
+      });
+
+      test(
+          '''command still in $CompletionConfiguration installs when already installed''',
+          () {
+        const systemShell = SystemShell.zsh;
+        final installation = CompletionInstallation.fromSystemShell(
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {
+            'HOME': tempDir.path,
+          },
+          systemShell: systemShell,
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        const command = 'very_good';
+        installation.install(command);
+
+        var completionConfiguration = CompletionConfiguration.fromFile(
+          installation.completionConfigurationFile,
+        );
+        expect(
+          completionConfiguration.installs
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration installs should contain the command after install''',
+        );
+
+        // Install again.
+        installation.install(command);
+
+        completionConfiguration = CompletionConfiguration.fromFile(
+          installation.completionConfigurationFile,
+        );
+        expect(
+          completionConfiguration.installs
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration installs should still contain the command after install''',
         );
       });
     });
@@ -812,6 +888,36 @@ void main() {
               .contains(command: command, systemShell: systemShell),
           isTrue,
           reason: 'Command should be added to uninstalls after uninstalling.',
+        );
+      });
+
+      test('removes command from installs when not the last command', () {
+        const systemShell = SystemShell.zsh;
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: systemShell,
+          logger: logger,
+          environmentOverride: {
+            'HOME': tempDir.path,
+          },
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        const command = 'very_good';
+        installation
+          ..install(command)
+          ..install('another_command')
+          ..uninstall(command);
+
+        final completionConfigurationFile =
+            installation.completionConfigurationFile;
+        final completionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          completionConfiguration.installs
+              .contains(command: command, systemShell: systemShell),
+          isFalse,
+          reason: 'Command should be removed from installs after uninstalling.',
         );
       });
 
