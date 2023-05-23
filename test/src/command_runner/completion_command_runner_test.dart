@@ -129,12 +129,10 @@ void main() {
       });
 
       test('does not auto install when it is disabled', () async {
-        final completionInstallation = _MockCompletionInstallation();
-
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = false
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         await commandRunner.run(['ahoy']);
 
@@ -146,12 +144,10 @@ void main() {
       });
 
       test('softly tries to install when enabled', () async {
-        final completionInstallation = _MockCompletionInstallation();
-
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = true
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation
+          ..mockCompletionInstallation = _MockCompletionInstallation()
           ..environmentOverride = {
             'SHELL': '/foo/bar/zsh',
           };
@@ -169,11 +165,9 @@ void main() {
     test(
       'When it throws CompletionInstallationException, it logs as a warning',
       () async {
-        final completionInstallation = _MockCompletionInstallation();
-
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         when(
           () => commandRunner.completionInstallation.install('test'),
@@ -190,11 +184,9 @@ void main() {
 
     test('When an unknown exception happens during a install, it logs as error',
         () async {
-      final completionInstallation = _MockCompletionInstallation();
-
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand())
-        ..mockCompletionInstallation = completionInstallation;
+        ..mockCompletionInstallation = _MockCompletionInstallation();
 
       when(
         () => commandRunner.completionInstallation.install('test'),
