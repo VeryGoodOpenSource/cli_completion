@@ -45,7 +45,7 @@ void main() {
     });
 
     group('install completion files', () {
-      test('forces to install', () async {
+      test('forces install', () async {
         await commandRunner.run(['install-completion-files']);
 
         verify(
