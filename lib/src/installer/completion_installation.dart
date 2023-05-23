@@ -91,6 +91,7 @@ class CompletionInstallation {
   }
 
   /// Define the [File] in which the completion configuration is stored.
+  @visibleForTesting
   File get completionConfigurationFile {
     return File(path.join(completionConfigDir.path, 'config.json'));
   }
@@ -106,7 +107,12 @@ class CompletionInstallation {
   /// completion script file.
   /// - A line in the shell config file (e.g. `.bash_profile`) that sources
   /// the aforementioned config file.
-  void install(String rootCommand) {
+  ///
+  /// If [hard] is true, it will overwrite the completion configuration files
+  /// even if they already exist. If false, it will check if the completion
+  /// configuration is already installed, or if it has been explicitly
+  /// uninstalled before installing it.
+  void install(String rootCommand, {bool hard = true}) {
     final configuration = this.configuration;
 
     if (configuration == null) {
@@ -114,6 +120,10 @@ class CompletionInstallation {
         message: 'Unknown shell.',
         rootCommand: rootCommand,
       );
+    }
+
+    if (!hard && !_shouldInstall(rootCommand)) {
+      return;
     }
 
     logger.detail(
@@ -140,6 +150,27 @@ class CompletionInstallation {
           ),
         )
         .writeTo(completionConfigurationFile);
+  }
+
+  /// Wether the completion configuration files for a [rootCommand] should be
+  /// installed or not.
+  ///
+  /// It will return false if the root command is not already installed or it
+  /// has been explicitly uninstalled.
+  bool _shouldInstall(String rootCommand) {
+    final completionConfiguration = CompletionConfiguration.fromFile(
+      completionConfigurationFile,
+    );
+    final systemShell = configuration!.shell;
+    final isInstalled = completionConfiguration.installs.contains(
+      command: rootCommand,
+      systemShell: systemShell,
+    );
+    final isUninstalled = completionConfiguration.uninstalls.contains(
+      command: rootCommand,
+      systemShell: systemShell,
+    );
+    return !isInstalled && !isUninstalled;
   }
 
   /// Create a directory in which the completion config files shall be saved.

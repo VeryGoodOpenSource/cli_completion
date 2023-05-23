@@ -65,24 +65,18 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     return _completionInstallation = completionInstallation;
   }
 
+  /// The list of commands that should not trigger the auto installation.
+  static const _reservedCommands = {
+    HandleCompletionRequestCommand.commandName,
+    InstallCompletionFilesCommand.commandName,
+    UnistallCompletionFilesCommand.commandName,
+  };
+
   @override
   @mustCallSuper
   Future<T?> runCommand(ArgResults topLevelResults) async {
-    final reservedCommands = [
-      HandleCompletionRequestCommand.commandName,
-      InstallCompletionFilesCommand.commandName,
-      UnistallCompletionFilesCommand.commandName,
-    ];
-
-    final completionConfiguration = CompletionConfiguration.fromFile(
-      completionInstallation.completionConfigurationFile,
-    );
-    final isUninstalled = systemShell != null &&
-        completionConfiguration.uninstalls
-            .contains(command: executableName, systemShell: systemShell!);
     if (enableAutoInstall &&
-        !reservedCommands.contains(topLevelResults.command?.name) &&
-        !isUninstalled) {
+        !_reservedCommands.contains(topLevelResults.command?.name)) {
       // When auto installing, use error level to display messages.
       tryInstallCompletionFiles(Level.error);
     }
@@ -95,7 +89,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   void tryInstallCompletionFiles(Level level) {
     try {
       completionInstallationLogger.level = level;
-      completionInstallation.install(executableName);
+      completionInstallation.install(executableName, hard: false);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
     } on Exception catch (e) {
