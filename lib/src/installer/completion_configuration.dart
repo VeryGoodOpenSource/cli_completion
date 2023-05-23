@@ -10,6 +10,7 @@ import 'package:meta/meta.dart';
 ///
 /// The map and its content are unmodifiable. This is to ensure that
 /// [CompletionConfiguration]s is fully immutable.
+// TODO(alestiago): Rename Uninstalls to ShellCommandsMap
 typedef Uninstalls
     = UnmodifiableMapView<SystemShell, UnmodifiableSetView<String>>;
 
@@ -22,11 +23,14 @@ class CompletionConfiguration {
   /// {@macro completion_configuration}
   const CompletionConfiguration._({
     required this.uninstalls,
+    required this.installs,
   });
 
   /// Creates an empty [CompletionConfiguration].
   @visibleForTesting
-  CompletionConfiguration.empty() : uninstalls = UnmodifiableMapView({});
+  CompletionConfiguration.empty()
+      : uninstalls = Uninstalls({}),
+        installs = Uninstalls({});
 
   /// Creates a [CompletionConfiguration] from the given [file] content.
   ///
@@ -56,17 +60,32 @@ class CompletionConfiguration {
     }
 
     return CompletionConfiguration._(
-      uninstalls: _jsonDecodeUninstalls(decodedJson),
+      uninstalls: _jsonDecodeUninstalls(
+        decodedJson,
+        jsonKey: CompletionConfiguration._uninstallsJsonKey,
+      ),
+      installs: _jsonDecodeUninstalls(
+        decodedJson,
+        jsonKey: CompletionConfiguration._installsJsonKey,
+      ),
     );
   }
 
   /// The JSON key for the [uninstalls] field.
   static const String _uninstallsJsonKey = 'uninstalls';
 
+  /// The JSON key for the [installs] field.
+  static const String _installsJsonKey = 'installs';
+
   /// Stores those commands that have been manually uninstalled by the user.
   ///
   /// Uninstalls are specific to a given [SystemShell].
   final Uninstalls uninstalls;
+
+  /// Stores those commands that have completion installed.
+  ///
+  /// Installed commands are specific to a given [SystemShell].
+  final Uninstalls installs;
 
   /// Stores the [CompletionConfiguration] in the given [file].
   void writeTo(File file) {
@@ -76,21 +95,24 @@ class CompletionConfiguration {
     file.writeAsStringSync(_toJson());
   }
 
-  /// Returns a copy of this [CompletionConfiguration] with the given fields
-  /// replaced.
-  CompletionConfiguration copyWith({
-    Uninstalls? uninstalls,
-  }) {
-    return CompletionConfiguration._(
-      uninstalls: uninstalls ?? this.uninstalls,
-    );
-  }
-
   /// Returns a JSON representation of this [CompletionConfiguration].
   String _toJson() {
     return jsonEncode({
       _uninstallsJsonKey: _jsonEncodeUninstalls(uninstalls),
+      _installsJsonKey: _jsonEncodeUninstalls(installs),
     });
+  }
+
+  /// Returns a copy of this [CompletionConfiguration] with the given fields
+  /// replaced.
+  CompletionConfiguration copyWith({
+    Uninstalls? uninstalls,
+    Uninstalls? installs,
+  }) {
+    return CompletionConfiguration._(
+      uninstalls: uninstalls ?? this.uninstalls,
+      installs: installs ?? this.installs,
+    );
   }
 }
 
@@ -98,19 +120,22 @@ class CompletionConfiguration {
 ///
 /// If the [json] is not partially or fully valid, it handles issues gracefully
 /// without throwing an [Exception].
-Uninstalls _jsonDecodeUninstalls(Map<String, dynamic> json) {
-  if (!json.containsKey(CompletionConfiguration._uninstallsJsonKey)) {
-    return UnmodifiableMapView({});
+Uninstalls _jsonDecodeUninstalls(
+  Map<String, dynamic> json, {
+  required String jsonKey,
+}) {
+  if (!json.containsKey(jsonKey)) {
+    return Uninstalls({});
   }
-  final jsonUninstalls = json[CompletionConfiguration._uninstallsJsonKey];
+  final jsonUninstalls = json[jsonKey];
   if (jsonUninstalls is! String) {
-    return UnmodifiableMapView({});
+    return Uninstalls({});
   }
   late final Map<String, dynamic> decodedUninstalls;
   try {
     decodedUninstalls = jsonDecode(jsonUninstalls) as Map<String, dynamic>;
   } on FormatException {
-    return UnmodifiableMapView({});
+    return Uninstalls({});
   }
 
   final newUninstalls = <SystemShell, UnmodifiableSetView<String>>{};

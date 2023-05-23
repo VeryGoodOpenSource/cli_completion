@@ -138,6 +138,10 @@ class CompletionInstallation {
             command: rootCommand,
             systemShell: configuration.shell,
           ),
+          installs: completionConfiguration.installs.include(
+            command: rootCommand,
+            systemShell: configuration.shell,
+          ),
         )
         .writeTo(completionConfigurationFile);
   }
@@ -406,6 +410,10 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       completionConfiguration
           .copyWith(
             uninstalls: completionConfiguration.uninstalls.include(
+              command: rootCommand,
+              systemShell: configuration.shell,
+            ),
+            installs: completionConfiguration.installs.exclude(
               command: rootCommand,
               systemShell: configuration.shell,
             ),
