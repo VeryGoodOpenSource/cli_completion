@@ -114,18 +114,15 @@ void main() {
 
     group('auto install', () {
       test('Tries to install completion files on test subcommand', () async {
-        final completionInstallation = _MockCompletionInstallation();
-
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         await commandRunner.run(['ahoy']);
 
         verify(
           () => commandRunner.completionInstallation.install('test'),
         ).called(1);
-
         verify(
           () => commandRunner.completionInstallationLogger.level = Level.error,
         ).called(1);
