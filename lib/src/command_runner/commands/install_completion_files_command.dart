@@ -49,7 +49,7 @@ class InstallCompletionFilesCommand<T> extends Command<T> {
   FutureOr<T>? run() {
     final verbose = argResults!['verbose'] as bool;
     final level = verbose ? Level.verbose : Level.info;
-    runner.tryInstallCompletionFiles(level);
+    runner.tryInstallCompletionFiles(level, force: true);
     return null;
   }
 }

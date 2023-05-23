@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
@@ -7,7 +6,6 @@ import 'package:cli_completion/installer.dart';
 import 'package:cli_completion/parser.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 class MockLogger extends Mock implements Logger {}
@@ -129,8 +127,9 @@ void main() {
 
         await commandRunner.run(['ahoy']);
 
-        verify(() => commandRunner.completionInstallation.install('test'))
-            .called(1);
+        verify(
+          () => commandRunner.completionInstallation.install('test'),
+        ).called(1);
 
         verify(
           () => commandRunner.completionInstallationLogger.level = Level.error,
@@ -158,11 +157,8 @@ void main() {
         );
       });
 
-      test('does not auto install when it is unistalled', () async {
+      test('softly tries to install when enabled', () async {
         final completionInstallation = _MockCompletionInstallation();
-
-        final tempDirectory = Directory.systemTemp.createTempSync();
-        addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = true
@@ -172,28 +168,13 @@ void main() {
             'SHELL': '/foo/bar/zsh',
           };
 
-        final completioninstallationFilePath =
-            path.join(tempDirectory.path, 'test-config.json');
-        final completionInstallationFile = File(completioninstallationFilePath);
-        final uninstalls = Uninstalls({
-          commandRunner.systemShell!:
-              UnmodifiableSetView<String>({commandRunner.executableName}),
-        });
-        CompletionConfiguration.empty()
-            .copyWith(uninstalls: uninstalls)
-            .writeTo(completionInstallationFile);
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
-
         await commandRunner.run(['ahoy']);
 
-        verifyNever(
-          () => commandRunner.completionInstallation
-              .install(commandRunner.executableName),
-        );
-        verifyNever(
-          () => commandRunner.completionInstallationLogger.level = any(),
-        );
+        verify(
+          () => commandRunner.completionInstallation.install(
+            commandRunner.executableName,
+          ),
+        ).called(1);
       });
     });
 

@@ -496,7 +496,8 @@ void main() {
         },
       );
 
-      test('removes command from $CompletionConfiguration when uninstalled',
+      test(
+          '''removes command from $CompletionConfiguration uninstalls when forced to install''',
           () {
         const systemShell = SystemShell.zsh;
         final installation = CompletionInstallation.fromSystemShell(
@@ -530,7 +531,7 @@ void main() {
               '''The completion configuration should contain the uninstall for the command before install''',
         );
 
-        installation.install('very_good');
+        installation.install('very_good', force: true);
 
         final newCompletionConfiguration =
             CompletionConfiguration.fromFile(completionConfigurationFile);

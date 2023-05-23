@@ -86,10 +86,10 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
 
   /// Tries to install completion files for the current shell.
   @internal
-  void tryInstallCompletionFiles(Level level) {
+  void tryInstallCompletionFiles(Level level, {bool force = false}) {
     try {
       completionInstallationLogger.level = level;
-      completionInstallation.install(executableName, hard: false);
+      completionInstallation.install(executableName, force: force);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
     } on Exception catch (e) {
