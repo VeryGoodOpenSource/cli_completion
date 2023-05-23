@@ -108,9 +108,9 @@ class CompletionInstallation {
   /// - A line in the shell config file (e.g. `.bash_profile`) that sources
   /// the aforementioned config file.
   ///
-  /// If [force] is true, it will overwrite the completion configuration files
-  /// even if they already exist. If false, it will check if it has been
-  /// explicitly uninstalled before installing it.
+  /// If [force] is true, it will overwrite the command's completion files even
+  /// if they already exist. If false, it will check if it has been explicitly
+  /// uninstalled before installing it.
   void install(String rootCommand, {bool force = false}) {
     final configuration = this.configuration;
 
