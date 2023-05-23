@@ -67,11 +67,11 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   }
 
   /// The list of commands that should not trigger the auto installation.
-  static final _reservedCommands = UnmodifiableListView([
+  static const _reservedCommands = [
     HandleCompletionRequestCommand.commandName,
     InstallCompletionFilesCommand.commandName,
     UnistallCompletionFilesCommand.commandName,
-  ]);
+  ];
 
   @override
   @mustCallSuper
