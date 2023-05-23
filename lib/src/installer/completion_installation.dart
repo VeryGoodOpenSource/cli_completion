@@ -162,15 +162,11 @@ class CompletionInstallation {
       completionConfigurationFile,
     );
     final systemShell = configuration!.shell;
-    final isInstalled = completionConfiguration.installs.contains(
-      command: rootCommand,
-      systemShell: systemShell,
-    );
     final isUninstalled = completionConfiguration.uninstalls.contains(
       command: rootCommand,
       systemShell: systemShell,
     );
-    return !isInstalled && !isUninstalled;
+    return !isUninstalled;
   }
 
   /// Create a directory in which the completion config files shall be saved.
