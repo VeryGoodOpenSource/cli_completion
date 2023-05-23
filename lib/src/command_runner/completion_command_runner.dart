@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
@@ -65,15 +66,16 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     return _completionInstallation = completionInstallation;
   }
 
+  /// The list of commands that should not trigger the auto installation.
+  static final _reservedCommands = UnmodifiableListView([
+    HandleCompletionRequestCommand.commandName,
+    InstallCompletionFilesCommand.commandName,
+    UnistallCompletionFilesCommand.commandName,
+  ]);
+
   @override
   @mustCallSuper
   Future<T?> runCommand(ArgResults topLevelResults) async {
-    final reservedCommands = [
-      HandleCompletionRequestCommand.commandName,
-      InstallCompletionFilesCommand.commandName,
-      UnistallCompletionFilesCommand.commandName,
-    ];
-
     if (enableAutoInstall && systemShell != null) {
       final completionConfiguration = CompletionConfiguration.fromFile(
         completionInstallation.completionConfigurationFile,
@@ -82,7 +84,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
           .contains(command: executableName, systemShell: systemShell!);
       final isUninstalled = completionConfiguration.uninstalls
           .contains(command: executableName, systemShell: systemShell!);
-      if (!reservedCommands.contains(topLevelResults.command?.name) &&
+      if (!_reservedCommands.contains(topLevelResults.command?.name) &&
           !isUninstalled &&
           !isInstalled) {
         // When auto installing, use error level to display messages.
