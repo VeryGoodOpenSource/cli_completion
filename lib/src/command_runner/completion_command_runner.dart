@@ -66,29 +66,19 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   }
 
   /// The list of commands that should not trigger the auto installation.
-  static const _reservedCommands = [
+  static const _reservedCommands = {
     HandleCompletionRequestCommand.commandName,
     InstallCompletionFilesCommand.commandName,
     UnistallCompletionFilesCommand.commandName,
-  ];
+  };
 
   @override
   @mustCallSuper
   Future<T?> runCommand(ArgResults topLevelResults) async {
-    if (enableAutoInstall && systemShell != null) {
-      final completionConfiguration = CompletionConfiguration.fromFile(
-        completionInstallation.completionConfigurationFile,
-      );
-      final isInstalled = completionConfiguration.installs
-          .contains(command: executableName, systemShell: systemShell!);
-      final isUninstalled = completionConfiguration.uninstalls
-          .contains(command: executableName, systemShell: systemShell!);
-      if (!_reservedCommands.contains(topLevelResults.command?.name) &&
-          !isUninstalled &&
-          !isInstalled) {
-        // When auto installing, use error level to display messages.
-        tryInstallCompletionFiles(Level.error);
-      }
+    if (enableAutoInstall &&
+        !_reservedCommands.contains(topLevelResults.command?.name)) {
+      // When auto installing, use error level to display messages.
+      tryInstallCompletionFiles(Level.error);
     }
 
     return super.runCommand(topLevelResults);
@@ -96,10 +86,10 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
 
   /// Tries to install completion files for the current shell.
   @internal
-  void tryInstallCompletionFiles(Level level) {
+  void tryInstallCompletionFiles(Level level, {bool force = false}) {
     try {
       completionInstallationLogger.level = level;
-      completionInstallation.install(executableName);
+      completionInstallation.install(executableName, force: force);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
     } on Exception catch (e) {

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/installer.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -29,11 +27,6 @@ void main() {
 
     setUp(() {
       commandRunner = _TestCompletionCommandRunner();
-
-      final completionInstallation = commandRunner.completionInstallation;
-      final completionInstallationFile = File('test-config.json');
-      when(() => completionInstallation.completionConfigurationFile)
-          .thenReturn(completionInstallationFile);
     });
 
     test('can be instantiated', () {
@@ -52,6 +45,15 @@ void main() {
     });
 
     group('install completion files', () {
+      test('forces install', () async {
+        await commandRunner.run(['install-completion-files']);
+
+        verify(
+          () => commandRunner.completionInstallation
+              .install(commandRunner.executableName, force: true),
+        ).called(1);
+      });
+
       test('when normal', () async {
         await commandRunner.run(['install-completion-files']);
 

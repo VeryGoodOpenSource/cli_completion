@@ -1,13 +1,9 @@
-import 'dart:collection';
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:cli_completion/installer.dart';
 import 'package:cli_completion/parser.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 class MockLogger extends Mock implements Logger {}
@@ -118,32 +114,25 @@ void main() {
 
     group('auto install', () {
       test('Tries to install completion files on test subcommand', () async {
-        final completionInstallation = _MockCompletionInstallation();
-        final completionInstallationFile = File('test-config.json');
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
-
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         await commandRunner.run(['ahoy']);
 
-        verify(() => commandRunner.completionInstallation.install('test'))
-            .called(1);
-
+        verify(
+          () => commandRunner.completionInstallation.install('test'),
+        ).called(1);
         verify(
           () => commandRunner.completionInstallationLogger.level = Level.error,
         ).called(1);
       });
 
       test('does not auto install when it is disabled', () async {
-        final completionInstallation = _MockCompletionInstallation();
-
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = false
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         await commandRunner.run(['ahoy']);
 
@@ -154,93 +143,31 @@ void main() {
         );
       });
 
-      test('does not auto install when it is unistalled', () async {
-        final completionInstallation = _MockCompletionInstallation();
-
-        final tempDirectory = Directory.systemTemp.createTempSync();
-        addTearDown(() => tempDirectory.deleteSync(recursive: true));
-
+      test('softly tries to install when enabled', () async {
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = true
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation
+          ..mockCompletionInstallation = _MockCompletionInstallation()
           ..environmentOverride = {
             'SHELL': '/foo/bar/zsh',
           };
 
-        final completioninstallationFilePath =
-            path.join(tempDirectory.path, 'test-config.json');
-        final completionInstallationFile = File(completioninstallationFilePath);
-        final uninstalls = ShellCommandsMap({
-          commandRunner.systemShell!:
-              UnmodifiableSetView<String>({commandRunner.executableName}),
-        });
-        CompletionConfiguration.empty()
-            .copyWith(uninstalls: uninstalls)
-            .writeTo(completionInstallationFile);
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
-
         await commandRunner.run(['ahoy']);
 
-        verifyNever(
-          () => commandRunner.completionInstallation
-              .install(commandRunner.executableName),
-        );
-        verifyNever(
-          () => commandRunner.completionInstallationLogger.level = any(),
-        );
-      });
-
-      test('does not auto install when it is already installed', () async {
-        final completionInstallation = _MockCompletionInstallation();
-
-        final tempDirectory = Directory.systemTemp.createTempSync();
-        addTearDown(() => tempDirectory.deleteSync(recursive: true));
-
-        final commandRunner = _TestCompletionCommandRunner()
-          ..enableAutoInstall = true
-          ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/zsh',
-          };
-
-        final completioninstallationFilePath =
-            path.join(tempDirectory.path, 'test-config.json');
-        final completionInstallationFile = File(completioninstallationFilePath);
-        final installs = ShellCommandsMap({
-          commandRunner.systemShell!:
-              UnmodifiableSetView<String>({commandRunner.executableName}),
-        });
-        CompletionConfiguration.empty()
-            .copyWith(installs: installs)
-            .writeTo(completionInstallationFile);
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
-
-        await commandRunner.run(['ahoy']);
-
-        verifyNever(
-          () => commandRunner.completionInstallation
-              .install(commandRunner.executableName),
-        );
-        verifyNever(
-          () => commandRunner.completionInstallationLogger.level = any(),
-        );
+        verify(
+          () => commandRunner.completionInstallation.install(
+            commandRunner.executableName,
+          ),
+        ).called(1);
       });
     });
 
     test(
       'When it throws CompletionInstallationException, it logs as a warning',
       () async {
-        final completionInstallation = _MockCompletionInstallation();
-        final completionInstallationFile = File('test-config.json');
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = completionInstallation;
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         when(
           () => commandRunner.completionInstallation.install('test'),
@@ -257,14 +184,9 @@ void main() {
 
     test('When an unknown exception happens during a install, it logs as error',
         () async {
-      final completionInstallation = _MockCompletionInstallation();
-      final completionInstallationFile = File('test-config.json');
-      when(() => completionInstallation.completionConfigurationFile)
-          .thenReturn(completionInstallationFile);
-
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand())
-        ..mockCompletionInstallation = completionInstallation;
+        ..mockCompletionInstallation = _MockCompletionInstallation();
 
       when(
         () => commandRunner.completionInstallation.install('test'),

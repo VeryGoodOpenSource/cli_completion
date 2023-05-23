@@ -497,7 +497,55 @@ void main() {
       );
 
       test(
-          '''removes command from $CompletionConfiguration uninstalls when uninstalled''',
+          '''doesn't remove command from $CompletionConfiguration uninstalls when not forced to install''',
+          () {
+        const systemShell = SystemShell.zsh;
+        final installation = CompletionInstallation.fromSystemShell(
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {
+            'HOME': tempDir.path,
+          },
+          systemShell: systemShell,
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        const command = 'very_good';
+        final completionConfigurationFile =
+            installation.completionConfigurationFile;
+
+        final uninstalls = Uninstalls({
+          systemShell: UnmodifiableSetView({command}),
+        });
+        CompletionConfiguration.empty()
+            .copyWith(uninstalls: uninstalls)
+            .writeTo(completionConfigurationFile);
+        final completionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          completionConfiguration.uninstalls
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration should contain the uninstall for the command before install''',
+        );
+
+        installation.install(command);
+
+        final newCompletionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          newCompletionConfiguration.uninstalls
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration should still contain the uninstall for the command after soft install''',
+        );
+      });
+
+      test(
+          '''removes command from $CompletionConfiguration uninstalls when forced to install''',
           () {
         const systemShell = SystemShell.zsh;
         final installation = CompletionInstallation.fromSystemShell(
@@ -531,7 +579,7 @@ void main() {
               '''The completion configuration should contain the uninstall for the command before install''',
         );
 
-        installation.install('very_good');
+        installation.install(command, force: true);
 
         final newCompletionConfiguration =
             CompletionConfiguration.fromFile(completionConfigurationFile);
