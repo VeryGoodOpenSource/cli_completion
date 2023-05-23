@@ -515,7 +515,7 @@ void main() {
         final completionConfigurationFile =
             installation.completionConfigurationFile;
 
-        final uninstalls = Uninstalls({
+        final uninstalls = ShellCommandsMap({
           systemShell: UnmodifiableSetView({command}),
         });
         CompletionConfiguration.empty()
