@@ -109,9 +109,8 @@ class CompletionInstallation {
   /// the aforementioned config file.
   ///
   /// If [force] is true, it will overwrite the command's completion files even
-  /// if they already exist. If false, it will check if the completion
-  /// configuration is already installed, or if it has been explicitly
-  /// uninstalled before installing it.
+  /// if they already exist. If false, it will check if is already installed, or
+  /// if it has been explicitly uninstalled before installing it.
   void install(String rootCommand, {bool force = false}) {
     final configuration = this.configuration;
 
