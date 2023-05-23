@@ -74,21 +74,22 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
       UnistallCompletionFilesCommand.commandName,
     ];
 
-    final completionConfiguration = CompletionConfiguration.fromFile(
-      completionInstallation.completionConfigurationFile,
-    );
-    final isInstalled = systemShell != null &&
-        completionConfiguration.installs
-            .contains(command: executableName, systemShell: systemShell!);
-    final isUninstalled = systemShell != null &&
-        completionConfiguration.uninstalls
-            .contains(command: executableName, systemShell: systemShell!);
-    if (enableAutoInstall &&
-        !reservedCommands.contains(topLevelResults.command?.name) &&
-        !isUninstalled &&
-        !isInstalled) {
-      // When auto installing, use error level to display messages.
-      tryInstallCompletionFiles(Level.error);
+    if (enableAutoInstall) {
+      final completionConfiguration = CompletionConfiguration.fromFile(
+        completionInstallation.completionConfigurationFile,
+      );
+      final isInstalled = systemShell != null &&
+          completionConfiguration.installs
+              .contains(command: executableName, systemShell: systemShell!);
+      final isUninstalled = systemShell != null &&
+          completionConfiguration.uninstalls
+              .contains(command: executableName, systemShell: systemShell!);
+      if (!reservedCommands.contains(topLevelResults.command?.name) &&
+          !isUninstalled &&
+          !isInstalled) {
+        // When auto installing, use error level to display messages.
+        tryInstallCompletionFiles(Level.error);
+      }
     }
 
     return super.runCommand(topLevelResults);

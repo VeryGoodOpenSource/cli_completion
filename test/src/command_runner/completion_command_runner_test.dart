@@ -140,10 +140,6 @@ void main() {
       test('does not auto install when it is disabled', () async {
         final completionInstallation = _MockCompletionInstallation();
 
-        final completionInstallationFile = File('test-config.json');
-        when(() => completionInstallation.completionConfigurationFile)
-            .thenReturn(completionInstallationFile);
-
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = false
           ..addCommand(_TestUserCommand())
