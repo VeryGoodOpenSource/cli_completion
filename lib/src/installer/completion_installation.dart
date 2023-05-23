@@ -109,7 +109,8 @@ class CompletionInstallation {
   /// the aforementioned config file.
   ///
   /// If [force] is true, it will overwrite the command's completion files even
-  /// if they already exist. If false, it will check if it has been explicitly
+  /// if they already exist. If false, it will check if the completion
+  /// configuration is already installed, or if it has been explicitly
   /// uninstalled before installing it.
   void install(String rootCommand, {bool force = false}) {
     final configuration = this.configuration;
@@ -158,17 +159,22 @@ class CompletionInstallation {
   /// Wether the completion configuration files for a [rootCommand] should be
   /// installed or not.
   ///
-  /// It will return false if the root command has been explicitly uninstalled.
+  /// It will return false if the root command is already installed or it
+  /// has been explicitly uninstalled.
   bool _shouldInstall(String rootCommand) {
     final completionConfiguration = CompletionConfiguration.fromFile(
       completionConfigurationFile,
     );
     final systemShell = configuration!.shell;
+    final isInstalled = completionConfiguration.installs.contains(
+      command: rootCommand,
+      systemShell: systemShell,
+    );
     final isUninstalled = completionConfiguration.uninstalls.contains(
       command: rootCommand,
       systemShell: systemShell,
     );
-    return !isUninstalled;
+    return !isInstalled && !isUninstalled;
   }
 
   /// Create a directory in which the completion config files shall be saved.
