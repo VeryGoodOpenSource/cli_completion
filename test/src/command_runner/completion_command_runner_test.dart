@@ -171,7 +171,7 @@ void main() {
         final completioninstallationFilePath =
             path.join(tempDirectory.path, 'test-config.json');
         final completionInstallationFile = File(completioninstallationFilePath);
-        final uninstalls = Uninstalls({
+        final uninstalls = ShellCommandsMap({
           commandRunner.systemShell!:
               UnmodifiableSetView<String>({commandRunner.executableName}),
         });
@@ -209,7 +209,7 @@ void main() {
         final completioninstallationFilePath =
             path.join(tempDirectory.path, 'test-config.json');
         final completionInstallationFile = File(completioninstallationFilePath);
-        final installs = Uninstalls({
+        final installs = ShellCommandsMap({
           commandRunner.systemShell!:
               UnmodifiableSetView<String>({commandRunner.executableName}),
         });
