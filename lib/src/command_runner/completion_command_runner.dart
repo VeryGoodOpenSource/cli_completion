@@ -65,16 +65,18 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     return _completionInstallation = completionInstallation;
   }
 
+  /// The list of commands that should not trigger the auto installation.
+  static const _reservedCommands = {
+    HandleCompletionRequestCommand.commandName,
+    InstallCompletionFilesCommand.commandName,
+    UnistallCompletionFilesCommand.commandName,
+  };
+
   @override
   @mustCallSuper
   Future<T?> runCommand(ArgResults topLevelResults) async {
-    final reservedCommands = [
-      HandleCompletionRequestCommand.commandName,
-      InstallCompletionFilesCommand.commandName,
-    ];
-
     if (enableAutoInstall &&
-        !reservedCommands.contains(topLevelResults.command?.name)) {
+        !_reservedCommands.contains(topLevelResults.command?.name)) {
       // When auto installing, use error level to display messages.
       tryInstallCompletionFiles(Level.error);
     }
@@ -84,10 +86,10 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
 
   /// Tries to install completion files for the current shell.
   @internal
-  void tryInstallCompletionFiles(Level level) {
+  void tryInstallCompletionFiles(Level level, {bool force = false}) {
     try {
       completionInstallationLogger.level = level;
-      completionInstallation.install(executableName);
+      completionInstallation.install(executableName, force: force);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
     } on Exception catch (e) {

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:cli_completion/installer.dart';
@@ -426,6 +427,7 @@ void main() {
               'not_good.zsh',
               'very_good.zsh',
               'zsh-config.zsh',
+              'config.json',
             ]),
           );
 
@@ -462,7 +464,8 @@ void main() {
               'very_good.bash',
               'very_good.zsh',
               'zsh-config.zsh',
-              'bash-config.bash'
+              'bash-config.bash',
+              'config.json',
             ]),
           );
         },
@@ -492,6 +495,102 @@ void main() {
           );
         },
       );
+
+      test(
+          '''doesn't remove command from $CompletionConfiguration uninstalls when not forced to install''',
+          () {
+        const systemShell = SystemShell.zsh;
+        final installation = CompletionInstallation.fromSystemShell(
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {
+            'HOME': tempDir.path,
+          },
+          systemShell: systemShell,
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        const command = 'very_good';
+        final completionConfigurationFile =
+            installation.completionConfigurationFile;
+
+        final uninstalls = Uninstalls({
+          systemShell: UnmodifiableSetView({command}),
+        });
+        CompletionConfiguration.empty()
+            .copyWith(uninstalls: uninstalls)
+            .writeTo(completionConfigurationFile);
+        final completionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          completionConfiguration.uninstalls
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration should contain the uninstall for the command before install''',
+        );
+
+        installation.install(command);
+
+        final newCompletionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          newCompletionConfiguration.uninstalls
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration should still contain the uninstall for the command after soft install''',
+        );
+      });
+
+      test(
+          '''removes command from $CompletionConfiguration uninstalls when forced to install''',
+          () {
+        const systemShell = SystemShell.zsh;
+        final installation = CompletionInstallation.fromSystemShell(
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {
+            'HOME': tempDir.path,
+          },
+          systemShell: systemShell,
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        const command = 'very_good';
+        final completionConfigurationFile =
+            installation.completionConfigurationFile;
+
+        final uninstalls = Uninstalls({
+          systemShell: UnmodifiableSetView({command}),
+        });
+        CompletionConfiguration.empty()
+            .copyWith(uninstalls: uninstalls)
+            .writeTo(completionConfigurationFile);
+        final completionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          completionConfiguration.uninstalls
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason:
+              '''The completion configuration should contain the uninstall for the command before install''',
+        );
+
+        installation.install(command, force: true);
+
+        final newCompletionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          newCompletionConfiguration.uninstalls
+              .contains(command: command, systemShell: systemShell),
+          isFalse,
+          reason:
+              '''The completion configuration should not contain the uninstall for the command after install''',
+        );
+      });
     });
 
     group('uninstall', () {
@@ -732,6 +831,36 @@ void main() {
           isTrue,
           reason:
               '''Command completion configuration for $anotherCommandName should still exist.''',
+        );
+      });
+
+      test('adds command to uninstalls when not the last command', () {
+        const systemShell = SystemShell.zsh;
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: systemShell,
+          logger: logger,
+          environmentOverride: {
+            'HOME': tempDir.path,
+          },
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        const command = 'very_good';
+        installation
+          ..install(command)
+          ..install('another_command')
+          ..uninstall(command);
+
+        final completionConfigurationFile =
+            installation.completionConfigurationFile;
+        final completionConfiguration =
+            CompletionConfiguration.fromFile(completionConfigurationFile);
+        expect(
+          completionConfiguration.uninstalls
+              .contains(command: command, systemShell: systemShell),
+          isTrue,
+          reason: 'Command should be added to uninstalls after uninstalling.',
         );
       });
 

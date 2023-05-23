@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 
 class MockLogger extends Mock implements Logger {}
 
-class MockCompletionInstallation extends Mock
+class _MockCompletionInstallation extends Mock
     implements CompletionInstallation {}
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
@@ -116,13 +116,13 @@ void main() {
       test('Tries to install completion files on test subcommand', () async {
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = MockCompletionInstallation();
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         await commandRunner.run(['ahoy']);
 
-        verify(() => commandRunner.completionInstallation.install('test'))
-            .called(1);
-
+        verify(
+          () => commandRunner.completionInstallation.install('test'),
+        ).called(1);
         verify(
           () => commandRunner.completionInstallationLogger.level = Level.error,
         ).called(1);
@@ -132,7 +132,7 @@ void main() {
         final commandRunner = _TestCompletionCommandRunner()
           ..enableAutoInstall = false
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = MockCompletionInstallation();
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         await commandRunner.run(['ahoy']);
 
@@ -142,6 +142,24 @@ void main() {
           () => commandRunner.completionInstallationLogger.level = any(),
         );
       });
+
+      test('softly tries to install when enabled', () async {
+        final commandRunner = _TestCompletionCommandRunner()
+          ..enableAutoInstall = true
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = _MockCompletionInstallation()
+          ..environmentOverride = {
+            'SHELL': '/foo/bar/zsh',
+          };
+
+        await commandRunner.run(['ahoy']);
+
+        verify(
+          () => commandRunner.completionInstallation.install(
+            commandRunner.executableName,
+          ),
+        ).called(1);
+      });
     });
 
     test(
@@ -149,7 +167,7 @@ void main() {
       () async {
         final commandRunner = _TestCompletionCommandRunner()
           ..addCommand(_TestUserCommand())
-          ..mockCompletionInstallation = MockCompletionInstallation();
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
         when(
           () => commandRunner.completionInstallation.install('test'),
@@ -168,7 +186,7 @@ void main() {
         () async {
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand())
-        ..mockCompletionInstallation = MockCompletionInstallation();
+        ..mockCompletionInstallation = _MockCompletionInstallation();
 
       when(
         () => commandRunner.completionInstallation.install('test'),
@@ -185,7 +203,7 @@ void main() {
         'logs a warning wen it throws $CompletionUninstallationException',
         () async {
           final commandRunner = _TestCompletionCommandRunner()
-            ..mockCompletionInstallation = MockCompletionInstallation();
+            ..mockCompletionInstallation = _MockCompletionInstallation();
 
           when(
             () => commandRunner.completionInstallation.uninstall('test'),
@@ -207,7 +225,7 @@ void main() {
         'logs an error when an unknown exception happens during a install',
         () async {
           final commandRunner = _TestCompletionCommandRunner()
-            ..mockCompletionInstallation = MockCompletionInstallation();
+            ..mockCompletionInstallation = _MockCompletionInstallation();
 
           when(
             () => commandRunner.completionInstallation.uninstall('test'),

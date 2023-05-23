@@ -4,9 +4,9 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
+class _MockLogger extends Mock implements Logger {}
 
-class MockCompletionInstallation extends Mock
+class _MockCompletionInstallation extends Mock
     implements CompletionInstallation {}
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
@@ -14,11 +14,11 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
 
   @override
   // ignore: overridden_fields
-  final Logger completionInstallationLogger = MockLogger();
+  final Logger completionInstallationLogger = _MockLogger();
 
   @override
   final CompletionInstallation completionInstallation =
-      MockCompletionInstallation();
+      _MockCompletionInstallation();
 }
 
 void main() {
@@ -45,6 +45,15 @@ void main() {
     });
 
     group('install completion files', () {
+      test('forces install', () async {
+        await commandRunner.run(['install-completion-files']);
+
+        verify(
+          () => commandRunner.completionInstallation
+              .install(commandRunner.executableName, force: true),
+        ).called(1);
+      });
+
       test('when normal', () async {
         await commandRunner.run(['install-completion-files']);
 
