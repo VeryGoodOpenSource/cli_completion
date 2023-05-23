@@ -195,6 +195,44 @@ void main() {
           () => commandRunner.completionInstallationLogger.level = any(),
         );
       });
+
+      test('does not auto install when it is already installed', () async {
+        final completionInstallation = _MockCompletionInstallation();
+
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final commandRunner = _TestCompletionCommandRunner()
+          ..enableAutoInstall = true
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = completionInstallation
+          ..environmentOverride = {
+            'SHELL': '/foo/bar/zsh',
+          };
+
+        final completioninstallationFilePath =
+            path.join(tempDirectory.path, 'test-config.json');
+        final completionInstallationFile = File(completioninstallationFilePath);
+        final installs = Uninstalls({
+          commandRunner.systemShell!:
+              UnmodifiableSetView<String>({commandRunner.executableName}),
+        });
+        CompletionConfiguration.empty()
+            .copyWith(installs: installs)
+            .writeTo(completionInstallationFile);
+        when(() => completionInstallation.completionConfigurationFile)
+            .thenReturn(completionInstallationFile);
+
+        await commandRunner.run(['ahoy']);
+
+        verifyNever(
+          () => commandRunner.completionInstallation
+              .install(commandRunner.executableName),
+        );
+        verifyNever(
+          () => commandRunner.completionInstallationLogger.level = any(),
+        );
+      });
     });
 
     test(
