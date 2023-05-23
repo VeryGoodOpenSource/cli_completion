@@ -531,7 +531,7 @@ void main() {
               '''The completion configuration should contain the uninstall for the command before install''',
         );
 
-        installation.install('very_good', force: true);
+        installation.install(command);
 
         final newCompletionConfiguration =
             CompletionConfiguration.fromFile(completionConfigurationFile);
@@ -579,7 +579,7 @@ void main() {
               '''The completion configuration should contain the uninstall for the command before install''',
         );
 
-        installation.install('very_good', force: true);
+        installation.install(command, force: true);
 
         final newCompletionConfiguration =
             CompletionConfiguration.fromFile(completionConfigurationFile);
