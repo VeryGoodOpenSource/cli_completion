@@ -515,7 +515,7 @@ void main() {
         final completionConfigurationFile =
             installation.completionConfigurationFile;
 
-        final uninstalls = Uninstalls({
+        final uninstalls = ShellCommandsMap({
           systemShell: UnmodifiableSetView({command}),
         });
         CompletionConfiguration.empty()
@@ -562,7 +562,7 @@ void main() {
         const command = 'very_good';
         final completionConfigurationFile =
             installation.completionConfigurationFile;
-        
+
         final uninstalls = ShellCommandsMap({
           systemShell: UnmodifiableSetView({command}),
         });

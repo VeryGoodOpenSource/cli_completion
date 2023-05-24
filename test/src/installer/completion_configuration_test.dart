@@ -454,58 +454,71 @@ void main() {
     });
   });
 
-  group('UninstallsExtension', () {
+  group('ShellCommandsMapExtension', () {
     group('include', () {
-      test('adds command to $Uninstalls when not already in', () {
+      test('adds command to $ShellCommandsMap when not already in', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({});
+        final shellCommandsMap = ShellCommandsMap({});
 
-        final newUninstalls =
-            uninstalls.include(command: testCommand, systemShell: testShell);
+        final newShellCommadsMap = shellCommandsMap.include(
+          command: testCommand,
+          systemShell: testShell,
+        );
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommadsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
       });
 
-      test('does nothing when $Uninstalls already has command', () {
+      test('does nothing when $ShellCommandsMap already has command', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
-        final newUninstalls =
-            uninstalls.include(command: testCommand, systemShell: testShell);
+        final newShellCommadsMap = shellCommandsMap.include(
+          command: testCommand,
+          systemShell: testShell,
+        );
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommadsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
       });
 
-      test('adds command $Uninstalls when on a different shell', () {
+      test('adds command $ShellCommandsMap when on a different shell', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
         const anotherShell = SystemShell.zsh;
-        final newUninstalls = uninstalls.include(
+        final newShellCommadsMap = shellCommandsMap.include(
           command: testCommand,
           systemShell: anotherShell,
         );
         expect(testShell, isNot(equals(anotherShell)));
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommadsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
         expect(
-          newUninstalls.contains(
+          newShellCommadsMap.contains(
             command: testCommand,
             systemShell: anotherShell,
           ),
@@ -515,75 +528,96 @@ void main() {
     });
 
     group('exclude', () {
-      test('removes command when in $Uninstalls', () {
+      test('removes command when in $ShellCommandsMap', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
-        final newUninstalls =
-            uninstalls.exclude(command: testCommand, systemShell: testShell);
+        final newShellCommandsMap = shellCommandsMap.exclude(
+          command: testCommand,
+          systemShell: testShell,
+        );
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommandsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isFalse,
         );
       });
 
-      test('does nothing when command not in $Uninstalls', () {
+      test('does nothing when command not in $ShellCommandsMap', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({});
+        final shellCommandsMap = ShellCommandsMap({});
 
-        final newUninstalls =
-            uninstalls.exclude(command: testCommand, systemShell: testShell);
+        final newShellCommandsMap = shellCommandsMap.exclude(
+          command: testCommand,
+          systemShell: testShell,
+        );
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommandsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isFalse,
         );
       });
 
-      test('does nothing when command in $Uninstalls is on a different shell',
+      test(
+          '''does nothing when command in $ShellCommandsMap is on a different shell''',
           () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
         const anotherShell = SystemShell.zsh;
-        final newUninstalls =
-            uninstalls.exclude(command: testCommand, systemShell: anotherShell);
+        final newShellCommadsMap = shellCommandsMap.exclude(
+          command: testCommand,
+          systemShell: anotherShell,
+        );
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommadsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
       });
     });
 
     group('contains', () {
-      test('returns true when command is in $Uninstalls for the given shell',
+      test(
+          '''returns true when command is in $ShellCommandsMap for the given shell''',
           () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
         expect(
-          uninstalls.contains(command: testCommand, systemShell: testShell),
+          shellCommandsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
       });
 
-      test('returns false when command is in $Uninstalls for another shell',
+      test(
+          '''returns false when command is in $ShellCommandsMap for another shell''',
           () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
@@ -591,7 +625,10 @@ void main() {
         expect(testShell, isNot(equals(anotherShell)));
 
         expect(
-          uninstalls.contains(command: testCommand, systemShell: anotherShell),
+          shellCommandsMap.contains(
+            command: testCommand,
+            systemShell: anotherShell,
+          ),
           isFalse,
         );
       });
