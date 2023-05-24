@@ -453,4 +453,148 @@ void main() {
       });
     });
   });
+
+  group('UninstallsExtension', () {
+    group('include', () {
+      test('adds command to $Uninstalls when not already in', () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({});
+
+        final newUninstalls =
+            uninstalls.include(command: testCommand, systemShell: testShell);
+
+        expect(
+          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          isTrue,
+        );
+      });
+
+      test('does nothing when $Uninstalls already has command', () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({
+          testShell: UnmodifiableSetView({testCommand}),
+        });
+
+        final newUninstalls =
+            uninstalls.include(command: testCommand, systemShell: testShell);
+
+        expect(
+          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          isTrue,
+        );
+      });
+
+      test('adds command $Uninstalls when on a different shell', () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({
+          testShell: UnmodifiableSetView({testCommand}),
+        });
+
+        const anotherShell = SystemShell.zsh;
+        final newUninstalls = uninstalls.include(
+          command: testCommand,
+          systemShell: anotherShell,
+        );
+        expect(testShell, isNot(equals(anotherShell)));
+
+        expect(
+          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          isTrue,
+        );
+        expect(
+          newUninstalls.contains(
+            command: testCommand,
+            systemShell: anotherShell,
+          ),
+          isTrue,
+        );
+      });
+    });
+
+    group('exclude', () {
+      test('removes command when in $Uninstalls', () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({
+          testShell: UnmodifiableSetView({testCommand}),
+        });
+
+        final newUninstalls =
+            uninstalls.exclude(command: testCommand, systemShell: testShell);
+
+        expect(
+          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          isFalse,
+        );
+      });
+
+      test('does nothing when command not in $Uninstalls', () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({});
+
+        final newUninstalls =
+            uninstalls.exclude(command: testCommand, systemShell: testShell);
+
+        expect(
+          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          isFalse,
+        );
+      });
+
+      test('does nothing when command in $Uninstalls is on a different shell',
+          () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({
+          testShell: UnmodifiableSetView({testCommand}),
+        });
+
+        const anotherShell = SystemShell.zsh;
+        final newUninstalls =
+            uninstalls.exclude(command: testCommand, systemShell: anotherShell);
+
+        expect(
+          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          isTrue,
+        );
+      });
+    });
+
+    group('contains', () {
+      test('returns true when command is in $Uninstalls for the given shell',
+          () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({
+          testShell: UnmodifiableSetView({testCommand}),
+        });
+
+        expect(
+          uninstalls.contains(command: testCommand, systemShell: testShell),
+          isTrue,
+        );
+      });
+
+      test('returns false when command is in $Uninstalls for another shell',
+          () {
+        const testCommand = 'test_command';
+        const testShell = SystemShell.bash;
+        final uninstalls = Uninstalls({
+          testShell: UnmodifiableSetView({testCommand}),
+        });
+
+        const anotherShell = SystemShell.zsh;
+        expect(testShell, isNot(equals(anotherShell)));
+
+        expect(
+          uninstalls.contains(command: testCommand, systemShell: anotherShell),
+          isFalse,
+        );
+      });
+    });
+  });
 }
