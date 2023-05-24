@@ -294,7 +294,7 @@ void main() {
         );
       });
 
-      test('does nothing when $ShellCommandsMap already has command', () {
+      test('remains the same when $ShellCommandsMap already has command', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
         final shellCommandsMap = ShellCommandsMap({
@@ -306,13 +306,7 @@ void main() {
           systemShell: testShell,
         );
 
-        expect(
-          newShellCommadsMap.contains(
-            command: testCommand,
-            systemShell: testShell,
-          ),
-          isTrue,
-        );
+        expect(newShellCommadsMap, equals(shellCommandsMap));
       });
 
       test('adds command $ShellCommandsMap when on a different shell', () {
@@ -368,7 +362,7 @@ void main() {
         );
       });
 
-      test('does nothing when command not in $ShellCommandsMap', () {
+      test('remains the same when command not in $ShellCommandsMap', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
         final shellCommandsMap = ShellCommandsMap({});
@@ -378,17 +372,11 @@ void main() {
           systemShell: testShell,
         );
 
-        expect(
-          newShellCommandsMap.contains(
-            command: testCommand,
-            systemShell: testShell,
-          ),
-          isFalse,
-        );
+        expect(newShellCommandsMap, equals(shellCommandsMap));
       });
 
       test(
-          '''does nothing when command in $ShellCommandsMap is on a different shell''',
+          '''remains the same when command in $ShellCommandsMap is on a different shell''',
           () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
@@ -402,13 +390,7 @@ void main() {
           systemShell: anotherShell,
         );
 
-        expect(
-          newShellCommadsMap.contains(
-            command: testCommand,
-            systemShell: testShell,
-          ),
-          isTrue,
-        );
+        expect(newShellCommadsMap, equals(shellCommandsMap));
       });
     });
 
