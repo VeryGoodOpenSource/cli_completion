@@ -265,7 +265,7 @@ void main() {
             completionConfiguration.copyWith(installs: installs);
 
         expect(
-          newcompletionConfiguration.uninstalls,
+          newcompletionConfiguration.installs,
           equals(installs),
           reason: 'Installs should be modified',
         );

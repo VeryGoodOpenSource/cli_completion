@@ -296,7 +296,7 @@ void main() {
       });
 
       test(
-        'installing completion for a command when it is already installed',
+        'installs completion for a an already installed command when forced',
         () {
           final installation = CompletionInstallation(
             logger: logger,
@@ -325,7 +325,7 @@ void main() {
           reset(logger);
 
           // install again
-          installation.install('very_good');
+          installation.install('very_good', force: true);
 
           verify(
             () => logger.warn(
@@ -368,6 +368,45 @@ void main() {
               'source ${path.join(tempDir.path, '.zshrc')}\n',
             ),
           );
+        },
+      );
+
+      test(
+        '''avoid installing completion for an already installed command''',
+        () {
+          final installation = CompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDir.path,
+            },
+            configuration: zshConfiguration,
+          );
+
+          File(path.join(tempDir.path, '.zshrc')).createSync();
+
+          installation.install('very_good');
+
+          verify(() => logger.level = Level.info).called(1);
+
+          verify(
+            () => logger.info(
+              '\n'
+              'Completion files installed. To enable completion, run the '
+              'following command in your shell:\n'
+              'source ${path.join(tempDir.path, '.zshrc')}\n',
+            ),
+          ).called(1);
+
+          reset(logger);
+
+          // Install again
+          installation.install('very_good');
+
+          verifyNever(() => logger.detail(any()));
+          verifyNever(() => logger.warn(any()));
+          verifyNever(() => logger.level = Level.debug);
+          verifyNever(() => logger.info(any()));
         },
       );
 
