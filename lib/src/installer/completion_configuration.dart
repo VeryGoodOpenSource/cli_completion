@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 ///
 /// The map and its content are unmodifiable. This is to ensure that
 /// [CompletionConfiguration]s is fully immutable.
-typedef Uninstalls
+typedef ShellCommandsMap
     = UnmodifiableMapView<SystemShell, UnmodifiableSetView<String>>;
 
 /// {@template completion_configuration}
@@ -22,11 +22,14 @@ class CompletionConfiguration {
   /// {@macro completion_configuration}
   const CompletionConfiguration._({
     required this.uninstalls,
+    required this.installs,
   });
 
   /// Creates an empty [CompletionConfiguration].
   @visibleForTesting
-  CompletionConfiguration.empty() : uninstalls = UnmodifiableMapView({});
+  CompletionConfiguration.empty()
+      : uninstalls = ShellCommandsMap({}),
+        installs = ShellCommandsMap({});
 
   /// Creates a [CompletionConfiguration] from the given [file] content.
   ///
@@ -56,17 +59,34 @@ class CompletionConfiguration {
     }
 
     return CompletionConfiguration._(
-      uninstalls: _jsonDecodeUninstalls(decodedJson),
+      uninstalls: _jsonDecodeShellCommandsMap(
+        decodedJson,
+        jsonKey: CompletionConfiguration.uninstallsJsonKey,
+      ),
+      installs: _jsonDecodeShellCommandsMap(
+        decodedJson,
+        jsonKey: CompletionConfiguration.installsJsonKey,
+      ),
     );
   }
 
   /// The JSON key for the [uninstalls] field.
-  static const String _uninstallsJsonKey = 'uninstalls';
+  @visibleForTesting
+  static const String uninstallsJsonKey = 'uninstalls';
+
+  /// The JSON key for the [installs] field.
+  @visibleForTesting
+  static const String installsJsonKey = 'installs';
 
   /// Stores those commands that have been manually uninstalled by the user.
   ///
   /// Uninstalls are specific to a given [SystemShell].
-  final Uninstalls uninstalls;
+  final ShellCommandsMap uninstalls;
+
+  /// Stores those commands that have completion installed.
+  ///
+  /// Installed commands are specific to a given [SystemShell].
+  final ShellCommandsMap installs;
 
   /// Stores the [CompletionConfiguration] in the given [file].
   void writeTo(File file) {
@@ -76,73 +96,80 @@ class CompletionConfiguration {
     file.writeAsStringSync(_toJson());
   }
 
-  /// Returns a copy of this [CompletionConfiguration] with the given fields
-  /// replaced.
-  CompletionConfiguration copyWith({
-    Uninstalls? uninstalls,
-  }) {
-    return CompletionConfiguration._(
-      uninstalls: uninstalls ?? this.uninstalls,
-    );
-  }
-
   /// Returns a JSON representation of this [CompletionConfiguration].
   String _toJson() {
     return jsonEncode({
-      _uninstallsJsonKey: _jsonEncodeUninstalls(uninstalls),
+      uninstallsJsonKey: _jsonEncodeShellCommandsMap(uninstalls),
+      installsJsonKey: _jsonEncodeShellCommandsMap(installs),
     });
+  }
+
+  /// Returns a copy of this [CompletionConfiguration] with the given fields
+  /// replaced.
+  CompletionConfiguration copyWith({
+    ShellCommandsMap? uninstalls,
+    ShellCommandsMap? installs,
+  }) {
+    return CompletionConfiguration._(
+      uninstalls: uninstalls ?? this.uninstalls,
+      installs: installs ?? this.installs,
+    );
   }
 }
 
-/// Decodes [Uninstalls] from the given [json].
+/// Decodes [ShellCommandsMap] from the given [json].
 ///
 /// If the [json] is not partially or fully valid, it handles issues gracefully
 /// without throwing an [Exception].
-Uninstalls _jsonDecodeUninstalls(Map<String, dynamic> json) {
-  if (!json.containsKey(CompletionConfiguration._uninstallsJsonKey)) {
-    return UnmodifiableMapView({});
+ShellCommandsMap _jsonDecodeShellCommandsMap(
+  Map<String, dynamic> json, {
+  required String jsonKey,
+}) {
+  if (!json.containsKey(jsonKey)) {
+    return ShellCommandsMap({});
   }
-  final jsonUninstalls = json[CompletionConfiguration._uninstallsJsonKey];
-  if (jsonUninstalls is! String) {
-    return UnmodifiableMapView({});
+  final jsonShellCommandsMap = json[jsonKey];
+  if (jsonShellCommandsMap is! String) {
+    return ShellCommandsMap({});
   }
-  late final Map<String, dynamic> decodedUninstalls;
+  late final Map<String, dynamic> decodedShellCommandsMap;
   try {
-    decodedUninstalls = jsonDecode(jsonUninstalls) as Map<String, dynamic>;
+    decodedShellCommandsMap =
+        jsonDecode(jsonShellCommandsMap) as Map<String, dynamic>;
   } on FormatException {
-    return UnmodifiableMapView({});
+    return ShellCommandsMap({});
   }
 
-  final newUninstalls = <SystemShell, UnmodifiableSetView<String>>{};
-  for (final entry in decodedUninstalls.entries) {
+  final newShellCommandsMap = <SystemShell, UnmodifiableSetView<String>>{};
+  for (final entry in decodedShellCommandsMap.entries) {
     final systemShell = SystemShell.tryParse(entry.key);
     if (systemShell == null) continue;
-    final uninstallSet = <String>{};
+    final commandsSet = <String>{};
     if (entry.value is List) {
       for (final uninstall in entry.value as List) {
         if (uninstall is String) {
-          uninstallSet.add(uninstall);
+          commandsSet.add(uninstall);
         }
       }
     }
-    newUninstalls[systemShell] = UnmodifiableSetView(uninstallSet);
+    newShellCommandsMap[systemShell] = UnmodifiableSetView(commandsSet);
   }
-  return UnmodifiableMapView(newUninstalls);
+  return UnmodifiableMapView(newShellCommandsMap);
 }
 
-/// Returns a JSON representation of the given [Uninstalls].
-String _jsonEncodeUninstalls(Uninstalls uninstalls) {
+/// Returns a JSON representation of the given [ShellCommandsMap].
+String _jsonEncodeShellCommandsMap(ShellCommandsMap shellCommandsMap) {
   return jsonEncode({
-    for (final entry in uninstalls.entries)
+    for (final entry in shellCommandsMap.entries)
       entry.key.toString(): entry.value.toList(),
   });
 }
 
-/// Provides convinience methods for [Uninstalls].
-extension UninstallsExtension on Uninstalls {
-  /// Returns a new [Uninstalls] with the given [command] added to
+/// Provides convinience methods for [ShellCommandsMap].
+extension ShellCommandsMapExtension on ShellCommandsMap {
+  /// Returns a new [ShellCommandsMap] with the given [command] added to
   /// [systemShell].
-  Uninstalls include({
+  ShellCommandsMap include({
     required String command,
     required SystemShell systemShell,
   }) {
@@ -159,9 +186,9 @@ extension UninstallsExtension on Uninstalls {
     );
   }
 
-  /// Returns a new [Uninstalls] with the given [command] removed from
+  /// Returns a new [ShellCommandsMap] with the given [command] removed from
   /// [systemShell].
-  Uninstalls exclude({
+  ShellCommandsMap exclude({
     required String command,
     required SystemShell systemShell,
   }) {

@@ -9,13 +9,16 @@ import 'package:test/test.dart';
 
 void main() {
   group('$CompletionConfiguration', () {
-    final testUninstalls = UnmodifiableMapView({
+    final testInstalls = ShellCommandsMap({
+      SystemShell.bash: UnmodifiableSetView({'very_good'}),
+    });
+    final testUninstalls = ShellCommandsMap({
       SystemShell.bash: UnmodifiableSetView({'very_bad'}),
     });
 
     group('fromFile', () {
       test(
-        'returns empty cache when file does not exist',
+        'returns empty $CompletionConfiguration when file does not exist',
         () {
           final tempDirectory = Directory.systemTemp.createTempSync();
           addTearDown(() => tempDirectory.deleteSync(recursive: true));
@@ -27,25 +30,26 @@ void main() {
             reason: 'File should not exist',
           );
 
-          final cache = CompletionConfiguration.fromFile(file);
+          final completionConfiguration =
+              CompletionConfiguration.fromFile(file);
           expect(
-            cache.uninstalls,
+            completionConfiguration.uninstalls,
             isEmpty,
             reason: 'Uninstalls should be initially empty',
           );
         },
       );
 
-      test('returns empty cache when file is empty', () {
+      test('returns empty $CompletionConfiguration when file is empty', () {
         final tempDirectory = Directory.systemTemp.createTempSync();
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final file = File(path.join(tempDirectory.path, 'config.json'))
           ..writeAsStringSync('');
 
-        final cache = CompletionConfiguration.fromFile(file);
+        final completionConfiguration = CompletionConfiguration.fromFile(file);
         expect(
-          cache.uninstalls,
+          completionConfiguration.uninstalls,
           isEmpty,
           reason: 'Uninstalls should be initially empty',
         );
@@ -57,31 +61,40 @@ void main() {
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final file = File(path.join(tempDirectory.path, 'config.json'));
-        final cache = CompletionConfiguration.empty().copyWith(
+        final completionConfiguration =
+            CompletionConfiguration.empty().copyWith(
+          installs: testInstalls,
           uninstalls: testUninstalls,
         )..writeTo(file);
 
-        final newCache = CompletionConfiguration.fromFile(file);
+        final newConfiguration = CompletionConfiguration.fromFile(file);
         expect(
-          newCache.uninstalls,
-          cache.uninstalls,
+          newConfiguration.installs,
+          equals(completionConfiguration.installs),
+          reason: 'Installs should match those defined in the file',
+        );
+        expect(
+          newConfiguration.uninstalls,
+          equals(completionConfiguration.uninstalls),
           reason: 'Uninstalls should match those defined in the file',
         );
       });
 
       test(
-        '''returns a $CompletionConfiguration with empty uninstalls if the file's JSON "uninstalls" key has a string value''',
+        '''returns a $CompletionConfiguration with empty uninstalls if the file's JSON uninstalls key has a string value''',
         () {
           final tempDirectory = Directory.systemTemp.createTempSync();
           addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
-          const json = '{"uninstalls": "very_bad"}';
+          const json =
+              '{"${CompletionConfiguration.uninstallsJsonKey}": "very_bad"}';
           final file = File(path.join(tempDirectory.path, 'config.json'))
             ..writeAsStringSync(json);
 
-          final cache = CompletionConfiguration.fromFile(file);
+          final completionConfiguration =
+              CompletionConfiguration.fromFile(file);
           expect(
-            cache.uninstalls,
+            completionConfiguration.uninstalls,
             isEmpty,
             reason:
                 '''Uninstalls should be empty when the value is of an invalid type''',
@@ -90,21 +103,65 @@ void main() {
       );
 
       test(
-        '''returns a $CompletionConfiguration with empty uninstalls if file's JSON "uninstalls" key has a numeric value''',
+        '''returns a $CompletionConfiguration with empty installs if the file's JSON installs key has a string value''',
         () {
           final tempDirectory = Directory.systemTemp.createTempSync();
           addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
-          const json = '{"uninstalls": 1}';
+          const json =
+              '{"${CompletionConfiguration.installsJsonKey}": "very_bad"}';
           final file = File(path.join(tempDirectory.path, 'config.json'))
             ..writeAsStringSync(json);
 
-          final cache = CompletionConfiguration.fromFile(file);
+          final completionConfiguration =
+              CompletionConfiguration.fromFile(file);
           expect(
-            cache.uninstalls,
+            completionConfiguration.installs,
+            isEmpty,
+            reason:
+                '''Installs should be empty when the value is of an invalid type''',
+          );
+        },
+      );
+
+      test(
+        '''returns a $CompletionConfiguration with empty uninstalls if file's JSON uninstalls key has a numeric value''',
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          const json = '{"${CompletionConfiguration.uninstallsJsonKey}": 1}';
+          final file = File(path.join(tempDirectory.path, 'config.json'))
+            ..writeAsStringSync(json);
+
+          final completionConfiguration =
+              CompletionConfiguration.fromFile(file);
+          expect(
+            completionConfiguration.uninstalls,
             isEmpty,
             reason:
                 '''Uninstalls should be empty when the value is of an invalid type''',
+          );
+        },
+      );
+
+      test(
+        '''returns a $CompletionConfiguration with empty installs if file's JSON installs key has a numeric value''',
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          const json = '{"${CompletionConfiguration.installsJsonKey}": 1}';
+          final file = File(path.join(tempDirectory.path, 'config.json'))
+            ..writeAsStringSync(json);
+
+          final completionConfiguration =
+              CompletionConfiguration.fromFile(file);
+          expect(
+            completionConfiguration.installs,
+            isEmpty,
+            reason:
+                '''Installs should be empty when the value is of an invalid type''',
           );
         },
       );
@@ -127,7 +184,7 @@ void main() {
         expect(
           file.existsSync(),
           isTrue,
-          reason: 'File should exist after cache creation',
+          reason: 'File should exist after completionConfiguration creation',
         );
       });
 
@@ -155,14 +212,22 @@ void main() {
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final file = File(path.join(tempDirectory.path, 'config.json'));
-        final cache = CompletionConfiguration.empty().copyWith(
+        final completionConfiguration =
+            CompletionConfiguration.empty().copyWith(
+          installs: testInstalls,
           uninstalls: testUninstalls,
         )..writeTo(file);
 
-        final newCache = CompletionConfiguration.fromFile(file);
+        final newcompletionConfiguration =
+            CompletionConfiguration.fromFile(file);
         expect(
-          newCache.uninstalls,
-          cache.uninstalls,
+          newcompletionConfiguration.installs,
+          completionConfiguration.installs,
+          reason: 'Installs should match those defined in the file',
+        );
+        expect(
+          newcompletionConfiguration.uninstalls,
+          completionConfiguration.uninstalls,
           reason: 'Uninstalls should match those defined in the file',
         );
       });
@@ -170,82 +235,103 @@ void main() {
 
     group('copyWith', () {
       test('members remain unchanged when nothing is specified', () {
-        final cache = CompletionConfiguration.empty();
-        final newCache = cache.copyWith();
+        final completionConfiguration = CompletionConfiguration.empty();
+        final newcompletionConfiguration = completionConfiguration.copyWith();
 
         expect(
-          newCache.uninstalls,
-          cache.uninstalls,
+          newcompletionConfiguration.uninstalls,
+          completionConfiguration.uninstalls,
           reason: 'Uninstalls should remain unchanged',
         );
       });
 
       test('modifies uninstalls when specified', () {
-        final cache = CompletionConfiguration.empty();
+        final completionConfiguration = CompletionConfiguration.empty();
         final uninstalls = testUninstalls;
-        final newCache = cache.copyWith(uninstalls: uninstalls);
+        final newcompletionConfiguration =
+            completionConfiguration.copyWith(uninstalls: uninstalls);
 
         expect(
-          newCache.uninstalls,
+          newcompletionConfiguration.uninstalls,
           equals(uninstalls),
           reason: 'Uninstalls should be modified',
+        );
+      });
+
+      test('modifies installs when specified', () {
+        final completionConfiguration = CompletionConfiguration.empty();
+        final installs = testUninstalls;
+        final newcompletionConfiguration =
+            completionConfiguration.copyWith(installs: installs);
+
+        expect(
+          newcompletionConfiguration.installs,
+          equals(installs),
+          reason: 'Installs should be modified',
         );
       });
     });
   });
 
-  group('UninstallsExtension', () {
+  group('ShellCommandsMapExtension', () {
     group('include', () {
-      test('adds command to $Uninstalls when not already in', () {
+      test('adds command to $ShellCommandsMap when not already in', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({});
+        final shellCommandsMap = ShellCommandsMap({});
 
-        final newUninstalls =
-            uninstalls.include(command: testCommand, systemShell: testShell);
+        final newShellCommadsMap = shellCommandsMap.include(
+          command: testCommand,
+          systemShell: testShell,
+        );
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommadsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
       });
 
-      test('does nothing when $Uninstalls already has command', () {
+      test('remains the same when $ShellCommandsMap already has command', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
-        final newUninstalls =
-            uninstalls.include(command: testCommand, systemShell: testShell);
-
-        expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
-          isTrue,
+        final newShellCommadsMap = shellCommandsMap.include(
+          command: testCommand,
+          systemShell: testShell,
         );
+
+        expect(newShellCommadsMap, equals(shellCommandsMap));
       });
 
-      test('adds command $Uninstalls when on a different shell', () {
+      test('adds command $ShellCommandsMap when on a different shell', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
         const anotherShell = SystemShell.zsh;
-        final newUninstalls = uninstalls.include(
+        final newShellCommadsMap = shellCommandsMap.include(
           command: testCommand,
           systemShell: anotherShell,
         );
         expect(testShell, isNot(equals(anotherShell)));
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommadsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
         expect(
-          newUninstalls.contains(
+          newShellCommadsMap.contains(
             command: testCommand,
             systemShell: anotherShell,
           ),
@@ -255,75 +341,84 @@ void main() {
     });
 
     group('exclude', () {
-      test('removes command when in $Uninstalls', () {
+      test('removes command when in $ShellCommandsMap', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
-        final newUninstalls =
-            uninstalls.exclude(command: testCommand, systemShell: testShell);
+        final newShellCommandsMap = shellCommandsMap.exclude(
+          command: testCommand,
+          systemShell: testShell,
+        );
 
         expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
+          newShellCommandsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isFalse,
         );
       });
 
-      test('does nothing when command not in $Uninstalls', () {
+      test('remains the same when command not in $ShellCommandsMap', () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({});
+        final shellCommandsMap = ShellCommandsMap({});
 
-        final newUninstalls =
-            uninstalls.exclude(command: testCommand, systemShell: testShell);
-
-        expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
-          isFalse,
+        final newShellCommandsMap = shellCommandsMap.exclude(
+          command: testCommand,
+          systemShell: testShell,
         );
+
+        expect(newShellCommandsMap, equals(shellCommandsMap));
       });
 
-      test('does nothing when command in $Uninstalls is on a different shell',
+      test(
+          '''remains the same when command in $ShellCommandsMap is on a different shell''',
           () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
         const anotherShell = SystemShell.zsh;
-        final newUninstalls =
-            uninstalls.exclude(command: testCommand, systemShell: anotherShell);
-
-        expect(
-          newUninstalls.contains(command: testCommand, systemShell: testShell),
-          isTrue,
+        final newShellCommadsMap = shellCommandsMap.exclude(
+          command: testCommand,
+          systemShell: anotherShell,
         );
+
+        expect(newShellCommadsMap, equals(shellCommandsMap));
       });
     });
 
     group('contains', () {
-      test('returns true when command is in $Uninstalls for the given shell',
+      test(
+          '''returns true when command is in $ShellCommandsMap for the given shell''',
           () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
         expect(
-          uninstalls.contains(command: testCommand, systemShell: testShell),
+          shellCommandsMap.contains(
+            command: testCommand,
+            systemShell: testShell,
+          ),
           isTrue,
         );
       });
 
-      test('returns false when command is in $Uninstalls for another shell',
+      test(
+          '''returns false when command is in $ShellCommandsMap for another shell''',
           () {
         const testCommand = 'test_command';
         const testShell = SystemShell.bash;
-        final uninstalls = Uninstalls({
+        final shellCommandsMap = ShellCommandsMap({
           testShell: UnmodifiableSetView({testCommand}),
         });
 
@@ -331,7 +426,10 @@ void main() {
         expect(testShell, isNot(equals(anotherShell)));
 
         expect(
-          uninstalls.contains(command: testCommand, systemShell: anotherShell),
+          shellCommandsMap.contains(
+            command: testCommand,
+            systemShell: anotherShell,
+          ),
           isFalse,
         );
       });
