@@ -8,7 +8,7 @@ void main() {
         final environment = <String, String>{
           'COMP_LINE': 'example_cli some_command --discrete foo',
           'COMP_POINT': '39',
-          'COMP_CWORD': '3'
+          'COMP_CWORD': '3',
         };
         final state = CompletionState.fromEnvironment(environment);
         expect(state, isNotNull);
@@ -26,7 +26,7 @@ void main() {
         final environment = <String, String>{
           'COMP_LINE': 'example_cli some_command --discrete foo',
           'COMP_POINT': '39',
-          'COMP_CWORD': '3'
+          'COMP_CWORD': '3',
         };
         final state = CompletionState.fromEnvironment(environment);
         final state2 = CompletionState.fromEnvironment(environment);
@@ -47,7 +47,7 @@ void main() {
 
       test('returns null when only COMP_LINE is set', () {
         final environment = <String, String>{
-          'COMP_LINE': 'example_cli some_command --discrete foo'
+          'COMP_LINE': 'example_cli some_command --discrete foo',
         };
         expect(
           CompletionState.fromEnvironment(environment),
@@ -86,7 +86,7 @@ void main() {
         final environment = <String, String>{
           'COMP_LINE': 'example_cli some_command --discrete foo',
           'COMP_POINT': '0',
-          'COMP_CWORD': '0'
+          'COMP_CWORD': '0',
         };
         expect(
           CompletionState.fromEnvironment(environment),
@@ -98,7 +98,7 @@ void main() {
         final environment = <String, String>{
           'COMP_LINE': 'example_cli some_command -- --discrete foo',
           'COMP_POINT': '42',
-          'COMP_CWORD': '4'
+          'COMP_CWORD': '4',
         };
         expect(
           CompletionState.fromEnvironment(environment),

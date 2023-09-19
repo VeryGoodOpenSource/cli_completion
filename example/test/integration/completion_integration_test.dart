@@ -203,7 +203,7 @@ void main() {
       '--no-flag': null,
       '--inverseflag': 'A flag that the default value is true',
       '--no-inverseflag': 'A flag that the default value is true',
-      '--trueflag': 'A flag that cannot be negated'
+      '--trueflag': 'A flag that cannot be negated',
     };
 
     final allAbbreviationsInThisLevel = <String, String?>{
@@ -213,7 +213,7 @@ void main() {
       '-n': 'An continuous option that can be passed multiple times',
       '-f': null,
       '-i': 'A flag that the default value is true',
-      '-t': 'A flag that cannot be negated'
+      '-t': 'A flag that cannot be negated',
     };
 
     group('empty ', () {
@@ -315,7 +315,7 @@ void main() {
                 'An option that starts with "no" just to make confusion with '
                     'negated flags',
             '--no-flag': null,
-            '--no-inverseflag': 'A flag that the default value is true'
+            '--no-inverseflag': 'A flag that the default value is true',
           }),
         );
       });
@@ -325,7 +325,7 @@ void main() {
           'example_cli some_command --no-i',
           suggests({
             '--no-itIsAFlag': null,
-            '--no-inverseflag': 'A flag that the default value is true'
+            '--no-inverseflag': 'A flag that the default value is true',
           }),
         );
       });
@@ -642,7 +642,7 @@ void main() {
               'fii': 'fii help',
               'bar': 'bar help',
               'fee': 'fee help',
-              'i have space': 'an allowed option with space on it'
+              'i have space': 'an allowed option with space on it',
             }),
           );
         });
