@@ -3,7 +3,7 @@ description: Completion functionality for Dart Command-Line Interfaces built usi
 version: 0.3.0
 repository: https://github.com/VeryGoodOpenSource/cli_completion
 issue_tracker: https://github.com/VeryGoodOpenSource/pub_updater/issues
-topics: [cli, completion, shell, bash]
+topics: [cli, completion, shell, bash, autocomplete]
 screenshots:
   - description: 'This screenshot shows the completion of a dart CLI.'
     path: doc/screen.png
