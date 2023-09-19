@@ -3,7 +3,7 @@
 - docs: update readme with a troubleshooting section ([#63](https://github.com/VeryGoodOpenSource/cli_completion/pull/63))
 - feat: included `CompletionConfiguration` class ([#71](https://github.com/VeryGoodOpenSource/cli_completion/pull/71))
 - feat: include uninstallation logic ([#70](https://github.com/VeryGoodOpenSource/cli_completion/pull/70))
-- feat: include `UnistallCompletionFilesCommand` ([#72](https://github.com/VeryGoodOpenSource/cli_completion/pull/72))
+- feat: include `UninstallCompletionFilesCommand` ([#72](https://github.com/VeryGoodOpenSource/cli_completion/pull/72))
 - feat: avoid auto-installing manually uninstalled commands ([#73](https://github.com/VeryGoodOpenSource/cli_completion/pull/73))
 - feat: avoid auto-installing when already installed ([#74](https://github.com/VeryGoodOpenSource/cli_completion/pull/74))
 

@@ -21,6 +21,7 @@
     "inverseflag",
     "trueflag",
     "autoload",
-    "compinit"
+    "compinit",
+    "uninstallation"
   ]
 }
