@@ -1,10 +1,15 @@
 name: cli_completion
 description: Completion functionality for Dart Command-Line Interfaces built using CommandRunner. Built by Very Good Ventures.
-repository: https://github.com/VeryGoodOpenSource/cli_completion
 version: 0.3.0
+repository: https://github.com/VeryGoodOpenSource/cli_completion
+issue_tracker: https://github.com/VeryGoodOpenSource/pub_updater/issues
+topics: [cli, completion, shell, bash]
+screenshots:
+  - description: 'This screenshot shows the completion of a dart CLI.'
+    path: doc/screen.png
 
 environment:
-  sdk: ">=2.18.0 <3.0.0"
+  sdk: ">=2.18.0 <4.0.0"
 
 dependencies:
   args: ^2.3.1
@@ -12,11 +17,8 @@ dependencies:
   mason_logger: ^0.2.2
   meta: ^1.8.0
   path: ^1.8.2
-screenshots:
-  - description: 'This screenshot shows the completion of a dart CLI.'
-    path: doc/screen.png
 
 dev_dependencies:
-  mocktail: ">=0.3.0 <2.0.0"
-  test: ^1.19.2
-  very_good_analysis: ^4.0.0+1
+  mocktail: ^1.0.0
+  test: ^1.24.6
+  very_good_analysis: ^5.1.0
