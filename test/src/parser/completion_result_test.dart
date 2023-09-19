@@ -139,7 +139,7 @@ void main() {
           {
             'command1': 'yay command 1',
             'command2': 'yay command 2',
-            'command_not_weird': 'yay weird command'
+            'command_not_weird': 'yay weird command',
           },
         );
       },

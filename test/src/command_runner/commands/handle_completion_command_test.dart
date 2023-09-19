@@ -78,7 +78,7 @@ void main() {
           'SHELL': '/foo/bar/zsh',
           'COMP_LINE': line,
           'COMP_POINT': '${line.length}',
-          'COMP_CWORD': '2'
+          'COMP_CWORD': '2',
         };
         await commandRunner.run(['completion']);
 
@@ -99,7 +99,7 @@ subcommand:level 1
           'SHELL': '/foo/bar/zsh',
           'COMP_LINE': line,
           'COMP_POINT': '${line.length}',
-          'COMP_CWORD': '2'
+          'COMP_CWORD': '2',
         };
         await commandRunner.run(['completion']);
 

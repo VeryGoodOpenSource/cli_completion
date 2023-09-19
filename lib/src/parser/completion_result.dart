@@ -248,7 +248,7 @@ class OptionValuesCompletionResult extends CompletionResult {
         if (includeAbbrName)
           '-$optionName$allowed': option?.allowedHelp?[allowed]
         else
-          allowed: option?.allowedHelp?[allowed]
+          allowed: option?.allowedHelp?[allowed],
     };
   }
 }
