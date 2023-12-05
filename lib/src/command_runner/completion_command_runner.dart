@@ -22,7 +22,12 @@ import 'package:meta/meta.dart';
 /// manually install completion files.
 abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   /// {@macro completion_command_runner}
-  CompletionCommandRunner(super.executableName, super.description) {
+  CompletionCommandRunner(
+    super.executableName,
+    super.description, {
+    super.usageLineLength,
+    super.suggestionDistanceLimit,
+  }) {
     addCommand(HandleCompletionRequestCommand<T>());
     addCommand(InstallCompletionFilesCommand<T>());
     addCommand(UnistallCompletionFilesCommand<T>());

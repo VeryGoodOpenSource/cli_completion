@@ -16,6 +16,7 @@ typedef SourceStringTemplate = String Function(String scriptPath);
 /// See:
 /// - [ShellCompletionConfiguration.fromSystemShell] to retrieve the
 /// configuration for a [SystemShell].
+/// {@endtemplate}
 @immutable
 class ShellCompletionConfiguration {
   /// {@macro shell_completion_configuration}
