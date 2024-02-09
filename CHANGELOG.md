@@ -1,3 +1,9 @@
+# 0.5.0
+
+- chore: fix issue tracker on pubspec ([#82](https://github.com/VeryGoodOpenSource/cli_completion/pull/82))
+- chore: update code owners ([#83](https://github.com/VeryGoodOpenSource/cli_completion/pull/83))
+- feat: add command runner constructor arguments ([#84](https://github.com/VeryGoodOpenSource/cli_completion/pull/84))
+
 # 0.4.0
 
 - docs: update readme with a troubleshooting section ([#63](https://github.com/VeryGoodOpenSource/cli_completion/pull/63))
