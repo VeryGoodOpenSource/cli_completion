@@ -10,7 +10,7 @@ const description = 'Example for cli_completion';
 /// {@template example_command_runner}
 /// A [CommandRunner] for the CLI.
 ///
-/// ```
+/// ```bash
 /// $ example_cli --version
 /// ```
 /// {@endtemplate}
