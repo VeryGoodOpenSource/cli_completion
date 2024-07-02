@@ -31,7 +31,7 @@ class CompletionLevel {
   /// will be taken as the completion context.
   ///
   /// Example:
-  /// ```
+  /// ```bash
   /// root_command -f command1 command2 -o
   /// ```
   /// Consider `root_command` the cli executable and command1` a sub command
