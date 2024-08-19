@@ -1,3 +1,7 @@
+# 0.5.1
+
+- chore: tighten dependencies ([#96](https://github.com/VeryGoodOpenSource/cli_completion/pull/96))
+
 # 0.5.0
 
 - chore: fix issue tracker on pubspec ([#82](https://github.com/VeryGoodOpenSource/cli_completion/pull/82))
