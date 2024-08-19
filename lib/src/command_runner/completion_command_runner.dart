@@ -139,10 +139,8 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
           completionLogger.info(
             '$suggestion${description != null ? ':$description' : ''}',
           );
-          break;
         case SystemShell.bash:
           completionLogger.info(entry.key);
-          break;
       }
     }
   }
