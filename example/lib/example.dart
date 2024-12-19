@@ -7,4 +7,4 @@
 /// # see usage
 /// example_cli --help
 /// ```
-library example;
+library;
