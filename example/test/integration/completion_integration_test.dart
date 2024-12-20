@@ -1,5 +1,5 @@
 @Tags(['integration'])
-library integration_tests;
+library;
 
 import 'package:test/test.dart';
 

@@ -13,6 +13,7 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
   _TestCompletionCommandRunner() : super('test', 'Test command runner');
 
   @override
+  // Override acceptable for test files
   // ignore: overridden_fields
   final Logger completionInstallationLogger = _MockLogger();
 
