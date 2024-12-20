@@ -23,7 +23,7 @@ extension ArgParserExtension on ArgParser {
     while (currentArgs.isNotEmpty) {
       try {
         return loosenOptionsGramamar.parse(currentArgs);
-      } catch (_) {
+      } on Exception catch (_) {
         currentArgs = currentArgs.take(currentArgs.length - 1).toList();
       }
     }

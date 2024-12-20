@@ -24,6 +24,7 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
   String get executableName => 'test_cli';
 
   @override
+  // Override acceptable for test files
   // ignore: overridden_fields
   final Logger completionLogger = MockLogger();
 }
