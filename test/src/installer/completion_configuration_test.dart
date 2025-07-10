@@ -31,8 +31,9 @@ void main() {
             reason: 'File should not exist',
           );
 
-          final completionConfiguration =
-              CompletionConfiguration.fromFile(file);
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
           expect(
             completionConfiguration.uninstalls,
             isEmpty,
@@ -56,30 +57,32 @@ void main() {
         );
       });
 
-      test("returns a $CompletionConfiguration with the file's defined members",
-          () {
-        final tempDirectory = Directory.systemTemp.createTempSync();
-        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+      test(
+        "returns a $CompletionConfiguration with the file's defined members",
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
-        final file = File(path.join(tempDirectory.path, 'config.json'));
-        final completionConfiguration =
-            CompletionConfiguration.empty().copyWith(
-          installs: testInstalls,
-          uninstalls: testUninstalls,
-        )..writeTo(file);
+          final file = File(path.join(tempDirectory.path, 'config.json'));
+          final completionConfiguration =
+              CompletionConfiguration.empty().copyWith(
+                installs: testInstalls,
+                uninstalls: testUninstalls,
+              )..writeTo(file);
 
-        final newConfiguration = CompletionConfiguration.fromFile(file);
-        expect(
-          newConfiguration.installs,
-          equals(completionConfiguration.installs),
-          reason: 'Installs should match those defined in the file',
-        );
-        expect(
-          newConfiguration.uninstalls,
-          equals(completionConfiguration.uninstalls),
-          reason: 'Uninstalls should match those defined in the file',
-        );
-      });
+          final newConfiguration = CompletionConfiguration.fromFile(file);
+          expect(
+            newConfiguration.installs,
+            equals(completionConfiguration.installs),
+            reason: 'Installs should match those defined in the file',
+          );
+          expect(
+            newConfiguration.uninstalls,
+            equals(completionConfiguration.uninstalls),
+            reason: 'Uninstalls should match those defined in the file',
+          );
+        },
+      );
 
       test(
         '''returns a $CompletionConfiguration with empty uninstalls if the file's JSON uninstalls key has a string value''',
@@ -92,8 +95,9 @@ void main() {
           final file = File(path.join(tempDirectory.path, 'config.json'))
             ..writeAsStringSync(json);
 
-          final completionConfiguration =
-              CompletionConfiguration.fromFile(file);
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
           expect(
             completionConfiguration.uninstalls,
             isEmpty,
@@ -114,8 +118,9 @@ void main() {
           final file = File(path.join(tempDirectory.path, 'config.json'))
             ..writeAsStringSync(json);
 
-          final completionConfiguration =
-              CompletionConfiguration.fromFile(file);
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
           expect(
             completionConfiguration.installs,
             isEmpty,
@@ -135,8 +140,9 @@ void main() {
           final file = File(path.join(tempDirectory.path, 'config.json'))
             ..writeAsStringSync(json);
 
-          final completionConfiguration =
-              CompletionConfiguration.fromFile(file);
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
           expect(
             completionConfiguration.uninstalls,
             isEmpty,
@@ -156,8 +162,9 @@ void main() {
           final file = File(path.join(tempDirectory.path, 'config.json'))
             ..writeAsStringSync(json);
 
-          final completionConfiguration =
-              CompletionConfiguration.fromFile(file);
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
           expect(
             completionConfiguration.installs,
             isEmpty,
@@ -215,12 +222,13 @@ void main() {
         final file = File(path.join(tempDirectory.path, 'config.json'));
         final completionConfiguration =
             CompletionConfiguration.empty().copyWith(
-          installs: testInstalls,
-          uninstalls: testUninstalls,
-        )..writeTo(file);
+              installs: testInstalls,
+              uninstalls: testUninstalls,
+            )..writeTo(file);
 
-        final newcompletionConfiguration =
-            CompletionConfiguration.fromFile(file);
+        final newcompletionConfiguration = CompletionConfiguration.fromFile(
+          file,
+        );
         expect(
           newcompletionConfiguration.installs,
           completionConfiguration.installs,
@@ -249,8 +257,9 @@ void main() {
       test('modifies uninstalls when specified', () {
         final completionConfiguration = CompletionConfiguration.empty();
         final uninstalls = testUninstalls;
-        final newcompletionConfiguration =
-            completionConfiguration.copyWith(uninstalls: uninstalls);
+        final newcompletionConfiguration = completionConfiguration.copyWith(
+          uninstalls: uninstalls,
+        );
 
         expect(
           newcompletionConfiguration.uninstalls,
@@ -262,8 +271,9 @@ void main() {
       test('modifies installs when specified', () {
         final completionConfiguration = CompletionConfiguration.empty();
         final installs = testUninstalls;
-        final newcompletionConfiguration =
-            completionConfiguration.copyWith(installs: installs);
+        final newcompletionConfiguration = completionConfiguration.copyWith(
+          installs: installs,
+        );
 
         expect(
           newcompletionConfiguration.installs,
@@ -377,63 +387,66 @@ void main() {
       });
 
       test(
-          '''remains the same when command in $ShellCommandsMap is on a different shell''',
-          () {
-        const testCommand = 'test_command';
-        const testShell = SystemShell.bash;
-        final shellCommandsMap = ShellCommandsMap({
-          testShell: UnmodifiableSetView({testCommand}),
-        });
+        '''remains the same when command in $ShellCommandsMap is on a different shell''',
+        () {
+          const testCommand = 'test_command';
+          const testShell = SystemShell.bash;
+          final shellCommandsMap = ShellCommandsMap({
+            testShell: UnmodifiableSetView({testCommand}),
+          });
 
-        const anotherShell = SystemShell.zsh;
-        final newShellCommadsMap = shellCommandsMap.exclude(
-          command: testCommand,
-          systemShell: anotherShell,
-        );
+          const anotherShell = SystemShell.zsh;
+          final newShellCommadsMap = shellCommandsMap.exclude(
+            command: testCommand,
+            systemShell: anotherShell,
+          );
 
-        expect(newShellCommadsMap, equals(shellCommandsMap));
-      });
+          expect(newShellCommadsMap, equals(shellCommandsMap));
+        },
+      );
     });
 
     group('contains', () {
       test(
-          '''returns true when command is in $ShellCommandsMap for the given shell''',
-          () {
-        const testCommand = 'test_command';
-        const testShell = SystemShell.bash;
-        final shellCommandsMap = ShellCommandsMap({
-          testShell: UnmodifiableSetView({testCommand}),
-        });
+        '''returns true when command is in $ShellCommandsMap for the given shell''',
+        () {
+          const testCommand = 'test_command';
+          const testShell = SystemShell.bash;
+          final shellCommandsMap = ShellCommandsMap({
+            testShell: UnmodifiableSetView({testCommand}),
+          });
 
-        expect(
-          shellCommandsMap.contains(
-            command: testCommand,
-            systemShell: testShell,
-          ),
-          isTrue,
-        );
-      });
+          expect(
+            shellCommandsMap.contains(
+              command: testCommand,
+              systemShell: testShell,
+            ),
+            isTrue,
+          );
+        },
+      );
 
       test(
-          '''returns false when command is in $ShellCommandsMap for another shell''',
-          () {
-        const testCommand = 'test_command';
-        const testShell = SystemShell.bash;
-        final shellCommandsMap = ShellCommandsMap({
-          testShell: UnmodifiableSetView({testCommand}),
-        });
+        '''returns false when command is in $ShellCommandsMap for another shell''',
+        () {
+          const testCommand = 'test_command';
+          const testShell = SystemShell.bash;
+          final shellCommandsMap = ShellCommandsMap({
+            testShell: UnmodifiableSetView({testCommand}),
+          });
 
-        const anotherShell = SystemShell.zsh;
-        expect(testShell, isNot(equals(anotherShell)));
+          const anotherShell = SystemShell.zsh;
+          expect(testShell, isNot(equals(anotherShell)));
 
-        expect(
-          shellCommandsMap.contains(
-            command: testCommand,
-            systemShell: anotherShell,
-          ),
-          isFalse,
-        );
-      });
+          expect(
+            shellCommandsMap.contains(
+              command: testCommand,
+              systemShell: anotherShell,
+            ),
+            isFalse,
+          );
+        },
+      );
     });
   });
 }

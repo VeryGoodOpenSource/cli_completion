@@ -50,8 +50,10 @@ void main() {
         await commandRunner.run(['install-completion-files']);
 
         verify(
-          () => commandRunner.completionInstallation
-              .install(commandRunner.executableName, force: true),
+          () => commandRunner.completionInstallation.install(
+            commandRunner.executableName,
+            force: true,
+          ),
         ).called(1);
       });
 
