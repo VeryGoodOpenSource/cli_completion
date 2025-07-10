@@ -7,8 +7,8 @@ import 'dart:io';
 class ScriptConfigurationEntry {
   /// {@macro script_entry}
   const ScriptConfigurationEntry(this.name)
-      : _startComment = '## [$name]',
-        _endComment = '## [/$name]';
+    : _startComment = '## [$name]',
+      _endComment = '## [/$name]';
 
   /// The name of the entry.
   final String name;

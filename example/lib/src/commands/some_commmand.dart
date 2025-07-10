@@ -35,7 +35,8 @@ class SomeCommand extends Command<int> {
       )
       ..addOption(
         'no-option',
-        help: 'An option that starts with "no" just to make confusion '
+        help:
+            'An option that starts with "no" just to make confusion '
             'with negated flags',
       )
       ..addMultiOption(
@@ -95,9 +96,9 @@ class SomeCommand extends Command<int> {
 
   @override
   List<String> get aliases => [
-        'disguised:some_commmand',
-        'melon',
-      ];
+    'disguised:some_commmand',
+    'melon',
+  ];
 
   @override
   Future<int> run() async {

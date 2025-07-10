@@ -176,8 +176,7 @@ void main() {
         });
       });
 
-      group(
-          'when the user started to type something after writing '
+      group('when the user started to type something after writing '
           'an option', () {
         group('an option without allowed values', () {
           test('returns OptionValuesCompletionResults', () {
@@ -293,8 +292,11 @@ void main() {
           expect(result.length, 1);
           expect(
             result.first,
-            isA<MatchingCommandsCompletionResult>()
-                .having((res) => res.pattern, 'commands pattern', 'command'),
+            isA<MatchingCommandsCompletionResult>().having(
+              (res) => res.pattern,
+              'commands pattern',
+              'command',
+            ),
           );
         });
       });
@@ -315,13 +317,19 @@ void main() {
           expect(result.length, 2);
           expect(
             result.first,
-            isA<MatchingCommandsCompletionResult>()
-                .having((res) => res.pattern, 'commands pattern', '--option'),
+            isA<MatchingCommandsCompletionResult>().having(
+              (res) => res.pattern,
+              'commands pattern',
+              '--option',
+            ),
           );
           expect(
             result.last,
-            isA<MatchingOptionsCompletionResult>()
-                .having((res) => res.pattern, 'option pattern', 'option'),
+            isA<MatchingOptionsCompletionResult>().having(
+              (res) => res.pattern,
+              'option pattern',
+              'option',
+            ),
           );
         });
       });

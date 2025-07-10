@@ -18,10 +18,10 @@ class CliCompletionMatcher extends CustomMatcher {
     Map<String, String?> suggestions, {
     this.cursorIndex,
   }) : super(
-          'Completes with the expected suggestions',
-          'suggestions',
-          completion(suggestions),
-        );
+         'Completes with the expected suggestions',
+         'suggestions',
+         completion(suggestions),
+       );
 
   final int? cursorIndex;
 
