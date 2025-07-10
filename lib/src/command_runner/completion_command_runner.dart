@@ -71,7 +71,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   }
 
   /// The list of commands that should not trigger the auto installation.
-  static const _reservedCommands = {
+  static const Set<String> _reservedCommands = {
     HandleCompletionRequestCommand.commandName,
     InstallCompletionFilesCommand.commandName,
     UnistallCompletionFilesCommand.commandName,

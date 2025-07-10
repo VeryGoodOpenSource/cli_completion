@@ -179,26 +179,30 @@ void main() {
 
         await commandRunner.run(['ahoy']);
 
-        verify(() => commandRunner.completionInstallationLogger.warn(any()))
-            .called(1);
+        verify(
+          () => commandRunner.completionInstallationLogger.warn(any()),
+        ).called(1);
       },
     );
 
-    test('When an unknown exception happens during a install, it logs as error',
-        () async {
-      final commandRunner = _TestCompletionCommandRunner()
-        ..addCommand(_TestUserCommand())
-        ..mockCompletionInstallation = _MockCompletionInstallation();
+    test(
+      'When an unknown exception happens during a install, it logs as error',
+      () async {
+        final commandRunner = _TestCompletionCommandRunner()
+          ..addCommand(_TestUserCommand())
+          ..mockCompletionInstallation = _MockCompletionInstallation();
 
-      when(
-        () => commandRunner.completionInstallation.install('test'),
-      ).thenThrow(Exception('oops'));
+        when(
+          () => commandRunner.completionInstallation.install('test'),
+        ).thenThrow(Exception('oops'));
 
-      await commandRunner.run(['ahoy']);
+        await commandRunner.run(['ahoy']);
 
-      verify(() => commandRunner.completionInstallationLogger.err(any()))
-          .called(1);
-    });
+        verify(
+          () => commandRunner.completionInstallationLogger.err(any()),
+        ).called(1);
+      },
+    );
 
     group('tryUninstallCompletionFiles', () {
       test(
@@ -218,8 +222,9 @@ void main() {
 
           commandRunner.tryUninstallCompletionFiles(Level.verbose);
 
-          verify(() => commandRunner.completionInstallationLogger.warn(any()))
-              .called(1);
+          verify(
+            () => commandRunner.completionInstallationLogger.warn(any()),
+          ).called(1);
         },
       );
 
@@ -235,8 +240,9 @@ void main() {
 
           commandRunner.tryUninstallCompletionFiles(Level.verbose);
 
-          verify(() => commandRunner.completionInstallationLogger.err(any()))
-              .called(1);
+          verify(
+            () => commandRunner.completionInstallationLogger.err(any()),
+          ).called(1);
         },
       );
     });

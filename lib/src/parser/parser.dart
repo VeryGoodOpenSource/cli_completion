@@ -66,8 +66,9 @@ class CompletionParser {
     // option with "allowed" values
     // e.g. `my_cli --option valueNam|` or `my_cli -o valueNam|`
     if (nonEmptyArgs.length > 1) {
-      final secondLastNonEmpty =
-          nonEmptyArgs.elementAt(nonEmptyArgs.length - 2);
+      final secondLastNonEmpty = nonEmptyArgs.elementAt(
+        nonEmptyArgs.length - 2,
+      );
 
       final resultForValues = _getOptionValues(secondLastNonEmpty, argOnCursor);
 

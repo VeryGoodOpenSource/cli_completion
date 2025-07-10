@@ -18,8 +18,8 @@ class ExampleCommandRunner extends CompletionCommandRunner<int> {
   /// {@macro example_command_runner}
   ExampleCommandRunner({
     Logger? logger,
-  })  : _logger = logger ?? Logger(),
-        super(executableName, description) {
+  }) : _logger = logger ?? Logger(),
+       super(executableName, description) {
     // Add root options and flags
     argParser
       ..addFlag(

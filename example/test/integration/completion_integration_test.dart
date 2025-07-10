@@ -196,7 +196,7 @@ void main() {
       '--continuous': r'A continuous option\: any value is allowed',
       '--no-option':
           'An option that starts with "no" just to make confusion with negated '
-              'flags',
+          'flags',
       '--multi-d': 'An discrete option that can be passed multiple times ',
       '--multi-c': 'An continuous option that can be passed multiple times',
       '--flag': null,
@@ -313,7 +313,7 @@ void main() {
           suggests({
             '--no-option':
                 'An option that starts with "no" just to make confusion with '
-                    'negated flags',
+                'negated flags',
             '--no-flag': null,
             '--no-inverseflag': 'A flag that the default value is true',
           }),
@@ -410,13 +410,14 @@ void main() {
         });
 
         test(
-            '**do not** suggest possible options when using equals/quote syntax',
-            () async {
-          await expectLater(
-            'example_cli some_command --discrete="',
-            suggests(noSuggestions),
-          );
-        });
+          '**do not** suggest possible options when using equals/quote syntax',
+          () async {
+            await expectLater(
+              'example_cli some_command --discrete="',
+              suggests(noSuggestions),
+            );
+          },
+        );
       });
 
       group('discrete (aliases)', () {
@@ -431,17 +432,19 @@ void main() {
           );
         });
 
-        test('suggest matching options for alias option when typed 2',
-            () async {
-          await expectLater(
-            'example_cli some_command --defined-values ',
-            suggests({
-              'foo': 'foo help',
-              'bar': 'bar help',
-              'faa': 'faa help',
-            }),
-          );
-        });
+        test(
+          'suggest matching options for alias option when typed 2',
+          () async {
+            await expectLater(
+              'example_cli some_command --defined-values ',
+              suggests({
+                'foo': 'foo help',
+                'bar': 'bar help',
+                'faa': 'faa help',
+              }),
+            );
+          },
+        );
       });
 
       group('continuous', () {
@@ -634,18 +637,20 @@ void main() {
           tags: 'known-issues',
         );
 
-        test('include discrete multi option value after it is specified',
-            () async {
-          await expectLater(
-            'example_cli some_command --multi-d bar -m ',
-            suggests({
-              'fii': 'fii help',
-              'bar': 'bar help',
-              'fee': 'fee help',
-              'i have space': 'an allowed option with space on it',
-            }),
-          );
-        });
+        test(
+          'include discrete multi option value after it is specified',
+          () async {
+            await expectLater(
+              'example_cli some_command --multi-d bar -m ',
+              suggests({
+                'fii': 'fii help',
+                'bar': 'bar help',
+                'fee': 'fee help',
+                'i have space': 'an allowed option with space on it',
+              }),
+            );
+          },
+        );
       });
     });
   });

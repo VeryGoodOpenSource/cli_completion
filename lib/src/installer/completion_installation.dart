@@ -139,8 +139,9 @@ class CompletionInstallation {
       _logSourceInstructions(rootCommand);
     }
 
-    final completionConfiguration =
-        CompletionConfiguration.fromFile(completionConfigurationFile);
+    final completionConfiguration = CompletionConfiguration.fromFile(
+      completionConfigurationFile,
+    );
     completionConfiguration
         .copyWith(
           uninstalls: completionConfiguration.uninstalls.exclude(
@@ -305,7 +306,8 @@ class CompletionInstallation {
     _sourceScriptOnFile(
       configFile: shellRCFile,
       scriptName: 'Completion',
-      description: 'Completion scripts setup. '
+      description:
+          'Completion scripts setup. '
           'Remove the following line to uninstall',
       scriptPath: path.join(
         completionConfigDir.path,
@@ -344,7 +346,8 @@ class CompletionInstallation {
 
     description ??= 'Completion config for "$scriptName"';
 
-    final content = '''
+    final content =
+        '''
 ## $description
 ${configuration!.sourceLineTemplate(scriptPath)}''';
     ScriptConfigurationEntry(scriptName).appendTo(
@@ -429,14 +432,16 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
       completionEntry.removeFrom(shellRCFile);
     }
     final completionConfigDirContent = completionConfigDir.listSync();
-    final onlyHasConfigurationFile = completionConfigDirContent.length == 1 &&
+    final onlyHasConfigurationFile =
+        completionConfigDirContent.length == 1 &&
         path.absolute(completionConfigDirContent.first.path) ==
             path.absolute(completionConfigurationFile.path);
     if (completionConfigDirContent.isEmpty || onlyHasConfigurationFile) {
       completionConfigDir.deleteSync(recursive: true);
     } else {
-      final completionConfiguration =
-          CompletionConfiguration.fromFile(completionConfigurationFile);
+      final completionConfiguration = CompletionConfiguration.fromFile(
+        completionConfigurationFile,
+      );
       completionConfiguration
           .copyWith(
             uninstalls: completionConfiguration.uninstalls.include(

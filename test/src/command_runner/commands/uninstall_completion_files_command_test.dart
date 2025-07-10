@@ -53,8 +53,9 @@ void main() {
           () => commandRunner.completionInstallationLogger.level = Level.info,
         ).called(1);
         verify(
-          () => commandRunner.completionInstallation
-              .uninstall(commandRunner.executableName),
+          () => commandRunner.completionInstallation.uninstall(
+            commandRunner.executableName,
+          ),
         ).called(1);
       });
 
@@ -68,8 +69,9 @@ void main() {
           },
         ).called(1);
         verify(
-          () => commandRunner.completionInstallation
-              .uninstall(commandRunner.executableName),
+          () => commandRunner.completionInstallation.uninstall(
+            commandRunner.executableName,
+          ),
         ).called(1);
       });
     });
