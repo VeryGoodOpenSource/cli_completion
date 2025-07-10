@@ -7,8 +7,9 @@ void main() {
       late ShellCompletionConfiguration zshConfiguration;
 
       setUp(() {
-        zshConfiguration =
-            ShellCompletionConfiguration.fromSystemShell(SystemShell.zsh);
+        zshConfiguration = ShellCompletionConfiguration.fromSystemShell(
+          SystemShell.zsh,
+        );
       });
 
       test('shell', () {
@@ -58,8 +59,9 @@ fi
       late ShellCompletionConfiguration bashConfiguration;
 
       setUp(() {
-        bashConfiguration =
-            ShellCompletionConfiguration.fromSystemShell(SystemShell.bash);
+        bashConfiguration = ShellCompletionConfiguration.fromSystemShell(
+          SystemShell.bash,
+        );
       });
 
       test('shell', () {

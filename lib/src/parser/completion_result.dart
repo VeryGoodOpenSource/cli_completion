@@ -195,8 +195,8 @@ class OptionValuesCompletionResult extends CompletionResult {
     required this.completionLevel,
     required this.optionName,
     this.pattern,
-  })  : isAbbr = false,
-        includeAbbrName = false;
+  }) : isAbbr = false,
+       includeAbbrName = false;
 
   /// {@macro option_values_completion_result}
   const OptionValuesCompletionResult.abbr({
@@ -204,8 +204,8 @@ class OptionValuesCompletionResult extends CompletionResult {
     required String abbrName,
     this.pattern,
     this.includeAbbrName = false,
-  })  : isAbbr = true,
-        optionName = abbrName;
+  }) : isAbbr = true,
+       optionName = abbrName;
 
   /// The [CompletionLevel] in which the suggested option is supposed to be
   /// located at.

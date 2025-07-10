@@ -61,10 +61,11 @@ void main() {
         'gets completion level from the innermost aspet',
         () {
           final commanrRunner = _TestCompletionCommandRunner();
-          final args = '--rootFlag '
-                  'subcommand  --level1Flag '
-                  'subsubcommand  --level2Flag'
-              .split(' ');
+          final args =
+              '--rootFlag '
+                      'subcommand  --level1Flag '
+                      'subsubcommand  --level2Flag'
+                  .split(' ');
 
           final completionLevel = CompletionLevel.find(
             args,
@@ -130,9 +131,10 @@ void main() {
         'finds level when subcommand is added via "ArgParser.addCommand"',
         () {
           final commanrRunner = _TestCompletionCommandRunner();
-          final args = '--rootFlag '
-                  'fakesubcommand --fakeSubcommandFlag'
-              .split(' ');
+          final args =
+              '--rootFlag '
+                      'fakesubcommand --fakeSubcommandFlag'
+                  .split(' ');
 
           final completionLevel = CompletionLevel.find(
             args,

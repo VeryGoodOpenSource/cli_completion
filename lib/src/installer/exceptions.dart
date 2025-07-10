@@ -15,7 +15,8 @@ class CompletionInstallationException implements Exception {
   final String rootCommand;
 
   @override
-  String toString() => 'Could not install completion scripts for $rootCommand: '
+  String toString() =>
+      'Could not install completion scripts for $rootCommand: '
       '$message';
 }
 

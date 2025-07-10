@@ -85,15 +85,18 @@ class CompletionLevel {
     // rawArgs should be only the args after the last parsed command
     final List<String> rawArgs;
     if (commandName != null) {
-      rawArgs =
-          rootArgs.skipWhile((value) => value != commandName).skip(1).toList();
+      rawArgs = rootArgs
+          .skipWhile((value) => value != commandName)
+          .skip(1)
+          .toList();
     } else {
       rawArgs = rootArgs.toList();
     }
 
     final validOptionsResult = originalGrammar.findValidOptions(rawArgs);
 
-    final visibleSubcommands = subcommands?.values.where((command) {
+    final visibleSubcommands =
+        subcommands?.values.where((command) {
           return !command.hidden;
         }).toList() ??
         [];

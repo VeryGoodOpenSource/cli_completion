@@ -46,8 +46,9 @@ extension ArgParserExtension on ArgParser {
     });
 
     try {
-      return commandsOnlyGrammar
-          .parse(filteredArgs.where((element) => element.isNotEmpty));
+      return commandsOnlyGrammar.parse(
+        filteredArgs.where((element) => element.isNotEmpty),
+      );
     } on ArgParserException {
       return null;
     }

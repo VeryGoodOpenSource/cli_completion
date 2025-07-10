@@ -10,8 +10,8 @@ import 'package:meta/meta.dart';
 ///
 /// The map and its content are unmodifiable. This is to ensure that
 /// [CompletionConfiguration]s is fully immutable.
-typedef ShellCommandsMap
-    = UnmodifiableMapView<SystemShell, UnmodifiableSetView<String>>;
+typedef ShellCommandsMap =
+    UnmodifiableMapView<SystemShell, UnmodifiableSetView<String>>;
 
 /// {@template completion_configuration}
 /// A configuration that stores information on how to handle command
@@ -28,8 +28,8 @@ class CompletionConfiguration {
   /// Creates an empty [CompletionConfiguration].
   @visibleForTesting
   CompletionConfiguration.empty()
-      : uninstalls = ShellCommandsMap({}),
-        installs = ShellCommandsMap({});
+    : uninstalls = ShellCommandsMap({}),
+      installs = ShellCommandsMap({});
 
   /// Creates a [CompletionConfiguration] from the given [file] content.
   ///
