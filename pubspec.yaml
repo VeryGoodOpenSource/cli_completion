@@ -9,7 +9,7 @@ screenshots:
     path: doc/screen.png
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.8.1
 
 dependencies:
   args: ^2.5.0
