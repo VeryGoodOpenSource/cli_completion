@@ -77,7 +77,7 @@ if type compdef &>/dev/null; then
 
     IFS=\$'\n' reply=(\$(COMP_CWORD="\$((CURRENT-1))" COMP_LINE="\$BUFFER" COMP_POINT="\$CURSOR" $rootCommand completion -- "\${words[@]}"))
     IFS=\$si
-
+    
     zstyle ':completion:*' menu yes select
     zstyle ':completion:*' list-colors ''
 
