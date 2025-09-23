@@ -62,14 +62,9 @@ class HandleCompletionRequestCommand<T> extends Command<T> {
       }
 
       // Parse the completion level into completion suggestions
-      final completionResults = CompletionParser(
-        completionLevel: completionLevel,
-      ).parse();
-
+      CompletionParser(completionLevel: completionLevel).parse()
       // Render the completion suggestions
-      for (final completionResult in completionResults) {
-        runner.renderCompletionResult(completionResult);
-      }
+      .forEach(runner.renderCompletionResult);
     } on Exception {
       // Do not output any Exception here, since even error messages are
       // interpreted as completion suggestions
