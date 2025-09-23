@@ -225,7 +225,6 @@ void main() {
         expect(configFile.existsSync(), true);
 
         // Different format needed for matching cli output
-        // ignore: leading_newlines_in_multiline_strings
         expect(configFile.readAsStringSync(), '''
 \n## [very_good]
 ## Completion config for "very_good"
@@ -287,7 +286,6 @@ void main() {
         installation.writeToShellConfigFile('very_good');
 
         // Different format needed for matching cli output
-        // ignore: leading_newlines_in_multiline_strings
         expect(rcFile.readAsStringSync(), '''
 \n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
@@ -435,7 +433,6 @@ void main() {
           // rc fle includes one reference to the global config
 
           // Different format needed for matching cli output
-          // ignore: leading_newlines_in_multiline_strings
           expect(rcFile.readAsStringSync(), '''
 \n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
@@ -450,7 +447,6 @@ void main() {
           );
 
           // Different format needed for matching cli output
-          // ignore: leading_newlines_in_multiline_strings
           expect(globalConfig.readAsStringSync(), '''
 \n## [very_good]
 ## Completion config for "very_good"
@@ -491,7 +487,6 @@ void main() {
             ..install('not_good');
 
           // Different format needed for matching cli output
-          // ignore: leading_newlines_in_multiline_strings
           expect(bashProfile.readAsStringSync(), '''
 \n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
