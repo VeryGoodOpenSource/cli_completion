@@ -275,6 +275,7 @@ class CompletionInstallation {
   }
 
 
+  final _missingFiles = <String>[];
   String? __shellRCFilePath;
   String get _shellRCFilePath {
     String? firstPath;
@@ -286,6 +287,7 @@ class CompletionInstallation {
           __shellRCFilePath = filePath;
           return __shellRCFilePath!;
         }
+        _missingFiles.add(filePath);
       }
       __shellRCFilePath = firstPath;
     }
@@ -305,9 +307,16 @@ class CompletionInstallation {
 
     final shellRCFile = File(_shellRCFilePath);
     if (!shellRCFile.existsSync()) {
+      var message = '';
+      if(_missingFiles.length > 1){
+        message = 'No configuration files where found at '
+        '\n  ${_missingFiles.join('\n  ')}';
+      }else{
+        message = 'No configuration file found at ${shellRCFile.path}';
+      }
       throw CompletionInstallationException(
         rootCommand: rootCommand,
-        message: 'No configuration file found at ${shellRCFile.path}',
+        message: message,
       );
     }
 

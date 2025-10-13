@@ -794,6 +794,38 @@ void main() {
         },
       );
 
+      test(
+        'missing .bashrc and .bash_profile',
+            () {
+
+          final bashInstallation = CompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDir.path,
+            },
+            configuration: bashConfiguration,
+          );
+
+          final configDir = bashInstallation.completionConfigDir;
+
+          const exceptionsMessage = '';
+
+          expect(
+                () => bashInstallation.install('very_good'),
+            throwsA(
+              isA<CompletionInstallationException>().having(
+                    (e) => e.message,
+                'message',
+                'No configuration files where found at '
+                    '\n  ${path.join(tempDir.path, '.bashrc')}'
+                    '\n  ${path.join(tempDir.path, '.bash_profile')}',
+              ),
+            ),
+          );
+
+        },
+      );
     });
 
     group('uninstall', () {
