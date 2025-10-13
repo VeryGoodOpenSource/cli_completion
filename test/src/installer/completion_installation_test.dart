@@ -807,10 +807,6 @@ void main() {
             configuration: bashConfiguration,
           );
 
-          final configDir = bashInstallation.completionConfigDir;
-
-          const exceptionsMessage = '';
-
           expect(
                 () => bashInstallation.install('very_good'),
             throwsA(
