@@ -727,6 +727,73 @@ void main() {
           );
         },
       );
+
+      test(
+        'installing completion for .bashrc',
+            () {
+
+          final bashInstallation = CompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDir.path,
+            },
+            configuration: bashConfiguration,
+          );
+
+          final configDir = bashInstallation.completionConfigDir;
+
+          final bashProfile = File(path.join(tempDir.path, '.bash_profile'))
+            ..createSync();
+
+          bashInstallation
+            .install('very_good');
+
+          // Different format needed for matching cli output
+          expect(bashProfile.readAsStringSync(), '''
+\n## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[ -f ${configDir.path}/bash-config.bash ] && . ${configDir.path}/bash-config.bash || true
+## [/Completion]
+
+''');
+
+        },
+      );
+
+      test(
+        'installing completion for .bash_profile',
+            () {
+
+          final bashInstallation = CompletionInstallation(
+            logger: logger,
+            isWindows: false,
+            environment: {
+              'HOME': tempDir.path,
+            },
+            configuration: bashConfiguration,
+          );
+
+          final configDir = bashInstallation.completionConfigDir;
+
+          final bashRc = File(path.join(tempDir.path, '.bashrc'))
+            ..createSync();
+
+          bashInstallation
+              .install('very_good');
+
+          // Different format needed for matching cli output
+          expect(bashRc.readAsStringSync(), '''
+\n## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[ -f ${configDir.path}/bash-config.bash ] && . ${configDir.path}/bash-config.bash || true
+## [/Completion]
+
+''');
+
+        },
+      );
+
     });
 
     group('uninstall', () {

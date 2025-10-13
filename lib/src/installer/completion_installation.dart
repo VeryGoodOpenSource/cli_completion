@@ -274,8 +274,23 @@ class CompletionInstallation {
     );
   }
 
-  String get _shellRCFilePath =>
-      _resolveHome(configuration!.shellRCFile, environment);
+
+  String? __shellRCFilePath;
+  String get _shellRCFilePath {
+    String? firstPath;
+    if(__shellRCFilePath == null){
+      for(final fileName in configuration!.shellRCFiles){
+        final filePath = _resolveHome(fileName, environment);
+        firstPath ??= filePath;
+        if(File(filePath).existsSync()){
+          __shellRCFilePath = filePath;
+          return __shellRCFilePath!;
+        }
+      }
+      __shellRCFilePath = firstPath;
+    }
+    return __shellRCFilePath!;
+  }
 
   /// Write a source to the completion global script in the shell configuration
   /// file, which its location is described by the [configuration].
