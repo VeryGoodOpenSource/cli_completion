@@ -730,8 +730,7 @@ void main() {
 
       test(
         'installing completion for .bashrc',
-            () {
-
+        () {
           final bashInstallation = CompletionInstallation(
             logger: logger,
             isWindows: false,
@@ -746,8 +745,7 @@ void main() {
           final bashProfile = File(path.join(tempDir.path, '.bash_profile'))
             ..createSync();
 
-          bashInstallation
-            .install('very_good');
+          bashInstallation.install('very_good');
 
           // Different format needed for matching cli output
           expect(bashProfile.readAsStringSync(), '''
@@ -757,14 +755,12 @@ void main() {
 ## [/Completion]
 
 ''');
-
         },
       );
 
       test(
         'installing completion for .bash_profile',
-            () {
-
+        () {
           final bashInstallation = CompletionInstallation(
             logger: logger,
             isWindows: false,
@@ -776,11 +772,9 @@ void main() {
 
           final configDir = bashInstallation.completionConfigDir;
 
-          final bashRc = File(path.join(tempDir.path, '.bashrc'))
-            ..createSync();
+          final bashRc = File(path.join(tempDir.path, '.bashrc'))..createSync();
 
-          bashInstallation
-              .install('very_good');
+          bashInstallation.install('very_good');
 
           // Different format needed for matching cli output
           expect(bashRc.readAsStringSync(), '''
@@ -790,14 +784,12 @@ void main() {
 ## [/Completion]
 
 ''');
-
         },
       );
 
       test(
         'missing .bashrc and .bash_profile',
-            () {
-
+        () {
           final bashInstallation = CompletionInstallation(
             logger: logger,
             isWindows: false,
@@ -808,10 +800,10 @@ void main() {
           );
 
           expect(
-                () => bashInstallation.install('very_good'),
+            () => bashInstallation.install('very_good'),
             throwsA(
               isA<CompletionInstallationException>().having(
-                    (e) => e.message,
+                (e) => e.message,
                 'message',
                 'No configuration files where found at '
                     '\n  ${path.join(tempDir.path, '.bashrc')}'
@@ -819,7 +811,6 @@ void main() {
               ),
             ),
           );
-
         },
       );
     });

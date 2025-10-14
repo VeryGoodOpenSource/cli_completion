@@ -97,7 +97,7 @@ fi
 @visibleForTesting
 final bashConfiguration = ShellCompletionConfiguration._(
   shell: SystemShell.bash,
-  shellRCFiles: const ['~/.bashrc','~/.bash_profile'],
+  shellRCFiles: const ['~/.bashrc', '~/.bash_profile'],
   sourceLineTemplate: (String scriptPath) {
     return '[ -f $scriptPath ] && . $scriptPath || true';
   },
