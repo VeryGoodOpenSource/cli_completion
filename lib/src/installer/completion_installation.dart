@@ -274,8 +274,24 @@ class CompletionInstallation {
     );
   }
 
-  String get _shellRCFilePath =>
-      _resolveHome(configuration!.shellRCFile, environment);
+  final _missingFiles = <String>[];
+  String? __shellRCFilePath;
+  String get _shellRCFilePath {
+    String? firstPath;
+    if (__shellRCFilePath == null) {
+      for (final fileName in configuration!.shellRCFiles) {
+        final filePath = _resolveHome(fileName, environment);
+        firstPath ??= filePath;
+        if (File(filePath).existsSync()) {
+          __shellRCFilePath = filePath;
+          return __shellRCFilePath!;
+        }
+        _missingFiles.add(filePath);
+      }
+      __shellRCFilePath = firstPath;
+    }
+    return __shellRCFilePath!;
+  }
 
   /// Write a source to the completion global script in the shell configuration
   /// file, which its location is described by the [configuration].
@@ -290,9 +306,17 @@ class CompletionInstallation {
 
     final shellRCFile = File(_shellRCFilePath);
     if (!shellRCFile.existsSync()) {
+      var message = '';
+      if (_missingFiles.length > 1) {
+        message =
+            'No configuration files where found at '
+            '\n  ${_missingFiles.join('\n  ')}';
+      } else {
+        message = 'No configuration file found at ${shellRCFile.path}';
+      }
       throw CompletionInstallationException(
         rootCommand: rootCommand,
-        message: 'No configuration file found at ${shellRCFile.path}',
+        message: message,
       );
     }
 

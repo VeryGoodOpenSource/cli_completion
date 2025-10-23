@@ -16,8 +16,8 @@ void main() {
         expect(zshConfiguration.shell, SystemShell.zsh);
       });
 
-      test('shellRCFile', () {
-        expect(zshConfiguration.shellRCFile, '~/.zshrc');
+      test('shellRCFiles', () {
+        expect(zshConfiguration.shellRCFiles.first, '~/.zshrc');
       });
 
       test('sourceStringTemplate', () {
@@ -71,8 +71,12 @@ fi
         expect(bashConfiguration.shell, SystemShell.bash);
       });
 
-      test('shellRCFile', () {
-        expect(bashConfiguration.shellRCFile, '~/.bash_profile');
+      test('shellRCFiles first', () {
+        expect(bashConfiguration.shellRCFiles.first, '~/.bashrc');
+      });
+
+      test('shellRCFiles last', () {
+        expect(bashConfiguration.shellRCFiles.last, '~/.bash_profile');
       });
 
       test('sourceStringTemplate', () {
