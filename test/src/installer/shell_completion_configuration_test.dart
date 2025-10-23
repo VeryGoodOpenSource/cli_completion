@@ -35,6 +35,9 @@ if type compdef &>/dev/null; then
 
     IFS=\$'\n' reply=(\$(COMP_CWORD="\$((CURRENT-1))" COMP_LINE="\$BUFFER" COMP_POINT="\$CURSOR" very_good completion -- "\${words[@]}"))
     IFS=\$si
+    
+    zstyle ':completion:*' menu yes select
+    zstyle ':completion:*' list-colors ''
 
     if [[ -z "\$reply" ]]; then
         _path_files
