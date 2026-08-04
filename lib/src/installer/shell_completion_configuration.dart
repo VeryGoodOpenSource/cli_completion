@@ -65,10 +65,10 @@ class ShellCompletionConfiguration {
 final zshConfiguration = ShellCompletionConfiguration._(
   shell: SystemShell.zsh,
   shellRCFiles: const ['~/.zshrc'],
-  sourceLineTemplate: (String scriptPath) {
+  sourceLineTemplate: (scriptPath) {
     return '[[ -f $scriptPath ]] && . $scriptPath || true';
   },
-  scriptTemplate: (String rootCommand) {
+  scriptTemplate: (rootCommand) {
     // Completion script for zsh.
     //
     // Based on https://github.com/mklabs/tabtab/blob/master/lib/scripts/zsh.sh
@@ -80,13 +80,13 @@ if type compdef &>/dev/null; then
 
     IFS=\$'\n' reply=(\$(COMP_CWORD="\$((CURRENT-1))" COMP_LINE="\$BUFFER" COMP_POINT="\$CURSOR" $rootCommand completion -- "\${words[@]}"))
     IFS=\$si
-    
+
     zstyle ':completion:*' menu yes select
     zstyle ':completion:*' list-colors ''
 
     if [[ -z "\$reply" ]]; then
         _path_files
-    else 
+    else
         _describe 'values' reply
     fi
   }
@@ -101,10 +101,10 @@ fi
 final bashConfiguration = ShellCompletionConfiguration._(
   shell: SystemShell.bash,
   shellRCFiles: const ['~/.bashrc', '~/.bash_profile'],
-  sourceLineTemplate: (String scriptPath) {
+  sourceLineTemplate: (scriptPath) {
     return '[ -f $scriptPath ] && . $scriptPath || true';
   },
-  scriptTemplate: (String rootCommand) {
+  scriptTemplate: (rootCommand) {
     // Completion script for bash.
     //
     // Based on https://github.com/mklabs/tabtab/blob/master/lib/scripts/bash.sh
