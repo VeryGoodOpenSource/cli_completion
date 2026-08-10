@@ -110,6 +110,56 @@ void main() {
       });
     });
 
+    group('completionScriptFor', () {
+      test('returns the completion script for the given shell', () {
+        final zshInstallation = CompletionInstallation(
+          configuration: zshConfiguration,
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDir.path,
+          },
+        );
+
+        expect(
+          zshInstallation.completionScriptFor('very_good'),
+          zshConfiguration.scriptTemplate('very_good'),
+        );
+
+        final bashInstallation = CompletionInstallation(
+          configuration: bashConfiguration,
+          logger: logger,
+          isWindows: false,
+          environment: {
+            'HOME': tempDir.path,
+          },
+        );
+
+        expect(
+          bashInstallation.completionScriptFor('very_good'),
+          bashConfiguration.scriptTemplate('very_good'),
+        );
+      });
+
+      test('throws when the shell is unknown', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          systemShell: null,
+          logger: logger,
+        );
+
+        expect(
+          () => installation.completionScriptFor('very_good'),
+          throwsA(
+            isA<CompletionInstallationException>().having(
+              (e) => e.message,
+              'message',
+              'Unknown shell.',
+            ),
+          ),
+        );
+      });
+    });
+
     group('install', () {
       test('createCompletionConfigDir', () {
         final installation = CompletionInstallation(

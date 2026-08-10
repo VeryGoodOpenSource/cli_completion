@@ -26,7 +26,7 @@ We call this process [parsing](#how-parsing-completion-works).
 
 The class `CompletionCommandRunner` tries to create these files upon any command run. It does nothing if the completion files exist and displays a short error message if there is an error in the process.
 
-To disable this behavior, set `enableAutoInstall` to false on your `CompletionCommandRunner` subclass.
+To disable this behavior, set `enableAutoInstall` to false on your `CompletionCommandRunner` subclass. In that case, users can install the completion files manually with the `install-completion-files` command, or print the completion script for the current shell with the `completion-script` command (e.g. `example_cli completion-script >> ~/.zshrc`), which is only available while auto installation is disabled.
 
 ### How Parsing Completion Works
 

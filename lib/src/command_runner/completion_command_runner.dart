@@ -20,6 +20,10 @@ import 'package:meta/meta.dart';
 ///
 /// Adds [InstallCompletionFilesCommand] to enable the user to
 /// manually install completion files.
+///
+/// When [enableAutoInstall] is disabled, it also adds
+/// [PrintCompletionScriptCommand] so the user can print the completion script
+/// and install it manually.
 abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   /// {@macro completion_command_runner}
   CompletionCommandRunner(
@@ -31,6 +35,13 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     addCommand(HandleCompletionRequestCommand<T>());
     addCommand(InstallCompletionFilesCommand<T>());
     addCommand(UnistallCompletionFilesCommand<T>());
+
+    // The print completion script command is only useful when the completion
+    // files are not installed automatically. Otherwise, users should rely on
+    // the auto installation (or the `install-completion-files` command).
+    if (!enableAutoInstall) {
+      addCommand(PrintCompletionScriptCommand<T>());
+    }
   }
 
   /// The [Logger] used to prompt the completion suggestions.
@@ -95,6 +106,25 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     try {
       completionInstallationLogger.level = level;
       completionInstallation.install(executableName, force: force);
+    } on CompletionInstallationException catch (e) {
+      completionInstallationLogger.warn(e.toString());
+    } on Exception catch (e) {
+      completionInstallationLogger.err(e.toString());
+    }
+  }
+
+  /// Prints the completion script for the current shell to stdout.
+  ///
+  /// This is used by [PrintCompletionScriptCommand] to allow users to install
+  /// the completion script manually, for example:
+  /// ```sh
+  /// my_cli completion-script >> ~/.zshrc
+  /// ```
+  @internal
+  void printCompletionScript() {
+    try {
+      final script = completionInstallation.completionScriptFor(executableName);
+      completionLogger.info(script);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
     } on Exception catch (e) {

@@ -57,6 +57,12 @@ When `enableAutoInstall` is set to false, users will have to call `install-compl
 $ example_cli install-completion-files
 ```
 
+Additionally, when `enableAutoInstall` is disabled a `completion-script` command is exposed. It prints the completion script for the current shell to stdout, so users can install it wherever they prefer:
+
+```bash
+$ example_cli completion-script >> ~/.zshrc
+```
+
 ## Documentation 📝
 
 For an overview of how this package works, check out the [documentation][docs_link].

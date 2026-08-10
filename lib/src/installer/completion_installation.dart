@@ -156,6 +156,30 @@ class CompletionInstallation {
         .writeTo(completionConfigurationFile);
   }
 
+  /// Returns the completion script for the [rootCommand] on the current shell
+  /// without writing it to any file.
+  ///
+  /// This can be used to print the completion script to stdout so that a user
+  /// can source it manually, for example:
+  /// ```sh
+  /// my_cli completion-script >> ~/.zshrc
+  /// ```
+  ///
+  /// Throws a [CompletionInstallationException] if the current shell is
+  /// unknown.
+  String completionScriptFor(String rootCommand) {
+    final configuration = this.configuration;
+
+    if (configuration == null) {
+      throw CompletionInstallationException(
+        message: 'Unknown shell.',
+        rootCommand: rootCommand,
+      );
+    }
+
+    return configuration.scriptTemplate(rootCommand);
+  }
+
   /// Wether the completion configuration files for a [rootCommand] should be
   /// installed or not.
   ///
