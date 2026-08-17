@@ -569,8 +569,7 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason:
-                '''The completion configuration should contain the uninstall for the command before install''',
+            reason: '''The completion configuration should contain the uninstall for the command before install''',
           );
 
           installation.install(command);
@@ -584,8 +583,7 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason:
-                '''The completion configuration should still contain the uninstall for the command after soft install''',
+            reason: '''The completion configuration should still contain the uninstall for the command after soft install''',
           );
         },
       );
@@ -624,8 +622,7 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason:
-                '''The completion configuration should contain the uninstall for the command before install''',
+            reason: '''The completion configuration should contain the uninstall for the command before install''',
           );
 
           installation.install(command, force: true);
@@ -639,8 +636,7 @@ void main() {
               systemShell: systemShell,
             ),
             isFalse,
-            reason:
-                '''The completion configuration should not contain the uninstall for the command after install''',
+            reason: '''The completion configuration should not contain the uninstall for the command after install''',
           );
         },
       );
@@ -673,8 +669,7 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason:
-                '''The completion configuration installs should contain the command after install''',
+            reason: '''The completion configuration installs should contain the command after install''',
           );
         },
       );
@@ -706,8 +701,7 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason:
-                '''The completion configuration installs should contain the command after install''',
+            reason: '''The completion configuration installs should contain the command after install''',
           );
 
           // Install again.
@@ -722,8 +716,7 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason:
-                '''The completion configuration installs should still contain the command after install''',
+            reason: '''The completion configuration installs should still contain the command after install''',
           );
         },
       );
