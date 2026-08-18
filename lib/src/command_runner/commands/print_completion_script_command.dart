@@ -15,6 +15,10 @@ import 'package:cli_completion/cli_completion.dart';
 /// ```
 ///
 /// This mirrors the approach used by other CLIs such as npm and the GitHub CLI.
+///
+/// Unlike the other completion commands, this command is intentionally left
+/// visible in `--help` (it does not override [hidden]) so that users can
+/// discover it.
 /// {@endtemplate}
 class PrintCompletionScriptCommand<T> extends Command<T> {
   /// {@macro print_completion_script_command}
