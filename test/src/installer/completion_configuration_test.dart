@@ -100,8 +100,7 @@ void main() {
           expect(
             completionConfiguration.uninstalls,
             isEmpty,
-            reason:
-                '''Uninstalls should be empty when the value is of an invalid type''',
+            reason: '''Uninstalls should be empty when the value is of an invalid type''',
           );
         },
       );
@@ -123,8 +122,7 @@ void main() {
           expect(
             completionConfiguration.installs,
             isEmpty,
-            reason:
-                '''Installs should be empty when the value is of an invalid type''',
+            reason: '''Installs should be empty when the value is of an invalid type''',
           );
         },
       );
@@ -145,8 +143,7 @@ void main() {
           expect(
             completionConfiguration.uninstalls,
             isEmpty,
-            reason:
-                '''Uninstalls should be empty when the value is of an invalid type''',
+            reason: '''Uninstalls should be empty when the value is of an invalid type''',
           );
         },
       );
@@ -167,8 +164,7 @@ void main() {
           expect(
             completionConfiguration.installs,
             isEmpty,
-            reason:
-                '''Installs should be empty when the value is of an invalid type''',
+            reason: '''Installs should be empty when the value is of an invalid type''',
           );
         },
       );
