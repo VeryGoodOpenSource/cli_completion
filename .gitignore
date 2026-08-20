@@ -7,3 +7,6 @@ build/
 pubspec.lock
 
 coverage/
+
+# VM service artifacts created by the test runner
+*.dart.vm.json

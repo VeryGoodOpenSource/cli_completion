@@ -34,6 +34,15 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
       mockCompletionInstallation ?? super.completionInstallation;
 }
 
+class _TestNoAutoInstallCompletionCommandRunner
+    extends CompletionCommandRunner<int> {
+  _TestNoAutoInstallCompletionCommandRunner()
+    : super('test', 'Test command runner');
+
+  @override
+  bool get enableAutoInstall => false;
+}
+
 class _TestUserCommand extends Command<int> {
   @override
   String get description => 'some command';
@@ -111,6 +120,32 @@ void main() {
           'completion',
           'install-completion-files',
         ]),
+      );
+    });
+
+    group('print completion script command', () {
+      test(
+        'is not added when auto install is enabled',
+        () {
+          final commandRunner = _TestCompletionCommandRunner();
+
+          expect(
+            commandRunner.commands.keys,
+            isNot(contains('completion-script')),
+          );
+        },
+      );
+
+      test(
+        'is added when auto install is disabled',
+        () {
+          final commandRunner = _TestNoAutoInstallCompletionCommandRunner();
+
+          expect(
+            commandRunner.commands.keys,
+            contains('completion-script'),
+          );
+        },
       );
     });
 

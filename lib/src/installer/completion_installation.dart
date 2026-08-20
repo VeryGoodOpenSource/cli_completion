@@ -112,14 +112,7 @@ class CompletionInstallation {
   /// if they already exist. If false, it will check if is already installed, or
   /// if it has been explicitly uninstalled before installing it.
   void install(String rootCommand, {bool force = false}) {
-    final configuration = this.configuration;
-
-    if (configuration == null) {
-      throw CompletionInstallationException(
-        message: 'Unknown shell.',
-        rootCommand: rootCommand,
-      );
-    }
+    final configuration = _configurationOrThrow(rootCommand);
 
     if (!force && !_shouldInstall(rootCommand)) {
       return;
@@ -154,6 +147,39 @@ class CompletionInstallation {
           ),
         )
         .writeTo(completionConfigurationFile);
+  }
+
+  /// Returns the completion script for the [rootCommand] on the current shell
+  /// without writing it to any file.
+  ///
+  /// This can be used to print the completion script to stdout so that a user
+  /// can source it manually, for example:
+  /// ```sh
+  /// my_cli completion-script >> ~/.zshrc
+  /// ```
+  ///
+  /// Throws a [CompletionInstallationException] if the current shell is
+  /// unknown.
+  String completionScriptFor(String rootCommand) {
+    final configuration = _configurationOrThrow(rootCommand);
+
+    return configuration.scriptTemplate(rootCommand);
+  }
+
+  /// Returns the current [configuration] or throws a
+  /// [CompletionInstallationException] if it is null (i.e. the current shell is
+  /// unknown).
+  ShellCompletionConfiguration _configurationOrThrow(String rootCommand) {
+    final configuration = this.configuration;
+
+    if (configuration == null) {
+      throw CompletionInstallationException(
+        message: 'Unknown shell.',
+        rootCommand: rootCommand,
+      );
+    }
+
+    return configuration;
   }
 
   /// Wether the completion configuration files for a [rootCommand] should be
@@ -191,9 +217,7 @@ class CompletionInstallation {
     );
 
     if (completionConfigDir.existsSync()) {
-      logger.warn(
-        'A ${completionConfigDir.path} directory was already found.',
-      );
+      logger.warn('A ${completionConfigDir.path} directory was already found.');
       return;
     }
 
@@ -374,10 +398,7 @@ class CompletionInstallation {
         '''
 ## $description
 ${configuration!.sourceLineTemplate(scriptPath)}''';
-    ScriptConfigurationEntry(scriptName).appendTo(
-      configFile,
-      content: content,
-    );
+    ScriptConfigurationEntry(scriptName).appendTo(configFile, content: content);
 
     logger.info('Added config to $configFilePath');
   }
@@ -483,10 +504,7 @@ ${configuration!.sourceLineTemplate(scriptPath)}''';
 }
 
 /// Resolve the home from a path string
-String _resolveHome(
-  String originalPath,
-  Map<String, String> environment,
-) {
+String _resolveHome(String originalPath, Map<String, String> environment) {
   final after = originalPath.split('~/').last;
   final home = path.absolute(environment['HOME']!);
   return path.join(home, after);
