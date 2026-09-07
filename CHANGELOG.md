@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.6.0...v0.7.0) (2026-09-07)
+
+
+### Features
+
+* add print completion-script command ([#128](https://github.com/VeryGoodOpenSource/cli_completion/issues/128)) ([41bc14b](https://github.com/VeryGoodOpenSource/cli_completion/commit/41bc14bf9cefc2c6b49a2153ad125f772c41da39))
+* **deps:** upgrade to Dart 3.13 ([#132](https://github.com/VeryGoodOpenSource/cli_completion/issues/132)) ([7424eee](https://github.com/VeryGoodOpenSource/cli_completion/commit/7424eee7b77f91c29891cd7fcb949bade3941917))
+
 ## [0.6.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.5.1...v0.6.0) (2026-08-06)
 
 
