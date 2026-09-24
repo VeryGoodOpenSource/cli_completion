@@ -96,6 +96,31 @@ class CompletionInstallation {
     return File(path.join(completionConfigDir.path, 'config.json'));
   }
 
+  /// Whether the automatic installation of completion files is enabled.
+  ///
+  /// This reads the user's persisted preference from the
+  /// [completionConfigurationFile]. It defaults to true when no preference has
+  /// been persisted.
+  bool get isAutoInstallEnabled {
+    return CompletionConfiguration.fromFile(
+      completionConfigurationFile,
+    ).enabled;
+  }
+
+  /// Persists whether the automatic installation of completion files is
+  /// [enabled].
+  ///
+  /// This is used to let the user opt out of the automatic installation of
+  /// completion files performed on command runs.
+  void setAutoInstallEnabled({required bool enabled}) {
+    final completionConfiguration = CompletionConfiguration.fromFile(
+      completionConfigurationFile,
+    );
+    completionConfiguration
+        .copyWith(enabled: enabled)
+        .writeTo(completionConfigurationFile);
+  }
+
   /// Install completion configuration files for a [rootCommand] in the
   /// current shell.
   ///
@@ -145,6 +170,10 @@ class CompletionInstallation {
             command: rootCommand,
             systemShell: configuration.shell,
           ),
+          // Installing completion files (either automatically or manually)
+          // implies that the user wants completion, so we re-enable the
+          // automatic installation in case it was previously disabled.
+          enabled: true,
         )
         .writeTo(completionConfigurationFile);
   }
@@ -185,12 +214,16 @@ class CompletionInstallation {
   /// Wether the completion configuration files for a [rootCommand] should be
   /// installed or not.
   ///
-  /// It will return false if the root command is already installed or it
-  /// has been explicitly uninstalled.
+  /// It will return false if the user has disabled the automatic installation,
+  /// if the root command is already installed or if it has been explicitly
+  /// uninstalled.
   bool _shouldInstall(String rootCommand) {
     final completionConfiguration = CompletionConfiguration.fromFile(
       completionConfigurationFile,
     );
+    if (!completionConfiguration.enabled) {
+      return false;
+    }
     final systemShell = configuration!.shell;
     final isInstalled = completionConfiguration.installs.contains(
       command: rootCommand,

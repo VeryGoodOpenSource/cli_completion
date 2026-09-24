@@ -63,6 +63,14 @@ Additionally, when `enableAutoInstall` is disabled a `completion-script` command
 $ example_cli completion-script >> ~/.zshrc
 ```
 
+When `enableAutoInstall` is enabled, users that prefer to opt out of the automatic installation can do so by running the hidden `disable-completion-auto-install` command. This choice is persisted, so completion files will no longer be installed automatically on command runs:
+
+```bash
+$ example_cli disable-completion-auto-install
+```
+
+Users can still install completion files manually with `install-completion-files`, which also re-enables the automatic installation.
+
 ## Documentation 📝
 
 For an overview of how this package works, check out the [documentation][docs_link].

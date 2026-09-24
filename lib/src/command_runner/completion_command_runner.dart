@@ -21,7 +21,11 @@ import 'package:meta/meta.dart';
 /// Adds [InstallCompletionFilesCommand] to enable the user to
 /// manually install completion files.
 ///
-/// When [enableAutoInstall] is disabled, it also adds
+/// When [enableAutoInstall] is enabled, it also adds
+/// [DisableCompletionInstallationCommand] so the user can opt out of the
+/// automatic installation of completion files.
+///
+/// When [enableAutoInstall] is disabled, it instead adds
 /// [PrintCompletionScriptCommand] so the user can print the completion script
 /// and install it manually.
 abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
@@ -36,10 +40,14 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     addCommand(InstallCompletionFilesCommand<T>());
     addCommand(UnistallCompletionFilesCommand<T>());
 
-    // The print completion script command is only useful when the completion
-    // files are not installed automatically. Otherwise, users should rely on
-    // the auto installation (or the `install-completion-files` command).
-    if (!enableAutoInstall) {
+    if (enableAutoInstall) {
+      // Allow the user to opt out of the automatic installation of completion
+      // files that is performed on any command run.
+      addCommand(DisableCompletionInstallationCommand<T>());
+    } else {
+      // The print completion script command is only useful when the completion
+      // files are not installed automatically. Otherwise, users should rely on
+      // the auto installation (or the `install-completion-files` command).
       addCommand(PrintCompletionScriptCommand<T>());
     }
   }
@@ -86,6 +94,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     HandleCompletionRequestCommand.commandName,
     InstallCompletionFilesCommand.commandName,
     UnistallCompletionFilesCommand.commandName,
+    DisableCompletionInstallationCommand.commandName,
   };
 
   @override
@@ -94,6 +103,11 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
     if (enableAutoInstall &&
         !_reservedCommands.contains(topLevelResults.command?.name)) {
       // When auto installing, use error level to display messages.
+      //
+      // The installation is skipped if the user has opted out of the automatic
+      // installation of completion files. This is handled by
+      // [CompletionInstallation.install] which respects the persisted user
+      // preference when not forced.
       tryInstallCompletionFiles(Level.error);
     }
 
@@ -108,6 +122,21 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
       completionInstallation.install(executableName, force: force);
     } on CompletionInstallationException catch (e) {
       completionInstallationLogger.warn(e.toString());
+    } on Exception catch (e) {
+      completionInstallationLogger.err(e.toString());
+    }
+  }
+
+  /// Disables the automatic installation of completion files.
+  ///
+  /// This persists the user's choice so that completion files are no longer
+  /// automatically installed upon command runs. Users can still manually
+  /// install completion files via the [InstallCompletionFilesCommand], which
+  /// also re-enables the automatic installation.
+  @internal
+  void disableAutoInstall() {
+    try {
+      completionInstallation.setAutoInstallEnabled(enabled: false);
     } on Exception catch (e) {
       completionInstallationLogger.err(e.toString());
     }

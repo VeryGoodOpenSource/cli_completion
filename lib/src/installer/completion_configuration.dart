@@ -23,13 +23,15 @@ class CompletionConfiguration {
   const CompletionConfiguration._({
     required this.uninstalls,
     required this.installs,
+    required this.enabled,
   });
 
   /// Creates an empty [CompletionConfiguration].
   @visibleForTesting
   CompletionConfiguration.empty()
     : uninstalls = ShellCommandsMap({}),
-      installs = ShellCommandsMap({});
+      installs = ShellCommandsMap({}),
+      enabled = true;
 
   /// Creates a [CompletionConfiguration] from the given [file] content.
   ///
@@ -67,6 +69,7 @@ class CompletionConfiguration {
         decodedJson,
         jsonKey: CompletionConfiguration.installsJsonKey,
       ),
+      enabled: _jsonDecodeEnabled(decodedJson),
     );
   }
 
@@ -78,6 +81,10 @@ class CompletionConfiguration {
   @visibleForTesting
   static const String installsJsonKey = 'installs';
 
+  /// The JSON key for the [enabled] field.
+  @visibleForTesting
+  static const String enabledJsonKey = 'enabled';
+
   /// Stores those commands that have been manually uninstalled by the user.
   ///
   /// Uninstalls are specific to a given [SystemShell].
@@ -87,6 +94,15 @@ class CompletionConfiguration {
   ///
   /// Installed commands are specific to a given [SystemShell].
   final ShellCommandsMap installs;
+
+  /// Whether the automatic installation of completion files is enabled.
+  ///
+  /// When set to false, the [CompletionCommandRunner] will not attempt to
+  /// automatically install completion files upon command runs. Users can
+  /// still manually install completion files.
+  ///
+  /// Defaults to true.
+  final bool enabled;
 
   /// Stores the [CompletionConfiguration] in the given [file].
   void writeTo(File file) {
@@ -101,6 +117,7 @@ class CompletionConfiguration {
     return jsonEncode({
       uninstallsJsonKey: _jsonEncodeShellCommandsMap(uninstalls),
       installsJsonKey: _jsonEncodeShellCommandsMap(installs),
+      enabledJsonKey: enabled,
     });
   }
 
@@ -109,12 +126,26 @@ class CompletionConfiguration {
   CompletionConfiguration copyWith({
     ShellCommandsMap? uninstalls,
     ShellCommandsMap? installs,
+    bool? enabled,
   }) {
     return CompletionConfiguration._(
       uninstalls: uninstalls ?? this.uninstalls,
       installs: installs ?? this.installs,
+      enabled: enabled ?? this.enabled,
     );
   }
+}
+
+/// Decodes the [CompletionConfiguration.enabled] field from the given [json].
+///
+/// If the value is missing or not a boolean, it defaults to true so that
+/// auto installation remains enabled unless the user explicitly disables it.
+bool _jsonDecodeEnabled(Map<String, dynamic> json) {
+  final value = json[CompletionConfiguration.enabledJsonKey];
+  if (value is bool) {
+    return value;
+  }
+  return true;
 }
 
 /// Decodes [ShellCommandsMap] from the given [json].

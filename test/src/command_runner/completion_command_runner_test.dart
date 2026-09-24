@@ -80,27 +80,16 @@ void main() {
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand());
 
-      expect(
-        commandRunner.usage,
-        contains('ahoy'),
-      );
-      expect(
-        commandRunner.usage,
-        isNot(contains('install-completion-files')),
-      );
-      expect(
-        commandRunner.usage,
-        isNot(contains('completion')),
-      );
+      expect(commandRunner.usage, contains('ahoy'));
+      expect(commandRunner.usage, isNot(contains('install-completion-files')));
+      expect(commandRunner.usage, isNot(contains('completion')));
     });
 
     group('completionInstallation', () {
       // test if it gets one with the current system shell
       test('creates one with the given system shell', () {
         final commandRunner = _TestCompletionCommandRunner()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/zsh',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/zsh'};
         expect(
           commandRunner.completionInstallation,
           isA<CompletionInstallation>().having(
@@ -116,37 +105,59 @@ void main() {
       final commandRunner = _TestCompletionCommandRunner();
       expect(
         commandRunner.commands.keys,
-        containsAll([
-          'completion',
-          'install-completion-files',
-        ]),
+        containsAll(['completion', 'install-completion-files']),
       );
     });
 
+    group('disable completion installation command', () {
+      test('is added when auto install is enabled', () {
+        final commandRunner = _TestCompletionCommandRunner();
+
+        expect(
+          commandRunner.commands.keys,
+          contains('disable-completion-auto-install'),
+        );
+      });
+
+      test('is not added when auto install is disabled', () {
+        final commandRunner = _TestNoAutoInstallCompletionCommandRunner();
+
+        expect(
+          commandRunner.commands.keys,
+          isNot(contains('disable-completion-auto-install')),
+        );
+      });
+
+      test('does not trigger auto install when run', () async {
+        final commandRunner = _TestCompletionCommandRunner()
+          ..mockCompletionInstallation = _MockCompletionInstallation();
+
+        await commandRunner.run(['disable-completion-auto-install']);
+
+        verifyNever(() => commandRunner.completionInstallation.install(any()));
+        verify(
+          () => commandRunner.completionInstallation.setAutoInstallEnabled(
+            enabled: false,
+          ),
+        ).called(1);
+      });
+    });
+
     group('print completion script command', () {
-      test(
-        'is not added when auto install is enabled',
-        () {
-          final commandRunner = _TestCompletionCommandRunner();
+      test('is not added when auto install is enabled', () {
+        final commandRunner = _TestCompletionCommandRunner();
 
-          expect(
-            commandRunner.commands.keys,
-            isNot(contains('completion-script')),
-          );
-        },
-      );
+        expect(
+          commandRunner.commands.keys,
+          isNot(contains('completion-script')),
+        );
+      });
 
-      test(
-        'is added when auto install is disabled',
-        () {
-          final commandRunner = _TestNoAutoInstallCompletionCommandRunner();
+      test('is added when auto install is disabled', () {
+        final commandRunner = _TestNoAutoInstallCompletionCommandRunner();
 
-          expect(
-            commandRunner.commands.keys,
-            contains('completion-script'),
-          );
-        },
-      );
+        expect(commandRunner.commands.keys, contains('completion-script'));
+      });
     });
 
     group('auto install', () {
@@ -185,9 +196,7 @@ void main() {
           ..enableAutoInstall = true
           ..addCommand(_TestUserCommand())
           ..mockCompletionInstallation = _MockCompletionInstallation()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/zsh',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/zsh'};
 
         await commandRunner.run(['ahoy']);
 
@@ -292,9 +301,7 @@ void main() {
         });
 
         final commandRunner = _TestCompletionCommandRunner()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/zsh',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/zsh'};
 
         final output = StringBuffer();
         when(() {
@@ -322,9 +329,7 @@ suggestion4:description4
         });
 
         final commandRunner = _TestCompletionCommandRunner()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/bash',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/bash'};
 
         final output = StringBuffer();
         when(() {

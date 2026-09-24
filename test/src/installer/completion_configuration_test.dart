@@ -24,11 +24,7 @@ void main() {
           addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
           final file = File(path.join(tempDirectory.path, 'config.json'));
-          expect(
-            file.existsSync(),
-            isFalse,
-            reason: 'File should not exist',
-          );
+          expect(file.existsSync(), isFalse, reason: 'File should not exist');
 
           final completionConfiguration = CompletionConfiguration.fromFile(
             file,
@@ -100,7 +96,8 @@ void main() {
           expect(
             completionConfiguration.uninstalls,
             isEmpty,
-            reason: '''Uninstalls should be empty when the value is of an invalid type''',
+            reason:
+                '''Uninstalls should be empty when the value is of an invalid type''',
           );
         },
       );
@@ -122,7 +119,8 @@ void main() {
           expect(
             completionConfiguration.installs,
             isEmpty,
-            reason: '''Installs should be empty when the value is of an invalid type''',
+            reason:
+                '''Installs should be empty when the value is of an invalid type''',
           );
         },
       );
@@ -143,7 +141,8 @@ void main() {
           expect(
             completionConfiguration.uninstalls,
             isEmpty,
-            reason: '''Uninstalls should be empty when the value is of an invalid type''',
+            reason:
+                '''Uninstalls should be empty when the value is of an invalid type''',
           );
         },
       );
@@ -164,7 +163,71 @@ void main() {
           expect(
             completionConfiguration.installs,
             isEmpty,
-            reason: '''Installs should be empty when the value is of an invalid type''',
+            reason:
+                '''Installs should be empty when the value is of an invalid type''',
+          );
+        },
+      );
+
+      test(
+        'returns a $CompletionConfiguration with enabled true by default',
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          const json = '{}';
+          final file = File(path.join(tempDirectory.path, 'config.json'))
+            ..writeAsStringSync(json);
+
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
+          expect(
+            completionConfiguration.enabled,
+            isTrue,
+            reason: 'Enabled should default to true when not defined',
+          );
+        },
+      );
+
+      test(
+        '''returns a $CompletionConfiguration with the file's defined enabled value''',
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          const json = '{"${CompletionConfiguration.enabledJsonKey}": false}';
+          final file = File(path.join(tempDirectory.path, 'config.json'))
+            ..writeAsStringSync(json);
+
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
+          expect(
+            completionConfiguration.enabled,
+            isFalse,
+            reason: 'Enabled should match the value defined in the file',
+          );
+        },
+      );
+
+      test(
+        '''returns a $CompletionConfiguration with enabled true if the file's JSON enabled key has an invalid type''',
+        () {
+          final tempDirectory = Directory.systemTemp.createTempSync();
+          addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+          const json = '{"${CompletionConfiguration.enabledJsonKey}": "nope"}';
+          final file = File(path.join(tempDirectory.path, 'config.json'))
+            ..writeAsStringSync(json);
+
+          final completionConfiguration = CompletionConfiguration.fromFile(
+            file,
+          );
+          expect(
+            completionConfiguration.enabled,
+            isTrue,
+            reason: 'Enabled should default to true for an invalid type',
           );
         },
       );
@@ -176,11 +239,7 @@ void main() {
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final file = File(path.join(tempDirectory.path, 'config.json'));
-        expect(
-          file.existsSync(),
-          isFalse,
-          reason: 'File should not exist',
-        );
+        expect(file.existsSync(), isFalse, reason: 'File should not exist');
 
         CompletionConfiguration.empty().writeTo(file);
 
@@ -197,11 +256,7 @@ void main() {
 
         final file = File(path.join(tempDirectory.path, 'config.json'))
           ..createSync();
-        expect(
-          file.existsSync(),
-          isTrue,
-          reason: 'File should exist',
-        );
+        expect(file.existsSync(), isTrue, reason: 'File should exist');
 
         expect(
           () => CompletionConfiguration.empty().writeTo(file),
@@ -274,6 +329,56 @@ void main() {
           newcompletionConfiguration.installs,
           equals(installs),
           reason: 'Installs should be modified',
+        );
+      });
+
+      test('enabled defaults to true when empty', () {
+        expect(
+          CompletionConfiguration.empty().enabled,
+          isTrue,
+          reason: 'Enabled should default to true',
+        );
+      });
+
+      test('enabled remains unchanged when nothing is specified', () {
+        final completionConfiguration = CompletionConfiguration.empty()
+            .copyWith(enabled: false);
+        final newcompletionConfiguration = completionConfiguration.copyWith();
+
+        expect(
+          newcompletionConfiguration.enabled,
+          completionConfiguration.enabled,
+          reason: 'Enabled should remain unchanged',
+        );
+      });
+
+      test('modifies enabled when specified', () {
+        final completionConfiguration = CompletionConfiguration.empty();
+        final newcompletionConfiguration = completionConfiguration.copyWith(
+          enabled: false,
+        );
+
+        expect(
+          newcompletionConfiguration.enabled,
+          isFalse,
+          reason: 'Enabled should be modified',
+        );
+      });
+
+      test('enabled can be read successfully after written', () {
+        final tempDirectory = Directory.systemTemp.createTempSync();
+        addTearDown(() => tempDirectory.deleteSync(recursive: true));
+
+        final file = File(path.join(tempDirectory.path, 'config.json'));
+        CompletionConfiguration.empty().copyWith(enabled: false).writeTo(file);
+
+        final newcompletionConfiguration = CompletionConfiguration.fromFile(
+          file,
+        );
+        expect(
+          newcompletionConfiguration.enabled,
+          isFalse,
+          reason: 'Enabled should match the value written to the file',
         );
       });
     });

@@ -63,9 +63,7 @@ void main() {
           configuration: zshConfiguration,
           logger: logger,
           isWindows: true,
-          environment: {
-            'LOCALAPPDATA': tempDir.path,
-          },
+          environment: {'LOCALAPPDATA': tempDir.path},
         );
 
         expect(
@@ -80,10 +78,7 @@ void main() {
             configuration: zshConfiguration,
             logger: logger,
             isWindows: false,
-            environment: {
-              'XDG_CONFIG_HOME': tempDir.path,
-              'HOME': 'ooohnoooo',
-            },
+            environment: {'XDG_CONFIG_HOME': tempDir.path, 'HOME': 'ooohnoooo'},
           );
 
           expect(
@@ -97,9 +92,7 @@ void main() {
             configuration: zshConfiguration,
             logger: logger,
             isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
+            environment: {'HOME': tempDir.path},
           );
 
           expect(
@@ -116,9 +109,7 @@ void main() {
           configuration: zshConfiguration,
           logger: logger,
           isWindows: false,
-          environment: {
-            'HOME': tempDir.path,
-          },
+          environment: {'HOME': tempDir.path},
         );
 
         expect(
@@ -130,9 +121,7 @@ void main() {
           configuration: bashConfiguration,
           logger: logger,
           isWindows: false,
-          environment: {
-            'HOME': tempDir.path,
-          },
+          environment: {'HOME': tempDir.path},
         );
 
         expect(
@@ -166,9 +155,7 @@ void main() {
           configuration: zshConfiguration,
           logger: logger,
           isWindows: false,
-          environment: {
-            'HOME': tempDir.path,
-          },
+          environment: {'HOME': tempDir.path},
         );
 
         expect(installation.completionConfigDir.existsSync(), false);
@@ -178,25 +165,15 @@ void main() {
         expect(installation.completionConfigDir.existsSync(), true);
 
         verifyNever(
-          () => logger.warn(
-            any(
-              that: endsWith(
-                'directory was already found.',
-              ),
-            ),
-          ),
+          () =>
+              logger.warn(any(that: endsWith('directory was already found.'))),
         );
 
         installation.createCompletionConfigDir();
 
         verify(
-          () => logger.warn(
-            any(
-              that: endsWith(
-                'directory was already found.',
-              ),
-            ),
-          ),
+          () =>
+              logger.warn(any(that: endsWith('directory was already found.'))),
         ).called(1);
       });
 
@@ -204,9 +181,7 @@ void main() {
         final installation = CompletionInstallation(
           logger: logger,
           isWindows: false,
-          environment: {
-            'HOME': tempDir.path,
-          },
+          environment: {'HOME': tempDir.path},
           configuration: zshConfiguration,
         );
 
@@ -256,9 +231,7 @@ void main() {
         final installation = CompletionInstallation(
           logger: logger,
           isWindows: false,
-          environment: {
-            'HOME': tempDir.path,
-          },
+          environment: {'HOME': tempDir.path},
           configuration: zshConfiguration,
         );
 
@@ -285,11 +258,7 @@ void main() {
 
         verify(
           () => logger.info(
-            any(
-              that: startsWith(
-                'No file found at ${configFile.path}',
-              ),
-            ),
+            any(that: startsWith('No file found at ${configFile.path}')),
           ),
         ).called(1);
 
@@ -310,9 +279,7 @@ void main() {
         final installation = CompletionInstallation(
           logger: logger,
           isWindows: false,
-          environment: {
-            'HOME': tempDir.path,
-          },
+          environment: {'HOME': tempDir.path},
           configuration: zshConfiguration,
         );
 
@@ -351,9 +318,7 @@ void main() {
           final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
+            environment: {'HOME': tempDir.path},
             configuration: zshConfiguration,
           );
 
@@ -385,19 +350,13 @@ void main() {
           ).called(1);
           verify(
             () => logger.warn(
-              'A script file for very_good was already found on ${path.join(
-                installation.completionConfigDir.path,
-                'very_good.zsh',
-              )}.',
+              'A script file for very_good was already found on ${path.join(installation.completionConfigDir.path, 'very_good.zsh')}.',
             ),
           ).called(1);
           verify(
             () => logger.warn(
               'A config entry for very_good was already found on '
-              '${path.join(
-                installation.completionConfigDir.path,
-                'zsh-config.zsh',
-              )}.',
+              '${path.join(installation.completionConfigDir.path, 'zsh-config.zsh')}.',
             ),
           ).called(1);
 
@@ -427,9 +386,7 @@ void main() {
           final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
+            environment: {'HOME': tempDir.path},
             configuration: zshConfiguration,
           );
 
@@ -460,30 +417,110 @@ void main() {
         },
       );
 
-      test(
-        'installing completion for two different commands',
-        () {
-          final zshInstallation = CompletionInstallation(
-            logger: logger,
-            isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
-            configuration: zshConfiguration,
-          );
+      test('auto install is enabled by default', () {
+        final installation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: zshConfiguration,
+        );
 
-          final rcFile = File(path.join(tempDir.path, '.zshrc'))..createSync();
+        expect(installation.isAutoInstallEnabled, isTrue);
+      });
 
-          final configDir = zshInstallation.completionConfigDir;
+      test('setAutoInstallEnabled persists the given value', () {
+        final installation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: zshConfiguration,
+        );
 
-          zshInstallation
-            ..install('very_good')
-            ..install('not_good');
+        installation.setAutoInstallEnabled(enabled: false);
 
-          // rc fle includes one reference to the global config
+        expect(installation.isAutoInstallEnabled, isFalse);
 
-          // Different format needed for matching cli output
-          expect(rcFile.readAsStringSync(), '''
+        final completionConfiguration = CompletionConfiguration.fromFile(
+          installation.completionConfigurationFile,
+        );
+        expect(completionConfiguration.enabled, isFalse);
+      });
+
+      test('avoids installing completion when auto install is disabled', () {
+        final installation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: zshConfiguration,
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        installation.setAutoInstallEnabled(enabled: false);
+        reset(logger);
+        when(() => logger.level).thenReturn(Level.quiet);
+
+        installation.install('very_good');
+
+        verifyNever(() => logger.detail(any()));
+        verifyNever(() => logger.warn(any()));
+        verifyNever(() => logger.info(any()));
+
+        final completionConfiguration = CompletionConfiguration.fromFile(
+          installation.completionConfigurationFile,
+        );
+        expect(
+          completionConfiguration.installs.contains(
+            command: 'very_good',
+            systemShell: SystemShell.zsh,
+          ),
+          isFalse,
+          reason: 'Command should not be installed when disabled',
+        );
+      });
+
+      test('re-enables auto install when forced install is performed', () {
+        final installation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: zshConfiguration,
+        );
+
+        File(path.join(tempDir.path, '.zshrc')).createSync();
+
+        installation.setAutoInstallEnabled(enabled: false);
+        expect(installation.isAutoInstallEnabled, isFalse);
+
+        installation.install('very_good', force: true);
+
+        expect(
+          installation.isAutoInstallEnabled,
+          isTrue,
+          reason: 'Forcing an install should re-enable auto install',
+        );
+      });
+
+      test('installing completion for two different commands', () {
+        final zshInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: zshConfiguration,
+        );
+
+        final rcFile = File(path.join(tempDir.path, '.zshrc'))..createSync();
+
+        final configDir = zshInstallation.completionConfigDir;
+
+        zshInstallation
+          ..install('very_good')
+          ..install('not_good');
+
+        // rc fle includes one reference to the global config
+
+        // Different format needed for matching cli output
+        expect(rcFile.readAsStringSync(), '''
 \n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [[ -f ${configDir.path}/zsh-config.zsh ]] && . ${configDir.path}/zsh-config.zsh || true
@@ -491,13 +528,11 @@ void main() {
 
 ''');
 
-          // global config includes one reference for each command
-          final globalConfig = File(
-            path.join(configDir.path, 'zsh-config.zsh'),
-          );
+        // global config includes one reference for each command
+        final globalConfig = File(path.join(configDir.path, 'zsh-config.zsh'));
 
-          // Different format needed for matching cli output
-          expect(globalConfig.readAsStringSync(), '''
+        // Different format needed for matching cli output
+        expect(globalConfig.readAsStringSync(), '''
 \n## [very_good]
 ## Completion config for "very_good"
 [[ -f ${configDir.path}/very_good.zsh ]] && . ${configDir.path}/very_good.zsh || true
@@ -510,34 +545,32 @@ void main() {
 
 ''');
 
-          expect(
-            configDir.listSync().map((e) => path.basename(e.path)),
-            unorderedEquals([
-              'not_good.zsh',
-              'very_good.zsh',
-              'zsh-config.zsh',
-              'config.json',
-            ]),
-          );
+        expect(
+          configDir.listSync().map((e) => path.basename(e.path)),
+          unorderedEquals([
+            'not_good.zsh',
+            'very_good.zsh',
+            'zsh-config.zsh',
+            'config.json',
+          ]),
+        );
 
-          final bashInstallation = CompletionInstallation(
-            logger: logger,
-            isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
-            configuration: bashConfiguration,
-          );
+        final bashInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: bashConfiguration,
+        );
 
-          final bashProfile = File(path.join(tempDir.path, '.bash_profile'))
-            ..createSync();
+        final bashProfile = File(path.join(tempDir.path, '.bash_profile'))
+          ..createSync();
 
-          bashInstallation
-            ..install('very_good')
-            ..install('not_good');
+        bashInstallation
+          ..install('very_good')
+          ..install('not_good');
 
-          // Different format needed for matching cli output
-          expect(bashProfile.readAsStringSync(), '''
+        // Different format needed for matching cli output
+        expect(bashProfile.readAsStringSync(), '''
 \n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [ -f ${configDir.path}/bash-config.bash ] && . ${configDir.path}/bash-config.bash || true
@@ -545,45 +578,39 @@ void main() {
 
 ''');
 
-          expect(
-            configDir.listSync().map((e) => path.basename(e.path)),
-            unorderedEquals([
-              'not_good.bash',
-              'not_good.zsh',
-              'very_good.bash',
-              'very_good.zsh',
-              'zsh-config.zsh',
-              'bash-config.bash',
-              'config.json',
-            ]),
-          );
-        },
-      );
+        expect(
+          configDir.listSync().map((e) => path.basename(e.path)),
+          unorderedEquals([
+            'not_good.bash',
+            'not_good.zsh',
+            'very_good.bash',
+            'very_good.zsh',
+            'zsh-config.zsh',
+            'bash-config.bash',
+            'config.json',
+          ]),
+        );
+      });
 
-      test(
-        'installing completion when the current shell is not supported',
-        () {
-          final installation = CompletionInstallation.fromSystemShell(
-            logger: logger,
-            isWindowsOverride: false,
-            environmentOverride: {
-              'HOME': tempDir.path,
-            },
-            systemShell: null,
-          );
+      test('installing completion when the current shell is not supported', () {
+        final installation = CompletionInstallation.fromSystemShell(
+          logger: logger,
+          isWindowsOverride: false,
+          environmentOverride: {'HOME': tempDir.path},
+          systemShell: null,
+        );
 
-          expect(
-            () => installation.install('very_good'),
-            throwsA(
-              isA<CompletionInstallationException>().having(
-                (e) => e.message,
-                'message',
-                'Unknown shell.',
-              ),
+        expect(
+          () => installation.install('very_good'),
+          throwsA(
+            isA<CompletionInstallationException>().having(
+              (e) => e.message,
+              'message',
+              'Unknown shell.',
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
 
       test(
         '''doesn't remove command from $CompletionConfiguration uninstalls when not forced to install''',
@@ -592,9 +619,7 @@ void main() {
           final installation = CompletionInstallation.fromSystemShell(
             logger: logger,
             isWindowsOverride: false,
-            environmentOverride: {
-              'HOME': tempDir.path,
-            },
+            environmentOverride: {'HOME': tempDir.path},
             systemShell: systemShell,
           );
 
@@ -619,7 +644,8 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason: '''The completion configuration should contain the uninstall for the command before install''',
+            reason:
+                '''The completion configuration should contain the uninstall for the command before install''',
           );
 
           installation.install(command);
@@ -633,7 +659,8 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason: '''The completion configuration should still contain the uninstall for the command after soft install''',
+            reason:
+                '''The completion configuration should still contain the uninstall for the command after soft install''',
           );
         },
       );
@@ -645,9 +672,7 @@ void main() {
           final installation = CompletionInstallation.fromSystemShell(
             logger: logger,
             isWindowsOverride: false,
-            environmentOverride: {
-              'HOME': tempDir.path,
-            },
+            environmentOverride: {'HOME': tempDir.path},
             systemShell: systemShell,
           );
 
@@ -672,7 +697,8 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason: '''The completion configuration should contain the uninstall for the command before install''',
+            reason:
+                '''The completion configuration should contain the uninstall for the command before install''',
           );
 
           installation.install(command, force: true);
@@ -686,7 +712,8 @@ void main() {
               systemShell: systemShell,
             ),
             isFalse,
-            reason: '''The completion configuration should not contain the uninstall for the command after install''',
+            reason:
+                '''The completion configuration should not contain the uninstall for the command after install''',
           );
         },
       );
@@ -698,9 +725,7 @@ void main() {
           final installation = CompletionInstallation.fromSystemShell(
             logger: logger,
             isWindowsOverride: false,
-            environmentOverride: {
-              'HOME': tempDir.path,
-            },
+            environmentOverride: {'HOME': tempDir.path},
             systemShell: systemShell,
           );
 
@@ -719,7 +744,8 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason: '''The completion configuration installs should contain the command after install''',
+            reason:
+                '''The completion configuration installs should contain the command after install''',
           );
         },
       );
@@ -731,9 +757,7 @@ void main() {
           final installation = CompletionInstallation.fromSystemShell(
             logger: logger,
             isWindowsOverride: false,
-            environmentOverride: {
-              'HOME': tempDir.path,
-            },
+            environmentOverride: {'HOME': tempDir.path},
             systemShell: systemShell,
           );
 
@@ -751,7 +775,8 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason: '''The completion configuration installs should contain the command after install''',
+            reason:
+                '''The completion configuration installs should contain the command after install''',
           );
 
           // Install again.
@@ -766,96 +791,82 @@ void main() {
               systemShell: systemShell,
             ),
             isTrue,
-            reason: '''The completion configuration installs should still contain the command after install''',
+            reason:
+                '''The completion configuration installs should still contain the command after install''',
           );
         },
       );
 
-      test(
-        'installing completion for .bashrc',
-        () {
-          final bashInstallation = CompletionInstallation(
-            logger: logger,
-            isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
-            configuration: bashConfiguration,
-          );
+      test('installing completion for .bashrc', () {
+        final bashInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: bashConfiguration,
+        );
 
-          final configDir = bashInstallation.completionConfigDir;
+        final configDir = bashInstallation.completionConfigDir;
 
-          final bashProfile = File(path.join(tempDir.path, '.bash_profile'))
-            ..createSync();
+        final bashProfile = File(path.join(tempDir.path, '.bash_profile'))
+          ..createSync();
 
-          bashInstallation.install('very_good');
+        bashInstallation.install('very_good');
 
-          // Different format needed for matching cli output
-          expect(bashProfile.readAsStringSync(), '''
+        // Different format needed for matching cli output
+        expect(bashProfile.readAsStringSync(), '''
 \n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [ -f ${configDir.path}/bash-config.bash ] && . ${configDir.path}/bash-config.bash || true
 ## [/Completion]
 
 ''');
-        },
-      );
+      });
 
-      test(
-        'installing completion for .bash_profile',
-        () {
-          final bashInstallation = CompletionInstallation(
-            logger: logger,
-            isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
-            configuration: bashConfiguration,
-          );
+      test('installing completion for .bash_profile', () {
+        final bashInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: bashConfiguration,
+        );
 
-          final configDir = bashInstallation.completionConfigDir;
+        final configDir = bashInstallation.completionConfigDir;
 
-          final bashRc = File(path.join(tempDir.path, '.bashrc'))..createSync();
+        final bashRc = File(path.join(tempDir.path, '.bashrc'))..createSync();
 
-          bashInstallation.install('very_good');
+        bashInstallation.install('very_good');
 
-          // Different format needed for matching cli output
-          expect(bashRc.readAsStringSync(), '''
+        // Different format needed for matching cli output
+        expect(bashRc.readAsStringSync(), '''
 \n## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
 [ -f ${configDir.path}/bash-config.bash ] && . ${configDir.path}/bash-config.bash || true
 ## [/Completion]
 
 ''');
-        },
-      );
+      });
 
-      test(
-        'missing .bashrc and .bash_profile',
-        () {
-          final bashInstallation = CompletionInstallation(
-            logger: logger,
-            isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
-            configuration: bashConfiguration,
-          );
+      test('missing .bashrc and .bash_profile', () {
+        final bashInstallation = CompletionInstallation(
+          logger: logger,
+          isWindows: false,
+          environment: {'HOME': tempDir.path},
+          configuration: bashConfiguration,
+        );
 
-          expect(
-            () => bashInstallation.install('very_good'),
-            throwsA(
-              isA<CompletionInstallationException>().having(
-                (e) => e.message,
-                'message',
-                'No configuration files where found at '
-                    '\n  ${path.join(tempDir.path, '.bashrc')}'
-                    '\n  ${path.join(tempDir.path, '.bash_profile')}',
-              ),
+        expect(
+          () => bashInstallation.install('very_good'),
+          throwsA(
+            isA<CompletionInstallationException>().having(
+              (e) => e.message,
+              'message',
+              'No configuration files where found at '
+                  '\n  ${path.join(tempDir.path, '.bashrc')}'
+                  '\n  ${path.join(tempDir.path, '.bash_profile')}',
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
     });
 
     group('uninstall', () {
@@ -874,9 +885,7 @@ void main() {
               CompletionInstallation(
                   logger: logger,
                   isWindows: false,
-                  environment: {
-                    'HOME': tempDirectory.path,
-                  },
+                  environment: {'HOME': tempDirectory.path},
                   configuration: configuration,
                 )
                 ..install(rootCommand)
@@ -916,9 +925,7 @@ void main() {
           final bashInstallation = CompletionInstallation(
             logger: logger,
             isWindows: false,
-            environment: {
-              'HOME': tempDirectory.path,
-            },
+            environment: {'HOME': tempDirectory.path},
             configuration: bashConfig,
           )..install(rootCommand);
 
@@ -926,9 +933,7 @@ void main() {
               CompletionInstallation(
                   logger: logger,
                   isWindows: false,
-                  environment: {
-                    'HOME': tempDirectory.path,
-                  },
+                  environment: {'HOME': tempDirectory.path},
                   configuration: zshConfig,
                 )
                 ..install(rootCommand)
@@ -1030,9 +1035,7 @@ void main() {
               CompletionInstallation(
                   logger: logger,
                   isWindows: false,
-                  environment: {
-                    'HOME': tempDirectory.path,
-                  },
+                  environment: {'HOME': tempDirectory.path},
                   configuration: configuration,
                 )
                 ..install(commandName)
@@ -1114,9 +1117,7 @@ void main() {
         final installation = CompletionInstallation.fromSystemShell(
           systemShell: systemShell,
           logger: logger,
-          environmentOverride: {
-            'HOME': tempDir.path,
-          },
+          environmentOverride: {'HOME': tempDir.path},
         );
 
         File(path.join(tempDir.path, '.zshrc')).createSync();
@@ -1147,9 +1148,7 @@ void main() {
         final installation = CompletionInstallation.fromSystemShell(
           systemShell: systemShell,
           logger: logger,
-          environmentOverride: {
-            'HOME': tempDir.path,
-          },
+          environmentOverride: {'HOME': tempDir.path},
         );
 
         File(path.join(tempDir.path, '.zshrc')).createSync();
@@ -1180,9 +1179,7 @@ void main() {
           final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
-            environment: {
-              'HOME': tempDir.path,
-            },
+            environment: {'HOME': tempDir.path},
             configuration: zshConfiguration,
           );
           final rcFile = File(path.join(tempDir.path, '.zshrc'));
@@ -1206,9 +1203,7 @@ void main() {
           final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
-            environment: {
-              'HOME': tempDirectory.path,
-            },
+            environment: {'HOME': tempDirectory.path},
             configuration: zshConfiguration,
           );
 
@@ -1235,9 +1230,7 @@ void main() {
           final installation = CompletionInstallation(
             logger: logger,
             isWindows: false,
-            environment: {
-              'HOME': tempDirectory.path,
-            },
+            environment: {'HOME': tempDirectory.path},
             configuration: configuration,
           );
 
