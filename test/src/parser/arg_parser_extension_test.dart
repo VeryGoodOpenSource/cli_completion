@@ -47,12 +47,7 @@ void main() {
         results!;
 
         expect(results.name, null);
-        expect(
-          results.arguments,
-          <String>[
-            'subcommand',
-          ],
-        );
+        expect(results.arguments, <String>['subcommand']);
         expect(
           results.command,
           isA<ArgResults>().having(
@@ -81,11 +76,7 @@ void main() {
     });
     group('findValidOptions', () {
       final argParser = ArgParser()
-        ..addFlag(
-          'flag',
-          abbr: 'f',
-          aliases: ['flagalias'],
-        )
+        ..addFlag('flag', abbr: 'f', aliases: ['flagalias'])
         ..addOption('mandatoryOption', mandatory: true)
         ..addMultiOption('multiOption', allowed: ['a', 'b', 'c'])
         ..addCommand('subcommand', ArgParser());

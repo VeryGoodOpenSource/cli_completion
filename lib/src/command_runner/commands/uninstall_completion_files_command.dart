@@ -14,7 +14,7 @@ import 'package:mason_logger/mason_logger.dart';
 /// {@endtemplate}
 class UnistallCompletionFilesCommand<T> extends Command<T> {
   /// {@macro uninstall_completion_command}
-  UnistallCompletionFilesCommand() {
+  new() {
     argParser.addFlag(
       'verbose',
       abbr: 'v',

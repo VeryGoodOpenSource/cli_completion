@@ -108,17 +108,11 @@ void main() {
       });
 
       test('totally written option', () async {
-        await expectLater(
-          'example_cli --rootflag',
-          suggests(noSuggestions),
-        );
+        await expectLater('example_cli --rootflag', suggests(noSuggestions));
       });
 
       test('totally written option (abbr)', () async {
-        await expectLater(
-          'example_cli -f',
-          suggests(noSuggestions),
-        );
+        await expectLater('example_cli -f', suggests(noSuggestions));
       });
     });
 
@@ -147,9 +141,7 @@ void main() {
         test('completes only one sub command', () async {
           await expectLater(
             'example_cli   some_comm',
-            suggests({
-              'some_command': 'This is help for some_command',
-            }),
+            suggests({'some_command': 'This is help for some_command'}),
           );
         });
       });
@@ -158,9 +150,7 @@ void main() {
         test('completes sub commands aliases when typed', () async {
           await expectLater(
             'example_cli mel',
-            suggests({
-              'melon': 'This is help for some_command',
-            }),
+            suggests({'melon': 'This is help for some_command'}),
           );
         });
 
@@ -245,16 +235,12 @@ void main() {
         );
       });
 
-      test(
-        'options in between',
-        () async {
-          await expectLater(
-            'example_cli -f --rootOption yay some_command',
-            suggests(allOptionsInThisLevel),
-          );
-        },
-        tags: 'known-issues',
-      );
+      test('options in between', () async {
+        await expectLater(
+          'example_cli -f --rootOption yay some_command',
+          suggests(allOptionsInThisLevel),
+        );
+      }, tags: 'known-issues');
 
       test('lots of spaces in between', () async {
         await expectLater(
@@ -266,10 +252,7 @@ void main() {
 
     group('empty (aliases)', () {
       test('shows same options for alias sub command', () async {
-        await expectLater(
-          'example_cli melon',
-          suggests(allOptionsInThisLevel),
-        );
+        await expectLater('example_cli melon', suggests(allOptionsInThisLevel));
       });
 
       test('shows same options for alias sub command 2', () async {
@@ -391,21 +374,14 @@ void main() {
         test('suggest possible options', () async {
           await expectLater(
             'example_cli some_command --discrete  ',
-            suggests({
-              'foo': 'foo help',
-              'bar': 'bar help',
-              'faa': 'faa help',
-            }),
+            suggests({'foo': 'foo help', 'bar': 'bar help', 'faa': 'faa help'}),
           );
         });
 
         test('suggest matching options', () async {
           await expectLater(
             'example_cli some_command  --discrete  f',
-            suggests({
-              'foo': 'foo help',
-              'faa': 'faa help',
-            }),
+            suggests({'foo': 'foo help', 'faa': 'faa help'}),
           );
         });
 
@@ -424,11 +400,7 @@ void main() {
         test('suggest matching options for alias option when typed', () async {
           await expectLater(
             'example_cli some_command --allowed ',
-            suggests({
-              'foo': 'foo help',
-              'bar': 'bar help',
-              'faa': 'faa help',
-            }),
+            suggests({'foo': 'foo help', 'bar': 'bar help', 'faa': 'faa help'}),
           );
         });
 
@@ -462,11 +434,7 @@ void main() {
         test('suggest possible options', () async {
           await expectLater(
             'example_cli some_command -d ',
-            suggests({
-              'foo': 'foo help',
-              'bar': 'bar help',
-              'faa': 'faa help',
-            }),
+            suggests({'foo': 'foo help', 'bar': 'bar help', 'faa': 'faa help'}),
           );
         });
 
@@ -484,20 +452,14 @@ void main() {
         test('suggest matching options', () async {
           await expectLater(
             'example_cli some_command  -d f',
-            suggests({
-              'foo': 'foo help',
-              'faa': 'faa help',
-            }),
+            suggests({'foo': 'foo help', 'faa': 'faa help'}),
           );
         });
 
         test('suggest matching options in a joined form', () async {
           await expectLater(
             'example_cli some_command  -df',
-            suggests({
-              '-dfoo': 'foo help',
-              '-dfaa': 'faa help',
-            }),
+            suggests({'-dfoo': 'foo help', '-dfaa': 'faa help'}),
           );
         });
       });
@@ -626,16 +588,12 @@ void main() {
           );
         });
 
-        test(
-          'include option after it is specified (abbr joined)',
-          () async {
-            await expectLater(
-              'example_cli some_command -nyeahoo ',
-              suggests(allOptionsInThisLevel),
-            );
-          },
-          tags: 'known-issues',
-        );
+        test('include option after it is specified (abbr joined)', () async {
+          await expectLater(
+            'example_cli some_command -nyeahoo ',
+            suggests(allOptionsInThisLevel),
+          );
+        }, tags: 'known-issues');
 
         test(
           'include discrete multi option value after it is specified',
@@ -672,9 +630,7 @@ void main() {
       test('partially written sub command', () async {
         await expectLater(
           'example_cli some_other_command sub',
-          suggests({
-            'subcommand': 'A sub command of some_other_command',
-          }),
+          suggests({'subcommand': 'A sub command of some_other_command'}),
         );
       });
     });
@@ -721,10 +677,7 @@ void main() {
 
   group('argument terminator bails', () {
     test('between commands', () async {
-      await expectLater(
-        'example_cli -- some_command',
-        suggests(noSuggestions),
-      );
+      await expectLater('example_cli -- some_command', suggests(noSuggestions));
     });
 
     test('after commands', () async {

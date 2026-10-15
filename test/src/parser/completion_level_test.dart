@@ -5,7 +5,7 @@ import 'package:cli_completion/parser.dart';
 import 'package:test/test.dart';
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
-  _TestCompletionCommandRunner() : super('test', 'Test command runner') {
+  new() : super('test', 'Test command runner') {
     argParser
       ..addOption('rootFlag')
       ..addCommand(
@@ -28,10 +28,7 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
     subCommand.addSubcommand(subSubCommand);
     subSubCommand.argParser
       ..addFlag('level2Flag')
-      ..addOption(
-        'level2Option',
-        mandatory: true,
-      );
+      ..addOption('level2Option', mandatory: true);
 
     final subSubSubCommand = _TestCommand(
       name: 'subsubsubcommand',
@@ -42,10 +39,7 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
 }
 
 class _TestCommand extends Command<int> {
-  _TestCommand({
-    required this.name,
-    required this.description,
-  });
+  new({required this.name, required this.description});
 
   @override
   final String description;
@@ -57,75 +51,69 @@ class _TestCommand extends Command<int> {
 void main() {
   group('CompletionLevel', () {
     group('find', () {
-      test(
-        'gets completion level from the innermost aspet',
-        () {
-          final commanrRunner = _TestCompletionCommandRunner();
-          final args =
-              '--rootFlag '
-                      'subcommand  --level1Flag '
-                      'subsubcommand  --level2Flag'
-                  .split(' ');
+      test('gets completion level from the innermost aspet', () {
+        final commanrRunner = _TestCompletionCommandRunner();
+        final args =
+            '--rootFlag '
+                    'subcommand  --level1Flag '
+                    'subsubcommand  --level2Flag'
+                .split(' ');
 
-          final completionLevel = CompletionLevel.find(
-            args,
-            commanrRunner.argParser,
-            commanrRunner.commands,
-          );
+        final completionLevel = CompletionLevel.find(
+          args,
+          commanrRunner.argParser,
+          commanrRunner.commands,
+        );
 
-          expect(completionLevel, isNotNull);
-          completionLevel!;
+        expect(completionLevel, isNotNull);
+        completionLevel!;
 
-          expect(completionLevel.rawArgs, [
-            '',
-            '--level2Flag',
-          ]);
+        expect(completionLevel.rawArgs, ['', '--level2Flag']);
 
-          expect(
-            completionLevel.parsedOptions,
-            isA<ArgResults>().having(
-              (results) => results.wasParsed('level2Flag'),
-              'parsed level2Flag',
-              true,
-            ),
-          );
+        expect(
+          completionLevel.parsedOptions,
+          isA<ArgResults>().having(
+            (results) => results.wasParsed('level2Flag'),
+            'parsed level2Flag',
+            true,
+          ),
+        );
 
-          expect(
-            completionLevel.visibleOptions,
-            isA<List<Option>>()
-                .having(
-                  (list) => list.length,
-                  'available options in the last level',
-                  2,
-                )
-                .having(
-                  (list) => list[0].name,
-                  'first option in the last level',
-                  'help',
-                )
-                .having(
-                  (list) => list[1].name,
-                  'second option in the last level',
-                  'level2Option',
-                ),
-          );
+        expect(
+          completionLevel.visibleOptions,
+          isA<List<Option>>()
+              .having(
+                (list) => list.length,
+                'available options in the last level',
+                2,
+              )
+              .having(
+                (list) => list[0].name,
+                'first option in the last level',
+                'help',
+              )
+              .having(
+                (list) => list[1].name,
+                'second option in the last level',
+                'level2Option',
+              ),
+        );
 
-          expect(
-            completionLevel.visibleSubcommands,
-            isA<List<Command<dynamic>>>()
-                .having(
-                  (list) => list.length,
-                  'available sub commands in the last level',
-                  1,
-                )
-                .having(
-                  (list) => list.single.name,
-                  'sub command in the last level',
-                  'subsubsubcommand',
-                ),
-          );
-        },
-      );
+        expect(
+          completionLevel.visibleSubcommands,
+          isA<List<Command<dynamic>>>()
+              .having(
+                (list) => list.length,
+                'available sub commands in the last level',
+                1,
+              )
+              .having(
+                (list) => list.single.name,
+                'sub command in the last level',
+                'subsubsubcommand',
+              ),
+        );
+      });
 
       test(
         'finds level when subcommand is added via "ArgParser.addCommand"',
@@ -145,9 +133,7 @@ void main() {
           expect(completionLevel, isNotNull);
           completionLevel!;
 
-          expect(completionLevel.rawArgs, [
-            '--fakeSubcommandFlag',
-          ]);
+          expect(completionLevel.rawArgs, ['--fakeSubcommandFlag']);
         },
       );
     });

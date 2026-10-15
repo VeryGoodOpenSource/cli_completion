@@ -16,7 +16,7 @@ import 'package:meta/meta.dart';
 class CompletionLevel {
   /// {@macro completion_level}
   @visibleForTesting
-  const CompletionLevel({
+  const new({
     required this.grammar,
     required this.rawArgs,
     required this.visibleSubcommands,

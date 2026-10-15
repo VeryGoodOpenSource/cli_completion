@@ -20,7 +20,7 @@ typedef SourceStringTemplate = String Function(String scriptPath);
 @immutable
 class ShellCompletionConfiguration {
   /// {@macro shell_completion_configuration}
-  const ShellCompletionConfiguration._({
+  const new _({
     required this.shell,
     required this.shellRCFiles,
     required this.sourceLineTemplate,
@@ -28,9 +28,7 @@ class ShellCompletionConfiguration {
   });
 
   /// Creates a [ShellCompletionConfiguration] given the current [SystemShell].
-  factory ShellCompletionConfiguration.fromSystemShell(
-    SystemShell systemShell,
-  ) {
+  factory fromSystemShell(SystemShell systemShell) {
     switch (systemShell) {
       case SystemShell.zsh:
         return zshConfiguration;

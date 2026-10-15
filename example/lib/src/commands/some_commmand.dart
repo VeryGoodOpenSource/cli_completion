@@ -5,30 +5,19 @@ import 'package:mason_logger/mason_logger.dart';
 /// receives all the common cases of option mapping: options, muilt-options,
 /// flags and whatnot
 class SomeCommand extends Command<int> {
-  SomeCommand(this._logger) {
+  new(this._logger) {
     argParser
       ..addOption(
         'discrete',
         abbr: 'd',
         help: 'A discrete option with "allowed" values (mandatory)',
         allowed: ['foo', 'bar', 'faa'],
-        aliases: [
-          'allowed',
-          'defined-values',
-        ],
-        allowedHelp: {
-          'foo': 'foo help',
-          'bar': 'bar help',
-          'faa': 'faa help',
-        },
+        aliases: ['allowed', 'defined-values'],
+        allowedHelp: {'foo': 'foo help', 'bar': 'bar help', 'faa': 'faa help'},
         mandatory: true,
       )
       ..addSeparator('yay')
-      ..addOption(
-        'hidden',
-        hide: true,
-        help: 'A hidden option',
-      )
+      ..addOption('hidden', hide: true, help: 'A hidden option')
       ..addOption(
         'continuous', // intentionally, this one does not have an abbr
         help: 'A continuous option: any value is allowed',
@@ -62,16 +51,8 @@ class SomeCommand extends Command<int> {
         abbr: 'n',
         help: 'An continuous option that can be passed multiple times',
       )
-      ..addFlag(
-        'hiddenflag',
-        hide: true,
-        help: 'A hidden flag',
-      )
-      ..addFlag(
-        'flag',
-        abbr: 'f',
-        aliases: ['itIsAFlag'],
-      )
+      ..addFlag('hiddenflag', hide: true, help: 'A hidden flag')
+      ..addFlag('flag', abbr: 'f', aliases: ['itIsAFlag'])
       ..addFlag(
         'inverseflag',
         abbr: 'i',
@@ -95,10 +76,7 @@ class SomeCommand extends Command<int> {
   String get name => 'some_command';
 
   @override
-  List<String> get aliases => [
-    'disguised:some_commmand',
-    'melon',
-  ];
+  List<String> get aliases => ['disguised:some_commmand', 'melon'];
 
   @override
   Future<int> run() async {

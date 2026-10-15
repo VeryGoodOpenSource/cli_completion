@@ -4,13 +4,13 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class _MockLogger extends Mock implements Logger {}
+class _MockLogger extends Mock implements Logger;
 
 class _MockCompletionInstallation extends Mock
-    implements CompletionInstallation {}
+    implements CompletionInstallation;
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
-  _TestCompletionCommandRunner() : super('test', 'Test command runner');
+  new() : super('test', 'Test command runner');
 
   @override
   // Override acceptable for test files
@@ -68,12 +68,10 @@ void main() {
       test('when verbose', () async {
         await commandRunner.run(['install-completion-files', '--verbose']);
 
-        verify(
-          () {
-            return commandRunner.completionInstallationLogger.level =
-                Level.verbose;
-          },
-        ).called(1);
+        verify(() {
+          return commandRunner.completionInstallationLogger.level =
+              Level.verbose;
+        }).called(1);
       });
     });
   });

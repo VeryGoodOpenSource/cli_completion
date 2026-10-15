@@ -20,14 +20,11 @@ typedef ShellCommandsMap =
 @immutable
 class CompletionConfiguration {
   /// {@macro completion_configuration}
-  const CompletionConfiguration._({
-    required this.uninstalls,
-    required this.installs,
-  });
+  const new _({required this.uninstalls, required this.installs});
 
   /// Creates an empty [CompletionConfiguration].
   @visibleForTesting
-  CompletionConfiguration.empty()
+  new empty()
     : uninstalls = ShellCommandsMap({}),
       installs = ShellCommandsMap({});
 
@@ -40,7 +37,7 @@ class CompletionConfiguration {
   /// file's content. This content is assumed to be a JSON string. The parsing
   /// is handled gracefully, so if the JSON is partially or fully invalid, it
   /// handles issues without throwing an [Exception].
-  factory CompletionConfiguration.fromFile(File file) {
+  factory fromFile(File file) {
     if (!file.existsSync()) {
       return CompletionConfiguration.empty();
     }
@@ -50,7 +47,7 @@ class CompletionConfiguration {
   }
 
   /// Creates a [CompletionConfiguration] from the given JSON string.
-  factory CompletionConfiguration._fromJson(String json) {
+  factory _fromJson(String json) {
     late final Map<String, dynamic> decodedJson;
     try {
       decodedJson = jsonDecode(json) as Map<String, dynamic>;

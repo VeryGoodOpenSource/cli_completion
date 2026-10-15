@@ -22,7 +22,7 @@ import 'package:cli_completion/cli_completion.dart';
 /// {@endtemplate}
 class PrintCompletionScriptCommand<T> extends Command<T> {
   /// {@macro print_completion_script_command}
-  PrintCompletionScriptCommand();
+  new();
 
   @override
   String get description {

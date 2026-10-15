@@ -13,7 +13,7 @@ import 'package:path/path.dart' as path;
 class CompletionInstallation {
   /// {@macro shell_completion_installation}
   @visibleForTesting
-  CompletionInstallation({
+  new({
     required this.configuration,
     required this.logger,
     required this.isWindows,
@@ -30,7 +30,7 @@ class CompletionInstallation {
   ///
   /// Pass [environmentOverride] to override the default value of
   /// [Platform.environment].
-  factory CompletionInstallation.fromSystemShell({
+  factory fromSystemShell({
     required SystemShell? systemShell,
     required Logger logger,
     bool? isWindowsOverride,

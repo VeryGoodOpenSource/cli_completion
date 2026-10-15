@@ -19,7 +19,7 @@ import 'package:meta/meta.dart';
 @immutable
 abstract class CompletionResult {
   /// {@macro completion_result}
-  const CompletionResult();
+  const new();
 
   /// A collection of [MapEntry] with completion suggestions to their
   /// descriptions.
@@ -32,9 +32,7 @@ abstract class CompletionResult {
 /// {@endtemplate}
 class AllOptionsAndCommandsCompletionResult extends CompletionResult {
   /// {@macro all_options_and_commands_completion_result}
-  const AllOptionsAndCommandsCompletionResult({
-    required this.completionLevel,
-  });
+  const new({required this.completionLevel});
 
   /// The [CompletionLevel] in which the suggested options and subcommands are
   /// supposed to be located at.
@@ -65,9 +63,7 @@ class AllOptionsAndCommandsCompletionResult extends CompletionResult {
 /// - [AllOptionsAndCommandsCompletionResult]
 class AllAbbrOptionsCompletionResult extends CompletionResult {
   /// {@macro all_options_and_commands_completion_result}
-  const AllAbbrOptionsCompletionResult({
-    required this.completionLevel,
-  });
+  const new({required this.completionLevel});
 
   /// The [CompletionLevel] in which the suggested options and subcommands are
   /// supposed to be located at.
@@ -94,10 +90,7 @@ class AllAbbrOptionsCompletionResult extends CompletionResult {
 /// If a command doesnt match the pattern, its aliases are also checked.
 class MatchingCommandsCompletionResult extends CompletionResult {
   /// {@macro matching_commands_completion_result}
-  const MatchingCommandsCompletionResult({
-    required this.completionLevel,
-    required this.pattern,
-  });
+  const new({required this.completionLevel, required this.pattern});
 
   /// The [CompletionLevel] in which the suggested commands are supposed to be
   /// located at.
@@ -133,10 +126,7 @@ class MatchingCommandsCompletionResult extends CompletionResult {
 /// If an option does not match the pattern, its aliases will be checked.
 class MatchingOptionsCompletionResult extends CompletionResult {
   /// {@macro matching_options_completion_result}
-  const MatchingOptionsCompletionResult({
-    required this.completionLevel,
-    required this.pattern,
-  });
+  const new({required this.completionLevel, required this.pattern});
 
   /// The [CompletionLevel] in which the suggested options are supposed to be
   /// located at.
@@ -191,7 +181,7 @@ class MatchingOptionsCompletionResult extends CompletionResult {
 /// in an abbreviated form.
 class OptionValuesCompletionResult extends CompletionResult {
   /// {@macro option_values_completion_result}
-  const OptionValuesCompletionResult({
+  const new({
     required this.completionLevel,
     required this.optionName,
     this.pattern,
@@ -199,7 +189,7 @@ class OptionValuesCompletionResult extends CompletionResult {
        includeAbbrName = false;
 
   /// {@macro option_values_completion_result}
-  const OptionValuesCompletionResult.abbr({
+  const new abbr({
     required this.completionLevel,
     required String abbrName,
     this.pattern,

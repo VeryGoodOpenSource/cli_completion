@@ -24,11 +24,7 @@ void main() {
           addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
           final file = File(path.join(tempDirectory.path, 'config.json'));
-          expect(
-            file.existsSync(),
-            isFalse,
-            reason: 'File should not exist',
-          );
+          expect(file.existsSync(), isFalse, reason: 'File should not exist');
 
           final completionConfiguration = CompletionConfiguration.fromFile(
             file,
@@ -176,11 +172,7 @@ void main() {
         addTearDown(() => tempDirectory.deleteSync(recursive: true));
 
         final file = File(path.join(tempDirectory.path, 'config.json'));
-        expect(
-          file.existsSync(),
-          isFalse,
-          reason: 'File should not exist',
-        );
+        expect(file.existsSync(), isFalse, reason: 'File should not exist');
 
         CompletionConfiguration.empty().writeTo(file);
 
@@ -197,11 +189,7 @@ void main() {
 
         final file = File(path.join(tempDirectory.path, 'config.json'))
           ..createSync();
-        expect(
-          file.existsSync(),
-          isTrue,
-          reason: 'File should exist',
-        );
+        expect(file.existsSync(), isTrue, reason: 'File should exist');
 
         expect(
           () => CompletionConfiguration.empty().writeTo(file),

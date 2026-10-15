@@ -15,7 +15,7 @@ enum SystemShell {
   bash('bash');
 
   /// {@macro system_shell}
-  const SystemShell(this.name);
+  new(this.name);
 
   /// A descriptive string to identify the shell among others.
   final String name;
@@ -26,9 +26,7 @@ enum SystemShell {
   /// [Platform.environment].
   ///
   /// Based on https://stackoverflow.com/a/3327022
-  static SystemShell? current({
-    Map<String, String>? environmentOverride,
-  }) {
+  static SystemShell? current({Map<String, String>? environmentOverride}) {
     final environment = environmentOverride ?? Platform.environment;
 
     // Heuristic: if ZSH_NAME is set, must be zsh

@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 class CompletionState extends Equatable {
   /// {@macro completion_state}
   @visibleForTesting
-  const CompletionState({
+  const new({
     required this.cword,
     required this.point,
     required this.line,

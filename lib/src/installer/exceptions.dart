@@ -3,10 +3,7 @@
 /// {@endtemplate}
 class CompletionInstallationException implements Exception {
   /// {@macro completion_installation_exception}
-  CompletionInstallationException({
-    required this.message,
-    required this.rootCommand,
-  });
+  new({required this.message, required this.rootCommand});
 
   /// The error message for this exception
   final String message;
@@ -25,10 +22,7 @@ class CompletionInstallationException implements Exception {
 /// {@endtemplate}
 class CompletionUninstallationException implements Exception {
   /// {@macro completion_unistallation_exception}
-  CompletionUninstallationException({
-    required this.message,
-    required this.rootCommand,
-  });
+  new({required this.message, required this.rootCommand});
 
   /// The error message for this exception
   final String message;

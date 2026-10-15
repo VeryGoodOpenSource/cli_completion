@@ -17,7 +17,7 @@ import 'package:mason_logger/mason_logger.dart';
 /// this command logs messages during the installation process.
 class InstallCompletionFilesCommand<T> extends Command<T> {
   /// {@macro install_completion_command}
-  InstallCompletionFilesCommand() {
+  new() {
     argParser.addFlag(
       'verbose',
       abbr: 'v',
