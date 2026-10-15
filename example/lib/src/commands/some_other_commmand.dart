@@ -3,7 +3,7 @@ import 'package:mason_logger/mason_logger.dart';
 
 /// A command that only has a sub command
 class SomeOtherCommand extends Command<int> {
-  SomeOtherCommand(this._logger) {
+  new(this._logger) {
     addSubcommand(_SomeSubCommand(_logger));
   }
 
@@ -19,7 +19,7 @@ class SomeOtherCommand extends Command<int> {
 /// A command under [SomeOtherCommand] that does not receive options and read
 /// the "rest" field from arg results
 class _SomeSubCommand extends Command<int> {
-  _SomeSubCommand(this._logger) {
+  new(this._logger) {
     argParser.addFlag(
       'flag',
       help: 'a flag just to show we are in the subcommand',

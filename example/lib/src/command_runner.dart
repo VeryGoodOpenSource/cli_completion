@@ -16,17 +16,12 @@ const description = 'Example for cli_completion';
 /// {@endtemplate}
 class ExampleCommandRunner extends CompletionCommandRunner<int> {
   /// {@macro example_command_runner}
-  ExampleCommandRunner({
-    Logger? logger,
-  }) : _logger = logger ?? Logger(),
-       super(executableName, description) {
+  new({Logger? logger})
+    : _logger = logger ?? Logger(),
+      super(executableName, description) {
     // Add root options and flags
     argParser
-      ..addFlag(
-        'rootFlag',
-        abbr: 'f',
-        help: 'A flag: in the root command',
-      )
+      ..addFlag('rootFlag', abbr: 'f', help: 'A flag: in the root command')
       ..addOption('rootOption');
 
     // Add sub commands
