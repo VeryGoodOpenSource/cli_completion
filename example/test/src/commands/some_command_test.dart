@@ -3,7 +3,7 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
+class MockLogger extends Mock implements Logger;
 
 void main() {
   group('SomeCommand', () {
@@ -13,9 +13,7 @@ void main() {
     setUp(() {
       logger = MockLogger();
 
-      commandRunner = ExampleCommandRunner(
-        logger: logger,
-      );
+      commandRunner = ExampleCommandRunner(logger: logger);
     });
 
     test('list passed options', () async {

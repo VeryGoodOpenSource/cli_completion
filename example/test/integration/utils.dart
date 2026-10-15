@@ -5,23 +5,18 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:test/test.dart';
 
-class MockStdout extends Mock implements Stdout {}
+class MockStdout extends Mock implements Stdout;
 
 Matcher suggests(Map<String, String?> suggestions, {int? whenCursorIsAt}) =>
-    CliCompletionMatcher(
-      suggestions,
-      cursorIndex: whenCursorIsAt,
-    );
+    CliCompletionMatcher(suggestions, cursorIndex: whenCursorIsAt);
 
 class CliCompletionMatcher extends CustomMatcher {
-  CliCompletionMatcher(
-    Map<String, String?> suggestions, {
-    this.cursorIndex,
-  }) : super(
-         'Completes with the expected suggestions',
-         'suggestions',
-         completion(suggestions),
-       );
+  new(Map<String, String?> suggestions, {this.cursorIndex})
+    : super(
+        'Completes with the expected suggestions',
+        'suggestions',
+        completion(suggestions),
+      );
 
   final int? cursorIndex;
 
@@ -47,11 +42,7 @@ Map<String, String> prepareEnvForLineInput(String line, {int? cursorIndex}) {
     }
     return value;
   });
-  return {
-    'COMP_LINE': line,
-    'COMP_POINT': '$cpoint',
-    'COMP_CWORD': '$cword',
-  };
+  return {'COMP_LINE': line, 'COMP_POINT': '$cpoint', 'COMP_CWORD': '$cword'};
 }
 
 Future<Map<String, String?>> runCompletionCommand(
@@ -74,17 +65,14 @@ Future<Map<String, String?>> runCompletionCommand(
     map[res.first] = description;
   });
 
-  await IOOverrides.runZoned(
-    stdout: () => stdout,
-    () async {
-      final commandRunner = ExampleCommandRunner()
-        ..environmentOverride = {
-          'SHELL': '/foo/bar/zsh',
-          ...prepareEnvForLineInput(line, cursorIndex: cursorIndex),
-        };
-      await commandRunner.run(['completion']);
-    },
-  );
+  await IOOverrides.runZoned(stdout: () => stdout, () async {
+    final commandRunner = ExampleCommandRunner()
+      ..environmentOverride = {
+        'SHELL': '/foo/bar/zsh',
+        ...prepareEnvForLineInput(line, cursorIndex: cursorIndex),
+      };
+    await commandRunner.run(['completion']);
+  });
 
   return map;
 }
