@@ -6,13 +6,13 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
+class MockLogger extends Mock implements Logger;
 
 class _MockCompletionInstallation extends Mock
-    implements CompletionInstallation {}
+    implements CompletionInstallation;
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
-  _TestCompletionCommandRunner() : super('test', 'Test command runner');
+  new() : super('test', 'Test command runner');
 
   @override
   bool enableAutoInstall = true;
@@ -36,8 +36,7 @@ class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
 
 class _TestNoAutoInstallCompletionCommandRunner
     extends CompletionCommandRunner<int> {
-  _TestNoAutoInstallCompletionCommandRunner()
-    : super('test', 'Test command runner');
+  new() : super('test', 'Test command runner');
 
   @override
   bool get enableAutoInstall => false;
@@ -57,7 +56,7 @@ class _TestUserCommand extends Command<int> {
 }
 
 class _TestCompletionResult extends CompletionResult {
-  const _TestCompletionResult(this._completions);
+  const new(this._completions);
 
   final Map<String, String?> _completions;
 
@@ -80,27 +79,16 @@ void main() {
       final commandRunner = _TestCompletionCommandRunner()
         ..addCommand(_TestUserCommand());
 
-      expect(
-        commandRunner.usage,
-        contains('ahoy'),
-      );
-      expect(
-        commandRunner.usage,
-        isNot(contains('install-completion-files')),
-      );
-      expect(
-        commandRunner.usage,
-        isNot(contains('completion')),
-      );
+      expect(commandRunner.usage, contains('ahoy'));
+      expect(commandRunner.usage, isNot(contains('install-completion-files')));
+      expect(commandRunner.usage, isNot(contains('completion')));
     });
 
     group('completionInstallation', () {
       // test if it gets one with the current system shell
       test('creates one with the given system shell', () {
         final commandRunner = _TestCompletionCommandRunner()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/zsh',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/zsh'};
         expect(
           commandRunner.completionInstallation,
           isA<CompletionInstallation>().having(
@@ -116,37 +104,25 @@ void main() {
       final commandRunner = _TestCompletionCommandRunner();
       expect(
         commandRunner.commands.keys,
-        containsAll([
-          'completion',
-          'install-completion-files',
-        ]),
+        containsAll(['completion', 'install-completion-files']),
       );
     });
 
     group('print completion script command', () {
-      test(
-        'is not added when auto install is enabled',
-        () {
-          final commandRunner = _TestCompletionCommandRunner();
+      test('is not added when auto install is enabled', () {
+        final commandRunner = _TestCompletionCommandRunner();
 
-          expect(
-            commandRunner.commands.keys,
-            isNot(contains('completion-script')),
-          );
-        },
-      );
+        expect(
+          commandRunner.commands.keys,
+          isNot(contains('completion-script')),
+        );
+      });
 
-      test(
-        'is added when auto install is disabled',
-        () {
-          final commandRunner = _TestNoAutoInstallCompletionCommandRunner();
+      test('is added when auto install is disabled', () {
+        final commandRunner = _TestNoAutoInstallCompletionCommandRunner();
 
-          expect(
-            commandRunner.commands.keys,
-            contains('completion-script'),
-          );
-        },
-      );
+        expect(commandRunner.commands.keys, contains('completion-script'));
+      });
     });
 
     group('auto install', () {
@@ -157,9 +133,8 @@ void main() {
 
         await commandRunner.run(['ahoy']);
 
-        verify(
-          () => commandRunner.completionInstallation.install('test'),
-        ).called(1);
+        verify(() => commandRunner.completionInstallation.install('test'))
+            .called(1);
         verify(
           () => commandRunner.completionInstallationLogger.level = Level.error,
         ).called(1);
@@ -185,9 +160,7 @@ void main() {
           ..enableAutoInstall = true
           ..addCommand(_TestUserCommand())
           ..mockCompletionInstallation = _MockCompletionInstallation()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/zsh',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/zsh'};
 
         await commandRunner.run(['ahoy']);
 
@@ -214,9 +187,8 @@ void main() {
 
         await commandRunner.run(['ahoy']);
 
-        verify(
-          () => commandRunner.completionInstallationLogger.warn(any()),
-        ).called(1);
+        verify(() => commandRunner.completionInstallationLogger.warn(any()))
+            .called(1);
       },
     );
 
@@ -227,15 +199,13 @@ void main() {
           ..addCommand(_TestUserCommand())
           ..mockCompletionInstallation = _MockCompletionInstallation();
 
-        when(
-          () => commandRunner.completionInstallation.install('test'),
-        ).thenThrow(Exception('oops'));
+        when(() => commandRunner.completionInstallation.install('test'))
+            .thenThrow(Exception('oops'));
 
         await commandRunner.run(['ahoy']);
 
-        verify(
-          () => commandRunner.completionInstallationLogger.err(any()),
-        ).called(1);
+        verify(() => commandRunner.completionInstallationLogger.err(any()))
+            .called(1);
       },
     );
 
@@ -246,20 +216,18 @@ void main() {
           final commandRunner = _TestCompletionCommandRunner()
             ..mockCompletionInstallation = _MockCompletionInstallation();
 
-          when(
-            () => commandRunner.completionInstallation.uninstall('test'),
-          ).thenThrow(
-            CompletionUninstallationException(
-              message: 'oops',
-              rootCommand: 'test',
-            ),
-          );
+          when(() => commandRunner.completionInstallation.uninstall('test'))
+              .thenThrow(
+                CompletionUninstallationException(
+                  message: 'oops',
+                  rootCommand: 'test',
+                ),
+              );
 
           commandRunner.tryUninstallCompletionFiles(Level.verbose);
 
-          verify(
-            () => commandRunner.completionInstallationLogger.warn(any()),
-          ).called(1);
+          verify(() => commandRunner.completionInstallationLogger.warn(any()))
+              .called(1);
         },
       );
 
@@ -269,15 +237,13 @@ void main() {
           final commandRunner = _TestCompletionCommandRunner()
             ..mockCompletionInstallation = _MockCompletionInstallation();
 
-          when(
-            () => commandRunner.completionInstallation.uninstall('test'),
-          ).thenThrow(Exception('oops'));
+          when(() => commandRunner.completionInstallation.uninstall('test'))
+              .thenThrow(Exception('oops'));
 
           commandRunner.tryUninstallCompletionFiles(Level.verbose);
 
-          verify(
-            () => commandRunner.completionInstallationLogger.err(any()),
-          ).called(1);
+          verify(() => commandRunner.completionInstallationLogger.err(any()))
+              .called(1);
         },
       );
     });
@@ -292,9 +258,7 @@ void main() {
         });
 
         final commandRunner = _TestCompletionCommandRunner()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/zsh',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/zsh'};
 
         final output = StringBuffer();
         when(() {
@@ -322,9 +286,7 @@ suggestion4:description4
         });
 
         final commandRunner = _TestCompletionCommandRunner()
-          ..environmentOverride = {
-            'SHELL': '/foo/bar/bash',
-          };
+          ..environmentOverride = {'SHELL': '/foo/bar/bash'};
 
         final output = StringBuffer();
         when(() {

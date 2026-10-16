@@ -4,10 +4,7 @@ import 'package:cli_completion/parser.dart';
 import 'package:test/test.dart';
 
 class _TestCommand extends Command<void> {
-  _TestCommand({
-    required this.name,
-    required this.description,
-  });
+  new({required this.name, required this.description});
 
   @override
   final String description;
@@ -57,10 +54,7 @@ void main() {
           final result = parser.parse();
 
           expect(result.length, 1);
-          expect(
-            result.first,
-            isA<AllOptionsAndCommandsCompletionResult>(),
-          );
+          expect(result.first, isA<AllOptionsAndCommandsCompletionResult>());
         });
       });
 
@@ -169,10 +163,7 @@ void main() {
 
           final result = parser.parse();
           expect(result.length, 1);
-          expect(
-            result.first,
-            isA<AllOptionsAndCommandsCompletionResult>(),
-          );
+          expect(result.first, isA<AllOptionsAndCommandsCompletionResult>());
         });
       });
 
@@ -206,12 +197,7 @@ void main() {
             final parser = CompletionParser(
               completionLevel: CompletionLevel(
                 grammar: testArgParser,
-                rawArgs: const [
-                  '',
-                  'command1',
-                  '--optionAllowed',
-                  'something',
-                ],
+                rawArgs: const ['', 'command1', '--optionAllowed', 'something'],
                 visibleSubcommands: visibleSubcommands,
                 visibleOptions: testArgParser.options.values.toList(),
               ),
@@ -234,12 +220,7 @@ void main() {
             final parser = CompletionParser(
               completionLevel: CompletionLevel(
                 grammar: testArgParser,
-                rawArgs: const [
-                  '',
-                  'command1',
-                  '-a',
-                  'something',
-                ],
+                rawArgs: const ['', 'command1', '-a', 'something'],
                 visibleSubcommands: visibleSubcommands,
                 visibleOptions: testArgParser.options.values.toList(),
               ),

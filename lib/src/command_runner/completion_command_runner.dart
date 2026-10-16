@@ -26,7 +26,7 @@ import 'package:meta/meta.dart';
 /// and install it manually.
 abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
   /// {@macro completion_command_runner}
-  CompletionCommandRunner(
+  new(
     super.executableName,
     super.description, {
     super.usageLineLength,
@@ -97,7 +97,7 @@ abstract class CompletionCommandRunner<T> extends CommandRunner<T> {
       tryInstallCompletionFiles(Level.error);
     }
 
-    return super.runCommand(topLevelResults);
+    return await super.runCommand(topLevelResults);
   }
 
   /// Tries to install completion files for the current shell.

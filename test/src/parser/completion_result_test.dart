@@ -4,11 +4,7 @@ import 'package:cli_completion/parser.dart';
 import 'package:test/test.dart';
 
 class _TestCommand extends Command<void> {
-  _TestCommand({
-    required this.name,
-    required this.description,
-    required this.aliases,
-  });
+  new({required this.name, required this.description, required this.aliases});
 
   @override
   final String description;
@@ -22,53 +18,44 @@ class _TestCommand extends Command<void> {
 
 void main() {
   group('AllOptionsAndCommandsCompletionResult', () {
-    test(
-      'renders suggestions for all sub commands and options in'
-      ' a completion level',
-      () {
-        final testArgParser = ArgParser()
-          ..addOption('option1')
-          ..addFlag('option2', help: 'yay option 2')
-          ..addFlag(
-            'trueflag',
-            negatable: false,
-          );
+    test('renders suggestions for all sub commands and options in'
+        ' a completion level', () {
+      final testArgParser = ArgParser()
+        ..addOption('option1')
+        ..addFlag('option2', help: 'yay option 2')
+        ..addFlag('trueflag', negatable: false);
 
-        final completionLevel = CompletionLevel(
-          grammar: testArgParser,
-          rawArgs: const <String>[],
-          visibleSubcommands: [
-            _TestCommand(
-              name: 'command1',
-              description: 'yay command 1',
-              aliases: [],
-            ),
-            _TestCommand(
-              name: 'command2',
-              description: 'yay command 2',
-              aliases: ['alias'],
-            ),
-          ],
-          visibleOptions: testArgParser.options.values.toList(),
-        );
+      final completionLevel = CompletionLevel(
+        grammar: testArgParser,
+        rawArgs: const <String>[],
+        visibleSubcommands: [
+          _TestCommand(
+            name: 'command1',
+            description: 'yay command 1',
+            aliases: [],
+          ),
+          _TestCommand(
+            name: 'command2',
+            description: 'yay command 2',
+            aliases: ['alias'],
+          ),
+        ],
+        visibleOptions: testArgParser.options.values.toList(),
+      );
 
-        final completionResult = AllOptionsAndCommandsCompletionResult(
-          completionLevel: completionLevel,
-        );
+      final completionResult = AllOptionsAndCommandsCompletionResult(
+        completionLevel: completionLevel,
+      );
 
-        expect(
-          completionResult.completions,
-          {
-            'command1': 'yay command 1',
-            'command2': 'yay command 2',
-            '--option1': null,
-            '--option2': 'yay option 2',
-            '--no-option2': 'yay option 2',
-            '--trueflag': null,
-          },
-        );
-      },
-    );
+      expect(completionResult.completions, {
+        'command1': 'yay command 1',
+        'command2': 'yay command 2',
+        '--option1': null,
+        '--option2': 'yay option 2',
+        '--no-option2': 'yay option 2',
+        '--trueflag': null,
+      });
+    });
   });
 
   group('AllAbbrOptionsCompletionResult', () {
@@ -92,10 +79,7 @@ void main() {
           completionLevel: completionLevel,
         );
 
-        expect(
-          completionResult.completions,
-          {'-a': null, '-b': 'yay flag1 2'},
-        );
+        expect(completionResult.completions, {'-a': null, '-b': 'yay flag1 2'});
       },
     );
   });
@@ -134,100 +118,72 @@ void main() {
           pattern: 'co',
         );
 
-        expect(
-          completionResult.completions,
-          {
-            'command1': 'yay command 1',
-            'command2': 'yay command 2',
-            'command_not_weird': 'yay weird command',
-          },
-        );
+        expect(completionResult.completions, {
+          'command1': 'yay command 1',
+          'command2': 'yay command 2',
+          'command_not_weird': 'yay weird command',
+        });
       },
     );
   });
 
   group('MatchingOptionsCompletionResult', () {
-    test(
-      'renders suggestions only for options that starts with pattern',
-      () {
-        final testArgParser = ArgParser()
-          ..addOption('option1')
-          ..addOption(
-            'noption2',
-            aliases: ['option2alias'],
-            help: 'yay noption2',
-          )
-          ..addFlag('oflag1');
+    test('renders suggestions only for options that starts with pattern', () {
+      final testArgParser = ArgParser()
+        ..addOption('option1')
+        ..addOption('noption2', aliases: ['option2alias'], help: 'yay noption2')
+        ..addFlag('oflag1');
 
-        final completionLevel = CompletionLevel(
-          grammar: testArgParser,
-          rawArgs: const <String>[],
-          visibleSubcommands: const [],
-          visibleOptions: testArgParser.options.values.toList(),
-        );
+      final completionLevel = CompletionLevel(
+        grammar: testArgParser,
+        rawArgs: const <String>[],
+        visibleSubcommands: const [],
+        visibleOptions: testArgParser.options.values.toList(),
+      );
 
-        final completionResult = MatchingOptionsCompletionResult(
-          completionLevel: completionLevel,
-          pattern: 'o',
-        );
+      final completionResult = MatchingOptionsCompletionResult(
+        completionLevel: completionLevel,
+        pattern: 'o',
+      );
 
-        expect(
-          completionResult.completions,
-          {
-            '--option1': null,
-            '--option2alias': 'yay noption2',
-            '--oflag1': null,
-          },
-        );
-      },
-    );
+      expect(completionResult.completions, {
+        '--option1': null,
+        '--option2alias': 'yay noption2',
+        '--oflag1': null,
+      });
+    });
 
-    test(
-      'renders suggestions only for negated flags',
-      () {
-        final testArgParser = ArgParser()
-          ..addOption('option1')
-          ..addOption(
-            'noption2',
-            aliases: ['option2alias'],
-            help: 'yay noption2',
-          )
-          ..addFlag('flag', aliases: ['aliasforflag'])
-          ..addFlag('trueflag', negatable: false);
+    test('renders suggestions only for negated flags', () {
+      final testArgParser = ArgParser()
+        ..addOption('option1')
+        ..addOption('noption2', aliases: ['option2alias'], help: 'yay noption2')
+        ..addFlag('flag', aliases: ['aliasforflag'])
+        ..addFlag('trueflag', negatable: false);
 
-        final completionLevel = CompletionLevel(
-          grammar: testArgParser,
-          rawArgs: const <String>[],
-          visibleSubcommands: const [],
-          visibleOptions: testArgParser.options.values.toList(),
-        );
+      final completionLevel = CompletionLevel(
+        grammar: testArgParser,
+        rawArgs: const <String>[],
+        visibleSubcommands: const [],
+        visibleOptions: testArgParser.options.values.toList(),
+      );
 
-        final completionResult = MatchingOptionsCompletionResult(
-          completionLevel: completionLevel,
-          pattern: 'no',
-        );
+      final completionResult = MatchingOptionsCompletionResult(
+        completionLevel: completionLevel,
+        pattern: 'no',
+      );
 
-        expect(
-          completionResult.completions,
-          {
-            '--noption2': 'yay noption2',
-            '--no-flag': null,
-          },
-        );
+      expect(completionResult.completions, {
+        '--noption2': 'yay noption2',
+        '--no-flag': null,
+      });
 
-        final completionResultAlias = MatchingOptionsCompletionResult(
-          completionLevel: completionLevel,
-          pattern: 'no-a',
-        );
+      final completionResultAlias = MatchingOptionsCompletionResult(
+        completionLevel: completionLevel,
+        pattern: 'no-a',
+      );
 
-        expect(
-          completionResultAlias.completions,
-          {
-            '--no-aliasforflag': null,
-          },
-        );
-      },
-    );
+      expect(completionResultAlias.completions, {'--no-aliasforflag': null});
+    });
   });
 
   group('OptionValuesCompletionResult', () {
@@ -236,11 +192,7 @@ void main() {
       ..addOption(
         'allowed',
         abbr: 'a',
-        allowed: [
-          'value',
-          'valuesomething',
-          'anothervalue',
-        ],
+        allowed: ['value', 'valuesomething', 'anothervalue'],
         allowedHelp: {
           'valueyay': 'yay valueyay',
           'valuesomething': 'yay valuesomething',

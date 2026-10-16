@@ -14,7 +14,7 @@ import 'package:cli_completion/parser.dart';
 /// for completions.
 class HandleCompletionRequestCommand<T> extends Command<T> {
   /// {@macro handle_completion_request_command}
-  HandleCompletionRequestCommand();
+  new();
 
   @override
   String get description {

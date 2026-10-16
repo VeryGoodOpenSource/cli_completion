@@ -6,7 +6,7 @@ import 'dart:io';
 /// {@endtemplate}
 class ScriptConfigurationEntry {
   /// {@macro script_entry}
-  const ScriptConfigurationEntry(this.name)
+  const new(this.name)
     : _startComment = '## [$name]',
       _endComment = '## [/$name]';
 
@@ -46,10 +46,7 @@ class ScriptConfigurationEntry {
       ..writeln(_endComment)
       ..writeln();
 
-    file.writeAsStringSync(
-      stringBuffer.toString(),
-      mode: FileMode.append,
-    );
+    file.writeAsStringSync(stringBuffer.toString(), mode: FileMode.append);
   }
 
   /// Removes the entry with [name] from the [file].
@@ -68,11 +65,7 @@ class ScriptConfigurationEntry {
     final stringPattern = '\n$_startComment.*$_endComment\n\n'
         .replaceAll('[', r'\[')
         .replaceAll(']', r'\]');
-    final pattern = RegExp(
-      stringPattern,
-      multiLine: true,
-      dotAll: true,
-    );
+    final pattern = RegExp(stringPattern, multiLine: true, dotAll: true);
     final newContent = content.replaceAllMapped(pattern, (_) => '');
     file.writeAsStringSync(newContent);
 

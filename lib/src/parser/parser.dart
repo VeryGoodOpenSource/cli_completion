@@ -11,9 +11,7 @@ import 'package:cli_completion/src/parser/arg_parser_extension.dart';
 /// {@endtemplate}
 class CompletionParser {
   /// {@macro completion_parser}
-  CompletionParser({
-    required this.completionLevel,
-  });
+  new({required this.completionLevel});
 
   /// The [CompletionLevel] to parse.
   final CompletionLevel completionLevel;

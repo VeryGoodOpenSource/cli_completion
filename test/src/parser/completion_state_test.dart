@@ -15,11 +15,7 @@ void main() {
         expect(state!.cword, 3);
         expect(state.point, 39);
         expect(state.line, 'example_cli some_command --discrete foo');
-        expect(state.args, [
-          'some_command',
-          '--discrete',
-          'foo',
-        ]);
+        expect(state.args, ['some_command', '--discrete', 'foo']);
       });
 
       test('equality', () {
@@ -49,26 +45,17 @@ void main() {
         final environment = <String, String>{
           'COMP_LINE': 'example_cli some_command --discrete foo',
         };
-        expect(
-          CompletionState.fromEnvironment(environment),
-          isNull,
-        );
+        expect(CompletionState.fromEnvironment(environment), isNull);
       });
 
       test('returns null when only COMP_POINT is set', () {
         final environment = <String, String>{'COMP_POINT': '12'};
-        expect(
-          CompletionState.fromEnvironment(environment),
-          isNull,
-        );
+        expect(CompletionState.fromEnvironment(environment), isNull);
       });
 
       test('returns null when only COMP_CWORD is set', () {
         final environment = <String, String>{'COMP_CWORD': '2'};
-        expect(
-          CompletionState.fromEnvironment(environment),
-          isNull,
-        );
+        expect(CompletionState.fromEnvironment(environment), isNull);
       });
 
       test('returns null when COMP_CWORD or COMP_POINT are not ints', () {
@@ -76,10 +63,7 @@ void main() {
           'COMP_CWORD': 'sdasdas',
           'COMP_POINT': 'asdasddd',
         };
-        expect(
-          CompletionState.fromEnvironment(environment),
-          isNull,
-        );
+        expect(CompletionState.fromEnvironment(environment), isNull);
       });
 
       test('returns null when COMP_POINT is not at the end of the line', () {
@@ -88,10 +72,7 @@ void main() {
           'COMP_POINT': '0',
           'COMP_CWORD': '0',
         };
-        expect(
-          CompletionState.fromEnvironment(environment),
-          isNull,
-        );
+        expect(CompletionState.fromEnvironment(environment), isNull);
       });
 
       test('returns null when there an argument terminator', () {
@@ -100,10 +81,7 @@ void main() {
           'COMP_POINT': '42',
           'COMP_CWORD': '4',
         };
-        expect(
-          CompletionState.fromEnvironment(environment),
-          isNull,
-        );
+        expect(CompletionState.fromEnvironment(environment), isNull);
       });
     });
   });

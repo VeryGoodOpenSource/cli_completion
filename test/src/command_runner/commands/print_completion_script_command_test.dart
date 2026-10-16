@@ -4,13 +4,13 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class _MockLogger extends Mock implements Logger {}
+class _MockLogger extends Mock implements Logger;
 
 class _MockCompletionInstallation extends Mock
-    implements CompletionInstallation {}
+    implements CompletionInstallation;
 
 class _TestCompletionCommandRunner extends CompletionCommandRunner<int> {
-  _TestCompletionCommandRunner() : super('test', 'Test command runner');
+  new() : super('test', 'Test command runner');
 
   @override
   bool get enableAutoInstall => false;
@@ -84,28 +84,23 @@ void main() {
 
           await commandRunner.run(['completion-script']);
 
-          verify(
-            () => commandRunner.completionInstallationLogger.warn(any()),
-          ).called(1);
+          verify(() => commandRunner.completionInstallationLogger.warn(any()))
+              .called(1);
         },
       );
 
-      test(
-        'logs an error when an unknown exception happens',
-        () async {
-          when(
-            () => commandRunner.completionInstallation.completionScriptFor(
-              commandRunner.executableName,
-            ),
-          ).thenThrow(Exception('oops'));
+      test('logs an error when an unknown exception happens', () async {
+        when(
+          () => commandRunner.completionInstallation.completionScriptFor(
+            commandRunner.executableName,
+          ),
+        ).thenThrow(Exception('oops'));
 
-          await commandRunner.run(['completion-script']);
+        await commandRunner.run(['completion-script']);
 
-          verify(
-            () => commandRunner.completionInstallationLogger.err(any()),
-          ).called(1);
-        },
-      );
+        verify(() => commandRunner.completionInstallationLogger.err(any()))
+            .called(1);
+      });
     });
   });
 }
