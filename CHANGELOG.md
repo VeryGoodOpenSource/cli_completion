@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.6.0...v0.7.0) (2026-10-16)
+
+
+### Features
+
+* add print completion-script command ([#128](https://github.com/VeryGoodOpenSource/cli_completion/issues/128)) ([41bc14b](https://github.com/VeryGoodOpenSource/cli_completion/commit/41bc14bf9cefc2c6b49a2153ad125f772c41da39))
+* **deps:** upgrade to Dart 3.13 ([#132](https://github.com/VeryGoodOpenSource/cli_completion/issues/132)) ([7424eee](https://github.com/VeryGoodOpenSource/cli_completion/commit/7424eee7b77f91c29891cd7fcb949bade3941917))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump equatable from 2.1.0 to 3.0.0 ([#138](https://github.com/VeryGoodOpenSource/cli_completion/issues/138)) ([53e722a](https://github.com/VeryGoodOpenSource/cli_completion/commit/53e722af02fcbd18c83f97c89f52aad89d2743a2))
+* **deps:** bump very_good_analysis from 10.3.0 to 11.0.0 ([#137](https://github.com/VeryGoodOpenSource/cli_completion/issues/137)) ([b444e88](https://github.com/VeryGoodOpenSource/cli_completion/commit/b444e8891c25e19f1c1a7be516d4cbad98e48a7f))
+* **deps:** bump very_good_analysis from 10.3.0 to 11.0.0 in /example ([#136](https://github.com/VeryGoodOpenSource/cli_completion/issues/136)) ([24bebc3](https://github.com/VeryGoodOpenSource/cli_completion/commit/24bebc3e587f1b1b770f3820394a923f6c512aae))
+
 ## [0.6.0](https://github.com/VeryGoodOpenSource/cli_completion/compare/v0.5.1...v0.6.0) (2026-08-06)
 
 
