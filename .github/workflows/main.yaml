@@ -23,7 +23,7 @@ jobs:
       modified_files_only: false
 
   build:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v1
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v2
 
   pana_score:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v2
