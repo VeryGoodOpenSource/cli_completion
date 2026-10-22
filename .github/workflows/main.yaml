@@ -26,7 +26,7 @@ jobs:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v1
 
   pana_score:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v1
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/pana.yml@v2
 
   integration_tests:
     runs-on: ubuntu-latest
