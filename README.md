@@ -117,6 +117,6 @@ compinit
 [pub_link]: https://cli_completion.pckg.pub
 [pub_badge]: https://img.shields.io/pub/v/cli_completion.svg
 [coverage_badge]: https://raw.githubusercontent.com/VeryGoodOpenSource/cli_completion/main/coverage_badge.svg
-[ci_badge]: https://github.com/VeryGoodOpenSource/cli_completion/workflows/ci/badge.svg
+[ci_badge]: https://github.com/VeryGoodOpenSource/cli_completion/actions/workflows/main.yaml/badge.svg
 [ci_link]: https://github.com/VeryGoodOpenSource/cli_completion/actions
 [oh_my_zsh]: https://ohmyz.sh/
